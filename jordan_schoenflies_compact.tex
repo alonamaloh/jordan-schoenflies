@@ -212,6 +212,13 @@ statement follows by the same subdivision.
 
 \section{Two-sided strips along polygonal curves}\label{sec:strips}
 
+That a polygonal curve has two sides is the first thing Part~I needs and
+the last thing it can take for granted. The following lemma produces the
+two sides explicitly, as a neighborhood split into two connected tracks.
+It is what bounds the number of components of a polygonal curve's
+complement, and it returns much later to bound the number of sides of a
+crosscut (Lemma~\ref{lem:twosides}).
+
 \begin{figure}[t]
 \centering
 % common furniture; #1 = outgoing angle, #2 = anchor for the theta label
@@ -282,7 +289,7 @@ counterclockwise through $\pi/2$ its \emph{left}. At a vertex, put the
 incoming tangent at angle $0$, so the ray back along the incoming edge
 has angle $\pi$, and let the outgoing tangent have angle $\theta$.
 Left-side points of the incoming and outgoing strips near the vertex
-have polar angles $\pi-\delta$ and $\theta+\delta$ for small
+have polar angles $\pi-\delta$ and $\theta+\delta$ (Figure~\ref{fig:vertex}) for small
 $\delta>0$; both lie in the counterclockwise circular arc from
 $\theta$ to $\pi$, hence in the same component of the circle with the
 two directions $\theta,\pi$ removed, for either sign of the turn. The
@@ -445,7 +452,7 @@ $\mathbb R^2\setminus C$ that $P$ crosses and $\Omega^\dagger$ the
 other one, and let $V_i$ be the region of $\mathbb R^2\setminus J_i$
 that does \emph{not} contain $\Omega^\dagger$. Then $V_1$ and $V_2$
 are two distinct components of $\Omega\setminus P$, and
-$\overline{V_i}\cap C=A_i$.
+$\overline{V_i}\cap C=A_i$. \textup(See Figure~\ref{fig:crosscut}.\textup)
 \end{lemma}
 \begin{proof}
 Each $J_i$ is a Jordan curve because $A_i$ and $P$ are simple arcs
@@ -632,7 +639,8 @@ In a drawing of a subdivision, each branch path is a simple arc and
 distinct branch paths share at most branch vertices, so a drawing of
 $K_{3,3}$ itself results; make it polygonal
 (Lemma~\ref{lem:redraw}). View $K_{3,3}$ as the hexagon
-$x_1y_1x_2y_2x_3y_3$ plus the chords $x_1y_2,x_2y_3,x_3y_1$. Each
+$x_1y_1x_2y_2x_3y_3$ plus the chords $x_1y_2,x_2y_3,x_3y_1$
+(Figure~\ref{fig:k33}). Each
 chord lies on one side of the hexagon; two lie on the same side; and
 each pair of chords has alternating endpoints (positions
 $(1,4),(3,6),(5,2)$ pairwise alternate), contradicting
@@ -699,6 +707,12 @@ face contains $x$.
 
 \section{Arc complements and the Jordan curve theorem}\label{sec:jct}
 
+Two statements separate the polygonal theory from the general one: an arc
+separates nothing, and a curve separates into exactly two. The first is
+proved by burying the arc in a chain of small squares and appealing to
+Lemma~\ref{lem:chain}; the second, in both directions, by exhibiting a
+plane $K_{3,3}$.
+
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[scale=1.05]
@@ -758,7 +772,7 @@ graphs are disjoint ($\delta$ apart minus radii $\delta/2$). Each pair
 $\Gamma_i\cup\Gamma_{i+1}$ lies in the square of radius $3d$ about
 $a_i$ (its centers are within $d$ or within $2d$ of $a_i$, and the
 square radius is $\delta/4\le d/4$), so $p,q$ lie in the outer
-face of every pair, hence of $G=\bigcup\Gamma_i$
+face of every pair (Figure~\ref{fig:chain}), hence of $G=\bigcup\Gamma_i$
 (Lemma~\ref{lem:chain}). Every point of $A$ lies in or on a small
 square; interior points are separated from the outer face by the
 square's boundary cycle, boundary points lie on $G$. So the outer
@@ -857,7 +871,8 @@ by a simple polygonal arc $R$ in that component
 $L_4$ and $d'$ its first subsequent point on $L_5$, and $L_6$ the
 subarc between, meeting $L_4\cup L_5$ only at its ends and missing
 $C$. Then $C\cup L_4\cup L_5\cup L_6$ is a plane subdivision of
-$K_{3,3}$ with parts $\{p_1,p_2,c'\}$ and $\{a,b,d'\}$: the four
+$K_{3,3}$ with parts $\{p_1,p_2,c'\}$ and $\{a,b,d'\}$
+(Figure~\ref{fig:sep}): the four
 subarcs of $P_1,P_2$ cut at $a,b$, the two subsegments of $L_4$ cut at
 $c'$, the two subpaths of $L_5$ cut at $d'$, and $L_6$ are nine
 internally disjoint branch paths (all the required disjointness is by
@@ -938,7 +953,7 @@ Lemma~\ref{lem:graphfacts}(b), $T_i$ is three internally disjoint
 branches from a center $x_i$ to the terminals. The $T_i$ are pairwise
 disjoint: their interiors lie in distinct components and the nine
 terminals are distinct. On each $Q_j$ let $y_j$ be the middle of the
-three terminals, and join each $x_i$ to each $y_j$ by its branch to
+three terminals (Figure~\ref{fig:middle}), and join each $x_i$ to each $y_j$ by its branch to
 $p_{ij}$ followed by the subarc of $Q_j$ to $y_j$ (empty for the
 middle terminal). These nine paths are internally disjoint: branches
 within one tree are; trees are disjoint; the two nonempty $Q_j$-subarcs
@@ -957,6 +972,11 @@ absorption and crosscut cells --- are from now on available for all of
 them.
 
 \section{Crosscuts of Jordan domains; reduction to the square}\label{sec:reduce}
+
+From here $C$ is an arbitrary Jordan curve and $D=\Int(C)$. The crosscut
+theorem below is the instrument Part~II uses at every single step; after
+it, the main theorem is reduced to the case of a square, and the rest of
+the paper is the construction that handles that case.
 
 \begin{lemma}[At most two sides]\label{lem:twosides}
 If $P$ is a polygonal crosscut of $D=\Int(C)$, then $D\setminus P$ has
@@ -1232,6 +1252,14 @@ verify this of their final outputs, not of every intermediate stage.
 
 \section{Finite transfer}\label{sec:transfer}
 
+Everything now turns on being able to perform a refinement on one side
+and reproduce it on the other. In the direction source-to-target this is
+unobstructed, because the target skeleton is polygonal everywhere,
+including on $S$. In the direction target-to-source it is not: a new edge
+that reaches $C$ must land at a point one can actually reach from inside,
+which is why the anchors are taken from the strongly accessible set $A$,
+and why each of them is given exactly one spoke.
+
 \begin{lemma}[Local sectors and face access]\label{lem:sector}
 Let $x$ be a point of a finite polygonal plane graph. Small closed
 disks at $x$ meet the graph in finitely many straight radial segments
@@ -1394,7 +1422,7 @@ both.}\label{fig:stage}
 \end{figure}
 
 Stage $n$ starts from $(\Gamma_{n-1},\Gamma_{n-1}')$ and performs four
-steps: attach a local grid in $W_n(b_n)$ to the source
+steps (Figure~\ref{fig:stage}): attach a local grid in $W_n(b_n)$ to the source
 (Proposition~\ref{prop:grid}); transfer it to the target
 (Theorem~\ref{thm:transfer}(a)); refine the whole target by the
 anchored mesh with $\delta=\varepsilon_n$
@@ -1524,15 +1552,19 @@ stages.
 
 \section{The interior homeomorphism}\label{sec:interior}
 
-For $x\in D$ let $T_n(x)$ be the closed target star of
-$\sigma_n'(x)$. Parent compatibility makes these nested, their
-diameters tend to zero (Proposition~\ref{prop:shrink}), so by
-Lemma~\ref{lem:nested} their intersection is one point: define
-$F(x)$ to be it. Write $G_n=|\Gamma_n|$ and $G_n'=|\Gamma_n'|$; the
-skeleton homeomorphisms $g_n$ are nested and combine to a bijection
+Everything is now in place. For $x\in D$ let $T_n(x)$ be the closed
+target star of $\sigma_n'(x)$. Parent compatibility makes these nested,
+and Proposition~\ref{prop:shrink} drives their diameters to zero, so by
+Lemma~\ref{lem:nested} their intersection is a single point. That point
+is the image of $x$:
+\[
+  \{F(x)\}\;:=\;\bigcap_{n\ge1}T_n(x).
+\]
+Write $G_n=|\Gamma_n|$ and $G_n'=|\Gamma_n'|$; the skeleton
+homeomorphisms $g_n$ are nested and combine to a bijection
 $g_\infty:\bigcup_nG_n\to\bigcup_nG_n'$.
 
-\begin{proposition}\label{prop:homeo}
+\begin{proposition}[The interior map]\label{prop:homeo}
 $F:D\to Q^\circ$ is a homeomorphism, and $F=g_n$ on
 $G_n\cap D$ for every $n$.
 \end{proposition}
@@ -1666,6 +1698,12 @@ mixed sequences follow by combining. \end{proof}
 
 \section{From the square extension to the plane}\label{sec:plane}
 
+Only the exterior is left. Inversion in a point of $\Int(C)$ turns the
+closed exterior into a closed interior punctured at one point, so the
+theorem just proved applies to it --- provided the two extensions can be
+made to agree at that point, which is what the pointed version below
+arranges.
+
 \begin{lemma}[Moving a point of the square]\label{lem:mover}
 For interior points $x,y$ of $Q$ there is a homeomorphism of $Q$
 fixing $S$ pointwise and sending $x$ to $y$.
@@ -1692,7 +1730,7 @@ mover (Lemma~\ref{lem:mover}) taking $J(H(z))$ to $J(z')$:
 $J^{-1}\circ M\circ J\circ H$ extends $f$ and sends $z\mapsto z'$.
 \end{proof}
 
-\begin{lemma}[Inversion]\label{lem:inv2}
+\begin{lemma}[Inversion]\label{lem:inversion}
 For $a\in\Int(C)$, the inversion $I_a(x)=a+(x-a)/\|x-a\|^2$ maps
 $C$ onto a Jordan curve $C^a$ and restricts to a homeomorphism of
 $C\cup\Ext(C)$ onto $\bigl(C^a\cup\Int(C^a)\bigr)\setminus\{a\}$.
@@ -1726,7 +1764,7 @@ F_{\mathrm{ext}}
  =I_b\circ H^*\circ I_a
  :\;C\cup\Ext(C)\longrightarrow C'\cup\Ext(C'),
 \]
-using Lemma~\ref{lem:inv2} on both sides and removing the
+using Lemma~\ref{lem:inversion} on both sides and removing the
 corresponding points $a,b$, is a homeomorphism extending
 $I_b\circ f^*\circ I_a=f$ on $C$. The maps
 $F_{\mathrm{int}},F_{\mathrm{ext}}$ agree on $C$ and are defined on
@@ -1735,6 +1773,33 @@ plane; pasting them, and pasting their inverses on
 $C'\cup\Int(C')$ and $C'\cup\Ext(C')$, yields the desired
 homeomorphism of $\mathbb R^2$ extending $f$.
 \end{proof}
+
+\section*{What the proof used}
+
+It is worth recording how little went in. Beyond the metric topology of
+the plane --- compactness, connectedness, uniform continuity --- and the
+density of $\mathbb Q^2$, the argument rests on one counting function,
+three constructions, and a single nonplanarity fact.
+
+The counting function is the crossing parity $\pi_C$ of
+Section~\ref{sec:polygonal}. It is what makes the polygonal count exact:
+the strip lemma bounds the number of components by two, and $\pi_C$,
+taking both values, shows the bound is attained. The identity
+$\pi_C=\pi_{J_1}+\pi_{J_2}$ is then the entire content of the polygonal
+crosscut theorem.
+
+The three constructions are the two-sided strip, which manufactures the
+sides of a polygonal curve; the chain of squares, which buries a simple
+arc so thoroughly that its complement never notices it; and the matched
+cellulation, which replaces the homeomorphism being sought by a sequence
+of finite ones and lets a limit do the rest.
+
+The nonplanarity fact is that $K_{3,3}$ has no plane drawing. It is
+invoked exactly twice, and both times to forbid a curve from separating
+wrongly: once against a curve that separates too little --- not at all
+--- and once against one that separates too much, into three regions.
+Between those two applications lies the whole distance from polygons to
+arbitrary Jordan curves.
 
 \section*{Note}
 The detailed companion manuscript proves the same theorem along the
