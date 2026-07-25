@@ -258,25 +258,39 @@ be chosen so that consecutive edge and vertex blocks overlap in the
 prescribed small rectangles around the radial segments, while the
 closures of all nonadjacent blocks are disjoint.
 
-For a directed edge with unit tangent $u$, call the side in the
-direction obtained by rotating $u$ counterclockwise through $\pi/2$
-the left side. We claim that at a vertex the left sides of the incoming
-and outgoing strips enter the same component of the vertex disk minus
-the two incident rays. Rotate coordinates so that the incoming tangent
-has angle $0$, and let the outgoing tangent have angle $\theta$. The
-ray from the vertex toward the preceding edge has angle $\pi$. A point
-on the left of the incoming strip has polar angle $\pi-\delta$, while
-a point on the left of the outgoing strip has angle
-$\theta+\delta$, for a sufficiently small $\delta>0$. These two angles
-lie in the same component of the circle with the directions $\pi$ and
-$\theta$ removed. The two right-side points, with angles
-$\pi+\delta$ and $\theta-\delta$, lie in the other component. This argument covers either sign of the turn. There are two
-degenerate collinear possibilities. If $\theta=0$, the polygon goes
-straight through the vertex, and that redundant vertex was deleted at
-the start. If $\theta=\pi$, the rays from the vertex toward the
-preceding and following edges coincide; the two incident segments then
-overlap in a nondegenerate initial segment, contrary to simplicity.
-Thus neither degenerate case occurs.
+For a directed edge with unit tangent $u$, write
+$u^{\perp}=(-u_2,u_1)$ for $u$ turned counterclockwise through a right
+angle, so that $\det(u,u^{\perp})=1$, and call the $u^{\perp}$ side of
+the edge its left side. We claim that at a vertex the left sides of the
+incoming and outgoing strips enter the same component of the vertex disk
+minus the two incident rays.
+
+Let $u$ be the incoming unit tangent and $w$ the outgoing one, so the
+two rays leave the vertex in the directions $r_1=-u$ and $r_2=w$.
+Neither $r_1=r_2$ nor $r_1=-r_2$ occurs. The first says $w=-u$, so the
+two incident segments overlap in a nondegenerate initial segment,
+contrary to simplicity; the second says $w=u$, a collinear vertex
+deleted at the start. So the two rays are distinct and not opposite, and
+they bound two arcs of directions at the vertex.
+
+Points of the left half-strip of the incoming edge near the vertex lie
+in directions $-tu+su^{\perp}$ with $t,s>0$ and $s/t$ small, and for
+such a direction $d$, bilinearity and $\det(u,u)=0$ give
+\[
+ \det(r_1,d)=\det(-u,-tu+su^{\perp})=-s<0 .
+\]
+Points of the left half-strip of the outgoing edge lie in directions
+$tw+sw^{\perp}$ with $t,s>0$ and $s/t$ small, and there
+\[
+ \det(r_2,d)=\det(w,tw+sw^{\perp})=s>0 .
+\]
+So the incoming left germ lies immediately clockwise of $r_1$ and the
+outgoing left germ immediately counterclockwise of $r_2$; by the
+direction facts of \hyperref[app:background]{Appendix~C} both therefore
+lie on the arc traversed counterclockwise from $r_2$ to $r_1$, the first
+just before its end and the second just after its start. The two right
+germs reverse both signs and lie on the other arc. No angle is named and
+no case distinction on the sense of the turn arises.
 
 Make the strips narrow enough that this side matching holds in every
 vertex disk. Let $N$ be the union of the interiors of the vertex disks
@@ -294,7 +308,7 @@ same is true on the right. Thus
 
 For a closed polygon, the labels are defined independently on every
 directed edge by the fixed orientation of the plane, and the preceding
-angle calculation shows left joins to left at every vertex. Thus the
+determinant calculation shows left joins to left at every vertex. Thus the
 labels return consistently after one circuit.
 
 The local two-sidedness assertion follows from the construction. Let
@@ -323,7 +337,9 @@ chosen inside the prescribed open set.
 \section{The polygonal Jordan and crosscut theorems}
 
 Let $C$ be a simple closed polygonal curve. Rotate the coordinate system
-slightly so that no edge is horizontal. For
+so that no edge is horizontal; this is possible because the finitely many
+edge directions exclude only finitely many rotations
+(\hyperref[app:background]{Appendix~C}). For
 $q=(\xi,\eta)\notin C$, orient each edge from its lower endpoint $a$ to
 its upper endpoint $b$, count the edges for which
 \[
@@ -1022,28 +1038,33 @@ a unique unbounded component of $\mathbb R^2\setminus C$.
 We first record the standard parametrization facts that give meaning
 to phrases such as ``the two arcs of $C$ between two of its points''.
 
-\begin{lemma}[Circular parametrization]\label{lem:jordan-circle}
-Let $C$ be a Jordan curve with parametrization $\gamma$. Then $\gamma$
-induces a homeomorphism from the unit circle onto $C$. Consequently,
+\begin{lemma}[Model-curve parametrization]\label{lem:jordan-circle}
+Let $C$ be a Jordan curve with parametrization $\gamma$, and let
+$S=\partial Q$ be the boundary of the square $Q=[-1,1]^2$. Then $\gamma$
+induces a homeomorphism from $S$ onto $C$. Consequently,
 any two distinct points of $C$ divide it into two simple arcs having
 exactly those points in common, and the relatively open subarcs of $C$
 form a basis of its subspace topology.
 \end{lemma}
 \begin{proof}
-Let $e(t)=(\cos2\pi t,\sin2\pi t)$, a continuous surjection of $[0,1]$
-onto the unit circle which identifies $0$ with $1$ and is injective
-otherwise. Since $\gamma(0)=\gamma(1)$, setting $h(e(t))=\gamma(t)$
-gives a well-defined bijection $h$ from the circle onto $C$. It is
-continuous: if $z_n\to z$ on the circle, choose $t_n$ with
+Let $e:[0,1]\to S$ traverse the four sides of $S$ at constant speed:
+$e$ is affine on each interval $[k/4,(k+1)/4]$ and carries the five
+endpoints to the four corners of $Q$ in cyclic order, returning to the
+first. It is a continuous surjection onto $S$ which identifies $0$ with
+$1$ and is injective otherwise. Since $\gamma(0)=\gamma(1)$, setting
+$h(e(t))=\gamma(t)$ gives a well-defined bijection $h$ from $S$ onto
+$C$. It is continuous: if $z_n\to z$ in $S$, choose $t_n$ with
 $e(t_n)=z_n$; every subsequence of $(t_n)$ has, by compactness of
 $[0,1]$, a further subsequence converging to some $t$ with $e(t)=z$,
 along which $h(z_n)=\gamma(t_n)\to\gamma(t)=h(z)$; hence
 $h(z_n)\to h(z)$. A continuous bijection from a compact space onto a
 Hausdorff space is a homeomorphism, so $h$ is one. The remaining
 assertions are transported by $h$ from the corresponding assertions
-about the circle, where they are immediate. The same argument applies
-with the boundary of a square in place of the unit circle, and radial
-projection is a homeomorphism between the two.
+about $S$, where they are immediate from the piecewise-affine
+description of $e$. Nothing in this document needs the unit circle in
+place of $S$; taking the model curve to be $\partial Q$ keeps the whole
+development free of trigonometry, and $S$ is in any case the curve that
+Part~II maps onto.
 \end{proof}
 
 \begin{proposition}[A Jordan curve separates]\label{prop:jordan-disconnected}
@@ -3197,7 +3218,7 @@ Lemma~\ref{lem:polygonal-overlay}\newline\emph{Polygonal overlay} & Definitions 
 Lemma~\ref{lem:face-cycles}\newline\emph{Face cycles} & Lemma~\ref{lem:relative-ear}, Theorem~\ref{thm:polygonal-jordan} and Theorem~\ref{thm:polygonal-crosscut} \\
 Lemma~\ref{lem:outer-chain}\newline\emph{Outer face of a chain} & Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:face-cycles} and Theorem~\ref{thm:polygonal-crosscut} \\
 Theorem~\ref{thm:arc-complement}\newline\emph{Arc-complement theorem} & Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:outer-chain} and Lemma~\ref{lem:polygonal-connected} \\
-Lemma~\ref{lem:jordan-circle}\newline\emph{Circular parametrization} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:jordan-circle}\newline\emph{Model-curve parametrization} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Proposition~\ref{prop:jordan-disconnected}\newline\emph{A Jordan curve separates} & Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:polygonal-connected} and Corollary~\ref{cor:k33-subdivision} \\
 Lemma~\ref{lem:accessible-dense}\newline\emph{Density of accessible points} & Lemma~\ref{lem:jordan-circle} and Theorem~\ref{thm:arc-complement} \\
 Theorem~\ref{thm:jordan}\newline\emph{Jordan curve theorem} & Proposition~\ref{prop:jordan-disconnected}, Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:accessible-dense}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:three-leaf-tree} and Corollary~\ref{cor:k33-subdivision} \\
@@ -3297,9 +3318,15 @@ should obtain these from its ambient libraries.
       and triangles, and of affine maps of the plane, including that
       an affine map of the plane is determined by its values at three
       affinely independent points and that an affine map fixing two
-      points of a line fixes that line pointwise; polar coordinates
-      about a point, and the decomposition of a circle by finitely
-      many directions into arcs; a nondegenerate compact connected
+      points of a line fixes that line pointwise; the orientation form
+      \(\det(a,b)=a_1b_2-a_2b_1\) and the right-angle rotation
+      \(u\mapsto u^{\perp}=(-u_2,u_1)\), for which
+      \(\det(u,u^{\perp})=\|u\|^2\); the fact that two distinct,
+      non-opposite unit vectors bound two open arcs of directions, and
+      that a direction near the first with negative \(\det\) against it
+      lies on the same arc as a direction near the second with positive
+      \(\det\) against it; the existence of a unit vector avoiding any
+      prescribed finite set of directions; a nondegenerate compact connected
       subset of a line is a closed segment; and a component of the
       intersection of a line with a bounded open subset of the plane
       is a bounded open segment of the line, whose closure is a closed
