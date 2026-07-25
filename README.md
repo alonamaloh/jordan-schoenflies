@@ -60,6 +60,18 @@ pdflatex jordan_schoenflies_compact.tex   # run twice, for cross-references
 pdflatex jordan_schoenflies.tex           # run three times, for the table of contents
 ```
 
+Appendix A of the blueprint — the statement-level citation index — is
+generated, not written by hand. After changing any statement or proof in
+`jordan_schoenflies.tex`, regenerate it and rebuild:
+
+```sh
+python3 regen_appendix.py                 # rewrites Appendix A in place
+```
+
+It parses the labelled environments and their proofs, collects the
+cross-references in each scope, and rewrites the table rows. Appendix B
+(the suggested module order) is coarser and is maintained by hand.
+
 ## License
 
 [CC BY 4.0](LICENSE). Share and adapt with attribution.
