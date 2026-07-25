@@ -72,10 +72,11 @@ rather than written out twice.
 \section*{The plan}
 
 A Jordan curve may be monstrous. It can be nowhere differentiable, it
-can have positive area, and it can meet a line in a Cantor set. Nothing
-can be constructed on it directly, and every proof of the theorem is
-therefore a proof that the monstrosity is irrelevant: that the curve is
-controlled entirely by objects one \emph{can} compute with. Here those
+can have positive area, and it can meet a line in a Cantor set. No
+construction on it may rely on local regularity, and every proof of the
+theorem is therefore a proof that the monstrosity is irrelevant: that
+the curve is controlled entirely by objects one \emph{can} compute
+with. Here those
 objects are polygons and finite graphs.
 
 Part I, Sections~\ref{sec:strips}--\ref{sec:jct}, makes them do the
@@ -125,7 +126,8 @@ separately, in Section~\ref{sec:boundary}, by trapping the curve
 between crosscuts. Section~\ref{sec:plane} passes from the closed disc
 to the whole plane by an inversion.
 
-The route is Thomassen's; the work here is to leave no step unargued.
+The route is Thomassen's~\cite{Thomassen}; the work here is to leave no
+step unargued.
 
 \section{Statement, conventions, and background}
 
@@ -514,8 +516,10 @@ $\Omega^\dagger$, whence $V_i\subseteq\Omega$; and $V_i$ misses
 $P\subseteq J_i$. Thus $V_i\subseteq\Omega\setminus P$, while
 $\partial V_i=J_i\subseteq C\cup P$ misses $\Omega\setminus P$, so
 $V_i$ is a component of it (Lemma~\ref{lem:clopen}). The two are
-distinct because their boundaries are: $A_1=A_2$ would force
-$C=A_1\cap A_2=\{p,q\}$. Finally
+distinct: $V_1=V_2$ would give $J_1=\partial V_1=\partial V_2=J_2$ and
+hence $A_1=J_1\setminus P^\circ=J_2\setminus P^\circ=A_2$, which is
+impossible because $A_1\cap A_2=\{p,q\}$ while each $A_i$ is a
+nondegenerate arc. Finally
 $\overline{V_i}\cap C=(V_i\cup J_i)\cap C=A_i$.
 \end{proof}
 
@@ -651,9 +655,13 @@ are disjoint compacta, with distinct boundary marks $c_{v,e}$. In
 $M=\mathbb R^2\setminus\bigcup_vD_v^\circ$, which is locally
 polygonally connected (disks, half-disks along sides, three-quarter
 disks at corners), Lemma~\ref{lem:sep} yields pairwise disjoint
-connected relatively open neighborhoods $U_e\supseteq K_e$ meeting the
-square boundaries only in small disjoint arcs around the marks: the
-boundary minus such an arc is compact and disjoint from $K_e$. The
+relatively open neighborhoods $O_e\supseteq K_e$ meeting the square
+boundaries only in small disjoint arcs around the marks: the boundary
+minus such an arc is compact and disjoint from $K_e$. Compact
+separation does not deliver connectedness, so let $U_e$ be the
+component of $O_e$ containing the connected set $K_e$; components of
+relatively open subsets of the locally connected $M$ are relatively
+open. The
 clopen argument of Lemma~\ref{lem:polyconn} runs inside each $U_e$, so
 $c_{v,e}$ and $c_{w,e}$ are joined in $U_e$ by a simple polygonal
 replacement core. Finally join $v$ radially to each $c_{v,e}$ inside
@@ -1297,11 +1305,54 @@ the corresponding cell is nonempty and witnesses the intersection on
 the other side.
 \end{proof}
 
-Parents compose along a sequence of refinements. By
-Lemma~\ref{lem:cellorder}(b) the parent of the carrier of a point is
-its carrier at the previous stage, and the star of a cell is contained
-in the star of its parent; so the closed stars of a fixed point shrink,
-weakly, under refinement.
+The quantitative work in Sections~\ref{sec:scheme}
+and~\ref{sec:interior} is carried entirely by stars, so we record what
+they do.
+
+\begin{lemma}[Stars]\label{lem:stars}
+\textup{(a)} Every cell is a subcell of a face, so that
+$\St(\sigma)$ is the union of the closures of the faces above $\sigma$;
+and if each of those closed faces has diameter $<\eta$ then
+$\diam\St(\sigma)<2\eta$.
+\textup{(b)} Parents preserve the subcell order.
+\textup{(c)} Hence $\St(\sigma^{+})\subseteq\St(\sigma)$ whenever
+$\sigma$ is the parent of $\sigma^{+}$; and the parent of the carrier
+of a point is its carrier at the previous stage, so the closed stars of
+a fixed point shrink, weakly, under refinement.
+\end{lemma}
+\begin{proof}
+(a) Both constructors preserve the property: initially every cell lies
+in $\overline{R_1}$ or $\overline{R_2}$; a subdivision's new cells lie
+in $\overline e$, and $e$ is below a face by hypothesis; a split's new
+cells are the crosscut and the two new faces, and the crosscut is below
+both. If now $\tau\succeq\sigma$ and $\tau\preceq R$ with $R$ a face,
+then $\overline\tau\subseteq\overline R$ and $R\succeq\sigma$, which
+gives the stated description of $\St(\sigma)$. Every closed face in it
+contains $\sigma$, hence a fixed point $x\in\sigma$; two points of the
+star are therefore within $2\eta$ of each other through $x$.
+
+(b) In each constructor all new cells share one parent $\rho$ --- the
+subdivided edge, or the split face --- and every surviving cell is its
+own parent. A relation between two new cells gives $\rho\preceq\rho$;
+between two old cells, an old relation. If an old $\sigma$ satisfies
+$\sigma\preceq\tau$ with $\tau$ new, then
+$\sigma\subseteq\overline\tau\subseteq\overline\rho$, so
+$\sigma\preceq\rho$ as required. The remaining case cannot occur: a new
+cell below a surviving cell would put it in an old closed cell other
+than $\overline\rho$, which the proof of
+Lemma~\ref{lem:cellorder}(b) excludes.
+
+(c) For $\tau^{+}\succeq\sigma^{+}$ with parent $\tau$, we have
+$\overline{\tau^{+}}\subseteq\overline\tau$ and, by (b),
+$\tau\succeq\sigma$; so $\overline{\tau^{+}}\subseteq\St(\sigma)$.
+For the carriers: if $x$ has carriers $\sigma$ before and $\sigma^{+}$
+after, then $\sigma^{+}$ meets $\overline\sigma$, so
+$\sigma^{+}\subseteq\overline\sigma$ by the frontier property and
+$\operatorname{par}(\sigma^{+})\preceq\sigma$; and
+$x\in\overline{\operatorname{par}(\sigma^{+})}$ forces
+$\sigma\preceq\operatorname{par}(\sigma^{+})$ the same way. Antisymmetry
+finishes it.
+\end{proof}
 
 One caution. During the finite-transfer induction of the next section,
 intermediate stages may temporarily have a disconnected inner part
@@ -1359,9 +1410,11 @@ be reproduced in the target: there is a matched cellulation extending
 $(\Gamma,\Gamma')$ whose source skeleton is $H$.
 
 \textup{(b)} Symmetrically from the target side, provided every new
-edge meeting $S$ has exactly one endpoint on $S$, at a fresh point of
-$u(\mathcal A)$ that becomes a boundary vertex with exactly one incident new
-edge.
+\emph{inner} edge meeting $S$ has exactly one endpoint on $S$, at a
+fresh point of $u(\mathcal A)$ that becomes a boundary vertex with
+exactly one incident new inner edge. \textup(The new \emph{outer} edges
+are unrestricted: subdividing $S$ at a fresh point creates two of them,
+both with both endpoints on $S$.\textup)
 \end{theorem}
 \begin{proof}
 First pass to a common subdivision so that the old skeleton is
@@ -1487,7 +1540,8 @@ both.}\label{fig:stage}
 Stage $n$ starts from $(\Gamma_{n-1},\Gamma_{n-1}')$ and performs four
 steps (Figure~\ref{fig:stage}): attach a local grid in $W_n(b_n)$ to the source
 (Proposition~\ref{prop:grid}); transfer it to the target
-(Theorem~\ref{thm:transfer}(a)); refine the whole target by the
+(Theorem~\ref{thm:transfer}(a)); refine \emph{that} target skeleton ---
+the one carrying the transferred grid, not $\Gamma_{n-1}'$ --- by the
 anchored mesh with $\delta=\varepsilon_n$
 (Proposition~\ref{prop:mesh}); transfer back
 (Theorem~\ref{thm:transfer}(b)). The result is
@@ -1529,24 +1583,25 @@ lowers the number of components, so finitely many rounds finish.
 \end{proof}
 
 \begin{proposition}[Anchored mesh]\label{prop:mesh}
-For every $\delta>0$ there is a polygonal cellulation $T$ of $Q$ whose
-faces have diameter $<\delta$, whose skeleton is 2-connected with
-$|T|\setminus S$ connected, in which every prescribed boundary vertex
-of $\Gamma_{n-1}'$ appears, and whose only new edges meeting $S$ are
-single \emph{spokes}, one at each of finitely many fresh points of
-$u(\mathcal A)$.
+Let $G'$ be the skeleton of any cellulation of $Q$, and let
+$\delta>0$. Then $G'$ has a refinement $T$, a polygonal cellulation of
+$Q$ whose faces have diameter $<\delta$, whose skeleton is 2-connected
+with $|T|\setminus S$ connected, and whose only new inner edges meeting
+$S$ are single \emph{spokes}, one at each of finitely many fresh points
+of $u(\mathcal A)$. \textup(It is applied below to the target skeleton
+current at that moment, not to $\Gamma_{n-1}'$.\textup)
 \end{proposition}
 \begin{proof}
 Radial coordinates $x=tz$ ($t=\|x\|_\infty$, $z\in S$) identify the
 collar $Q\setminus(\lambda Q)^\circ$ with $S\times[\lambda,1]$; fix
-$\lambda<1$ with $\sqrt2(1-\lambda)<\delta/4$. Parametrize $S$ by a
+$0<\lambda<1$ with $\sqrt2(1-\lambda)<\delta/4$. Parametrize $S$ by a
 circle, partition it into arcs of image-diameter $<\delta/8$ (uniform
 continuity), and choose one fresh point $z_i$ of the dense set
-$u(\mathcal A)$ in the relative interior of each, avoiding the finitely many
-excluded points --- possible since a dense set meets every open subarc
+$u(\mathcal A)$ in the relative interior of each, avoiding the finitely
+many boundary vertices of $G'$ --- possible since a dense set meets every open subarc
 even after finitely many deletions. Consecutive $z_i$ then bound arcs
-$A_i\subseteq S$ of diameter $<\delta/4$; insert the old boundary
-vertices as subdivisions of these arcs. Draw the spokes
+$A_i\subseteq S$ of diameter $<\delta/4$; insert the boundary vertices
+of $G'$ as subdivisions of these arcs. Draw the spokes
 $[z_i,\lambda z_i]$ --- disjoint, since two radial segments of the
 collar meet only on a common ray --- cutting the collar into the
 rectangles $R_i=\{tz:z\in A_i,\ \lambda\le t\le1\}$, each of diameter
@@ -1564,12 +1619,13 @@ adjoining these cycles one after another preserves 2-connectivity,
 and their union with the grid is the whole skeleton. And
 $|T|\setminus S$ is connected: the core grid and $\partial(\lambda Q)$ form a connected
 set in $Q^\circ$, to which each spoke minus its outer endpoint is
-attached. Overlaying $T$ with $\Gamma_{n-1}'$ preserves 2-connectivity, since
-both graphs contain the outer cycle $S$ and so share at least two
-vertices (Lemma~\ref{lem:graphfacts}(c)); if the two inner
-parts are disjoint, adding the ears of one joining arc in $Q^\circ$,
-as in Proposition~\ref{prop:grid}, connects them. This yields the
-required refinement; the only new edges meeting $S$ are the spokes.
+attached. Overlaying $T$ with $G'$ preserves 2-connectivity, since both graphs
+contain the outer cycle $S$ and so share at least two vertices
+(Lemma~\ref{lem:graphfacts}(c)); if the two inner parts are disjoint,
+adding the ears of one joining arc in $Q^\circ$, as in
+Proposition~\ref{prop:grid}, connects them. This yields the required
+refinement; the only new inner edges meeting $S$ are the spokes, and
+the new outer edges are the subedges into which $S$ has been cut.
 \end{proof}
 
 \begin{proposition}[Shrinking stars]\label{prop:shrink}
@@ -1585,8 +1641,8 @@ mesh of Proposition~\ref{prop:mesh}, so each of its faces, being
 connected and disjoint from the mesh skeleton, lies in one mesh face
 and has diameter $<\varepsilon_n$; faces only shrink under later
 refinement
-(each face lies in the closure of its parent), and all closed faces in
-a star share a point, so star diameters are $<2\varepsilon_n$.
+(each face lies in the closure of its parent), so by
+Lemma~\ref{lem:stars}(a) the star diameters are $<2\varepsilon_n$.
 
 On the source, fix $x$ and $d=r(x)>0$; choose $b\in B$ with
 $\|b-x\|_\infty<d/8$, occurring at arbitrarily large indices $n$ with
@@ -1599,10 +1655,9 @@ connected and disjoint from that skeleton, which contains all grid
 lines of $W$ and $\partial W$, so $T$ lies in one component of their
 complement, and not in the unbounded one, whose closure misses the
 interior point $x$; hence $T$ lies in one open grid rectangle and
-$\overline T$ in its closure, of diameter $<\varepsilon_n$. All closed
-faces of $\St_{\Gamma_n}(x)$ contain $x$, so
-$\diam\St_{\Gamma_n}(x)<2\varepsilon_n$; and stars only shrink at
-later stages.
+$\overline T$ in its closure, of diameter $<\varepsilon_n$. All closed faces of $\St_{\Gamma_n}(x)$ contain $x$, so
+$\diam\St_{\Gamma_n}(x)<2\varepsilon_n$ by Lemma~\ref{lem:stars}(a);
+and by Lemma~\ref{lem:stars}(c) stars only shrink at later stages.
 \end{proof}
 
 Let $\mathcal A_\infty\subseteq\mathcal A$ be the preimages of all fresh anchors ever
@@ -1876,5 +1931,12 @@ together with a mechanically generated citation index and an explicit
 imported-background appendix. Where the present text says ``by the
 correspondence of incidences'' or compresses a constructor case check
 into a sentence, the companion contains the full case analysis.
+
+\begin{thebibliography}{9}
+\bibitem{Thomassen}
+C. Thomassen, \emph{The Jordan--Schönflies theorem and the
+classification of surfaces}, Amer. Math. Monthly \textbf{99} (1992),
+116--130.
+\end{thebibliography}
 
 \end{document}
