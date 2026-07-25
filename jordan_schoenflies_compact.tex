@@ -329,6 +329,38 @@ be the parity of the number of edges, oriented upward, with
 $a_y\le\eta<b_y$ whose crossing of the line $y=\eta$ lies strictly
 right of $q$.
 
+
+\begin{remark}[The count has no degenerate cases]\label{rem:parity}
+$\pi_C(q)$ is a sum over \emph{edges} satisfying an inequality, not a
+count of the points where a ray meets $C$, so there is nothing to
+disambiguate when the ray meets the curve badly. Since $C$ has finitely
+many edges, all but finitely many rotations leave none of them
+horizontal; then every edge has $a_y<b_y$, so ``oriented upward'' means
+something and each active edge meets the line $y=\eta$ in exactly one
+point. No edge can lie \emph{along} the ray.
+
+Vertices at height $\eta$ are handled by the half-open condition rather
+than by any hypothesis on $q$. Both edges at such a vertex cross
+$y=\eta$ at the vertex itself, so they pass or fail the ``strictly
+right'' test together; and where the curve runs through the vertex, the
+arriving edge has $b_y=\eta$ and is not counted while the departing edge
+has $a_y=\eta$ and is, contributing $1$, whereas at a local minimum both
+have $a_y=\eta$ and contribute $2$, and at a local maximum both have
+$b_y=\eta$ and contribute $0$. Nor does ``strictly right of $q$'' ever
+have to break a tie: an active edge crossing $y=\eta$ at $q$ itself
+would put $q$ on $C$.
+
+Finally --- this is used in Lemma~\ref{lem:split} --- subdividing an
+edge leaves $\pi_C$ unchanged: cutting the upward edge $a\to b$ at an
+interior point $c$ replaces the condition $a_y\le\eta<b_y$ by the two
+conditions $a_y\le\eta<c_y$ and $c_y\le\eta<b_y$, which partition it,
+and whichever piece survives crosses $y=\eta$ where the original did.
+
+The vertex analysis in the next proof settles a different question: not
+whether the count is well defined at a fixed $q$, which is the matter
+here, but whether it jumps as $\eta$ \emph{varies past} a vertex height.
+\end{remark}
+
 \begin{lemma}[Crossing parity]\label{lem:parity}
 $\pi_C$ is locally constant on $\mathbb R^2\setminus C$, and the two
 sides of a small disk crossing one edge have opposite parity.
@@ -488,7 +520,8 @@ $P$ lies inside exactly one of $J_1,J_2$, and a point of $\Ext(C)$ off
 $P$ lies inside both or neither.
 \end{lemma}
 \begin{proof}
-Subdivide $C$ at the endpoints of $P$ and count edge by edge: the
+Subdivide $C$ at the endpoints of $P$ --- harmless by
+Remark~\ref{rem:parity} --- and count edge by edge: the
 edges of $P$ occur in both $J_i$ and cancel, while $A_1,A_2$ partition
 the edges of $C$. The two consequences restate \eqref{eq:split} using
 $\pi_C=1$ on $\Int(C)$ and $\pi_C=0$ on $\Ext(C)$

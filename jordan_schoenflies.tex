@@ -319,6 +319,39 @@ and whose intersection with the line $y=\eta$ lies strictly to the
 right of $q$, and reduce the count modulo $2$. Denote the resulting
 number by $\pi_C(q)$.
 
+The count is a sum over edges satisfying an inequality, not a count of
+the points in which a ray meets $C$, and it is well defined for every
+$q\notin C$ without any genericity assumption. Because no edge is
+horizontal, each counted edge meets the line $y=\eta$ in exactly one
+point, and no edge lies along that line. A vertex at height $\eta$ is
+handled by the half-open condition: both of its edges meet $y=\eta$ at
+the vertex itself, so they stand or fall together on the test ``strictly
+to the right of $q$'', and of the two, one is counted if the curve runs
+through the vertex \textup(the arriving edge has $b_y=\eta$ and the
+departing edge $a_y=\eta$\textup), two at a local minimum, and none at a
+local maximum. The comparison ``strictly to the right'' is never a tie,
+since an edge meeting $y=\eta$ at $q$ itself would place $q$ on $C$.
+
+We record one further property for use in
+Theorem~\ref{thm:polygonal-crosscut}.
+
+\begin{lemma}[Subdivision invariance]\label{lem:parity-subdivision}
+Let $C'$ be obtained from $C$ by replacing an edge with upward endpoints
+$a,b$ by the two edges from $a$ to $c$ and from $c$ to $b$, where $c$ is
+an interior point of that edge. Then $\pi_{C'}=\pi_C$ on
+$\mathbb R^2\setminus C$.
+\end{lemma}
+\begin{proof}
+Neither new edge is horizontal, and $a_y<c_y<b_y$, so the conditions
+$a_y\le\eta<c_y$ and $c_y\le\eta<b_y$ are mutually exclusive and their
+disjunction is $a_y\le\eta<b_y$. Hence for each $\eta$ at most one of
+the two new edges is counted, and one is counted exactly when the old
+edge was. Each new edge is a subset of the old one, so when it is
+counted it meets $y=\eta$ in the same point that the old edge did, and
+the test against $q$ has the same outcome. All other edges are
+unchanged.
+\end{proof}
+
 \begin{lemma}[Crossing parity]\label{lem:polygon-parity}
 The function $\pi_C$ is locally constant on
 $\mathbb R^2\setminus C$. Near a point in the relative interior of an
@@ -415,8 +448,9 @@ In either case $\mathbb R^2\setminus(C\cup P)$ has exactly three
 regions, with boundaries $C,J_1,J_2$.
 \end{longtheorem}
 \begin{proof}
-Subdivide $C$ at $p,q$ and rotate coordinates so that no edge of
-$C\cup P$ is horizontal. By Theorem~\ref{thm:polygonal-jordan}, the parity
+Subdivide $C$ at $p,q$ --- which changes no parity function, by
+Lemma~\ref{lem:parity-subdivision} --- and rotate coordinates so that no
+edge of $C\cup P$ is horizontal. By Theorem~\ref{thm:polygonal-jordan}, the parity
 function of Lemma~\ref{lem:polygon-parity} is the indicator of the bounded
 component for each of the three polygonal Jordan curves. For every
 point outside $C\cup P$,
