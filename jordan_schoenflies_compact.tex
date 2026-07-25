@@ -1,27 +1,53 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{lmodern}
+\usepackage{mathpazo}
 \usepackage{amsmath,amssymb,amsthm}
-\usepackage[margin=2.7cm]{geometry}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows.meta,patterns,decorations.pathmorphing}
+\usepackage[margin=3.1cm]{geometry}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
 
+\linespread{1.04}
+\setlength{\emergencystretch}{2em}
+
+\newtheoremstyle{jsplain}{1.1\baselineskip}{1.1\baselineskip}%
+  {\itshape}{}{\bfseries}{.}{0.5em}{}
+\newtheoremstyle{jsdefn}{1.1\baselineskip}{1.1\baselineskip}%
+  {\normalfont}{}{\bfseries}{.}{0.5em}{}
+\theoremstyle{jsplain}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
-\theoremstyle{definition}
+\theoremstyle{jsdefn}
 \newtheorem{definition}[theorem]{Definition}
-\theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
 \newcommand{\Int}{\operatorname{Int}}
 \newcommand{\Ext}{\operatorname{Ext}}
 \newcommand{\St}{\operatorname{St}}
-\newcommand{\car}{\operatorname{car}}
 \newcommand{\diam}{\operatorname{diam}}
 \newcommand{\dist}{\operatorname{dist}}
+\newcommand{\RR}{\mathbb R^2}
+
+% Figure styling: one consistent visual language throughout.
+\definecolor{curve}{RGB}{25,25,25}
+\definecolor{cut}{RGB}{176,42,42}
+\definecolor{fill1}{RGB}{232,238,246}
+\definecolor{fill2}{RGB}{246,238,232}
+\definecolor{aux}{RGB}{110,120,135}
+\tikzset{
+  jcurve/.style={curve,line width=1.1pt},
+  jcut/.style={cut,line width=1.1pt},
+  jaux/.style={aux,line width=0.5pt,dashed},
+  jdot/.style={circle,fill=curve,inner sep=1.15pt},
+  jcutdot/.style={circle,fill=cut,inner sep=1.15pt},
+}
+\newcommand{\figcap}[1]{\par\smallskip{\small #1}}
 
 \title{The Jordan--Schönflies theorem:\\ a complete proof for human readers}
 \author{}
@@ -39,6 +65,64 @@ blueprint; the two documents follow the same route, and the section
 structure here parallels the detailed one so that any step can be
 expanded by consulting it.
 \end{abstract}
+
+\section*{The plan}
+
+A Jordan curve may be monstrous. It can be nowhere differentiable, it
+can have positive area, and it can meet a line in a Cantor set. Nothing
+can be constructed on it directly, and every proof of the theorem is
+therefore a proof that the monstrosity is irrelevant: that the curve is
+controlled entirely by objects one \emph{can} compute with. Here those
+objects are polygons and finite graphs.
+
+Part I, Sections~\ref{sec:strips}--\ref{sec:jct}, makes them do the
+separating. For a polygonal curve, separation is arithmetic: a point is
+inside precisely when a ray to the right crosses the curve an odd number
+of times (Section~\ref{sec:polygonal}). Everything else in Part I is
+extracted from that single count. It yields the polygonal Jordan and
+crosscut theorems, and through them the one nonplanarity fact we need
+--- that $K_{3,3}$ cannot be drawn in the plane --- which is the lever
+that reaches arbitrary curves. A Jordan curve whose complement had three
+regions would let us draw $K_{3,3}$; so would a curve that failed to
+separate at all. And a simple arc cannot separate, because a chain of
+small squares laid along it has a corridor for an outer face. These
+three facts are the Jordan curve theorem
+(Section~\ref{sec:jct}). Observe what Part~I never does: it never
+approximates a Jordan curve by polygons. It approximates the
+\emph{paths that would have to cross it}, which is a far cheaper thing
+to control.
+
+Part II, Sections~\ref{sec:reduce}--\ref{sec:plane}, builds the
+extension. It never writes down a homeomorphism from the closed Jordan
+domain $\overline D$ to a square $Q$; it writes down a
+\emph{sequence of finite combinatorial matches} and takes a limit. A
+\emph{matched cellulation} is a pair of finite decompositions, one of
+$\overline D$ and one of $Q$, into vertices, edges and faces, together
+with an isomorphism between them that already agrees with the given
+boundary map. Such a pair can be refined on either side and the
+refinement copied to the other --- this is the finite transfer theorem
+of Section~\ref{sec:transfer}, and it is possible only because both
+sides are, at every finite stage, plane graphs governed by the crosscut
+theorem. Alternating the two directions (Section~\ref{sec:scheme})
+drives the cells small on both sides at once. Each point of $D$ then
+sits in a nested sequence of closed stars whose partners in $Q$ shrink
+to a single point, and that point is its image
+(Section~\ref{sec:interior}).
+
+Three seams take care. The refinements must shrink cells on \emph{both}
+sides, which is why the scheme alternates a grid on the source with a
+mesh on the target rather than refining one side freely. The transfer is
+asymmetric: copying into the target is unobstructed, since everything
+there is polygonal, whereas copying into the source needs a supply of
+boundary points approachable along a straight segment --- the
+\emph{strongly accessible} points, which are dense
+(Section~\ref{sec:reduce}). And the limit map is built inside $D$, so it
+says nothing about the boundary; continuity there is recovered
+separately, in Section~\ref{sec:boundary}, by trapping the curve
+between crosscuts. Section~\ref{sec:plane} passes from the closed disc
+to the whole plane by an inversion.
+
+The route is Thomassen's; the work here is to leave no step unargued.
 
 \section{Statement, conventions, and background}
 
@@ -72,7 +156,7 @@ a closed set lies in that closed set, that a continuous surjection
 carries dense sets to dense sets, and that $\mathbb Q^2$ is dense.
 From finite graph theory we use only that any walk between two
 vertices contains a simple path (shorten at repeated vertices) and
-that minimal objects exist by finiteness. Three small lemmas of the
+that minimal objects exist by finiteness. Four small lemmas of the
 same character are used often enough to state.
 
 \begin{lemma}[Compact separation]\label{lem:sep}
@@ -100,6 +184,17 @@ every closed $K_m$ since the tail of the subsequence does. Two points
 of the intersection are at distance $\le\diam K_n\to0$.
 \end{proof}
 
+\begin{lemma}[Recognizing a component]\label{lem:clopen}
+Let $V$ be an open plane set and $U\subseteq V$ a region with
+$\partial U\cap V=\varnothing$. Then $U$ is a component of $V$.
+\end{lemma}
+\begin{proof}
+$U$ is open, and closed in $V$ because
+$\overline U\cap V=(U\cup\partial U)\cap V=U$. Thus $U$ is a nonempty
+clopen connected subset of the component of $V$ containing it, hence is
+that component.
+\end{proof}
+
 \begin{lemma}[Polygonal connectedness]\label{lem:polyconn}
 Any two points of a region are joined in it by a simple polygonal arc.
 The same holds in any connected set that is a finite union of
@@ -114,7 +209,7 @@ obtaining a finite graph, and take a simple graph path. The second
 statement follows by the same subdivision.
 \end{proof}
 
-\section{Two-sided strips along polygonal curves}
+\section{Two-sided strips along polygonal curves}\label{sec:strips}
 
 \begin{lemma}[Two-sided strips]\label{lem:strip}
 Let $P$ be a simple closed polygonal curve, or a simple polygonal arc
@@ -171,7 +266,7 @@ and hence carrying one label, and the two carry different labels by
 the sector/half-strip labeling.
 \end{proof}
 
-\section{The polygonal Jordan and crosscut theorems}
+\section{The polygonal Jordan and crosscut theorems}\label{sec:polygonal}
 
 Let $C$ be a simple closed polygonal curve; rotate coordinates so no
 edge is horizontal. For $q=(\xi,\eta)\notin C$, let $\pi_C(q)\in\{0,1\}$
@@ -197,8 +292,7 @@ across the edge changes the count by exactly one.
 
 \begin{theorem}[Polygonal Jordan curve theorem]\label{thm:pjct}
 $\mathbb R^2\setminus C$ has exactly two regions, one bounded and one
-unbounded, both with boundary $C$; and the two half-disks of a small
-disk meeting $C$ in a straight diameter lie in different regions.
+unbounded, both with boundary $C$.
 \end{theorem}
 \begin{proof}
 Take a strip $N_L\sqcup C\sqcup N_R$ (Lemma~\ref{lem:strip}) and
@@ -209,72 +303,110 @@ contradict minimality), and its final portion lies in one connected
 track; hence $x$ is in the component of $z_L$ or of $z_R$: at most two
 components. The reference points have opposite parity
 (Lemma~\ref{lem:parity}), and parity is constant on connected sets, so
-there are exactly two components, and the two half-disks of the last
-assertion lie in different ones. The complement of a large disk is
+there are exactly two components. The complement of a large disk is
 connected, so exactly one component is unbounded. Every point of $C$
 is a limit of both tracks, hence of both components, so
 $C\subseteq\partial\Omega$ for each region $\Omega$; conversely
 $\partial\Omega\subseteq C$ always. Since the count vanishes far to
 the right, $\pi_C$ is $0$ on the unbounded region
-$\operatorname{ext}(C)$ and $1$ on the bounded region
-$\operatorname{int}(C)$.
+$\Ext(C)$ and $1$ on the bounded region $\Int(C)$.
 \end{proof}
+
+Call a Jordan curve \emph{separating} if its complement has exactly two
+regions --- a bounded $\Int(C)$ and an unbounded $\Ext(C)$ --- each with
+boundary all of $C$. Theorem~\ref{thm:pjct} says that every polygonal
+Jordan curve is separating; Theorem~\ref{thm:jct} will delete the word
+``polygonal''. The next two lemmas are needed on both sides of that
+divide, so they are proved from the word \emph{separating} alone, and
+never used before it has been established for the curves at hand.
 
 A \emph{crosscut} of a region $\Omega$ is a simple arc with two
 distinct endpoints on $\partial\Omega$ and all other points in
-$\Omega$.
+$\Omega$. If $C$ is separating and $P$ is a simple arc meeting $C$
+exactly in its two endpoints, then $P^\circ$ is connected and misses
+$C$, so $P$ is a crosscut of exactly one of $\Int(C),\Ext(C)$.
+
+\begin{lemma}[Absorption]\label{lem:absorb}
+Let $C$ and $J$ be separating Jordan curves, $\Omega$ a region of
+$\mathbb R^2\setminus C$, and $V$ a region of $\mathbb R^2\setminus J$
+with $\Omega\subseteq V$. Then $C\setminus J\subseteq V$.
+\end{lemma}
+\begin{proof}
+$C=\partial\Omega\subseteq\overline\Omega\subseteq\overline V=V\cup J$.
+\end{proof}
+
+\begin{lemma}[Crosscut cells]\label{lem:cells}
+Let $C$ be a separating Jordan curve and $P$ a simple arc meeting $C$
+exactly in its two endpoints $p\ne q$. Let $A_1,A_2$ be the two arcs
+of $C$ from $p$ to $q$, so that $J_i=A_i\cup P$ are Jordan curves, and
+assume these separating as well. Let $\Omega$ be the region of
+$\mathbb R^2\setminus C$ that $P$ crosses and $\Omega^\dagger$ the
+other one, and let $V_i$ be the region of $\mathbb R^2\setminus J_i$
+that does \emph{not} contain $\Omega^\dagger$. Then $V_1$ and $V_2$
+are two distinct components of $\Omega\setminus P$, and
+$\overline{V_i}\cap C=A_i$.
+\end{lemma}
+\begin{proof}
+Each $J_i$ is a Jordan curve because $A_i$ and $P$ are simple arcs
+meeting exactly in their two common endpoints. The region
+$\Omega^\dagger$ misses $C$ and $P$, hence misses $J_i$, and being
+connected it lies in one region $W_i$ of $\mathbb R^2\setminus J_i$; so
+$V_i$, the other one, is well defined. Absorption applied to
+$\Omega^\dagger\subseteq W_i$ gives $C\setminus J_i\subseteq W_i$,
+which is disjoint from $V_i$; and $C\cap J_i=A_i$ is disjoint from
+$V_i$ too. So $V_i$ is a region missing $C$ and missing
+$\Omega^\dagger$, whence $V_i\subseteq\Omega$; and $V_i$ misses
+$P\subseteq J_i$. Thus $V_i\subseteq\Omega\setminus P$, while
+$\partial V_i=J_i\subseteq C\cup P$ misses $\Omega\setminus P$, so
+$V_i$ is a component of it (Lemma~\ref{lem:clopen}). The two are
+distinct because their boundaries are: $A_1=A_2$ would force
+$C=A_1\cap A_2=\{p,q\}$. Finally
+$\overline{V_i}\cap C=(V_i\cup J_i)\cap C=A_i$.
+\end{proof}
+
+That is everything separation alone yields; the count is completed, in
+the polygonal case, by the parity function.
+
+\begin{lemma}[Parity splits]\label{lem:split}
+Let $C$ be a simple closed polygonal curve, $P$ a simple polygonal arc
+meeting $C$ exactly in its two endpoints, and $J_1,J_2$ as above, with
+coordinates rotated so that no edge of $C\cup P$ is horizontal. Then
+\begin{equation}\label{eq:split}
+\pi_C=\pi_{J_1}+\pi_{J_2}\pmod 2
+\end{equation}
+at every point off $C\cup P$. In particular a point of $\Int(C)$ off
+$P$ lies inside exactly one of $J_1,J_2$, and a point of $\Ext(C)$ off
+$P$ lies inside both or neither.
+\end{lemma}
+\begin{proof}
+Subdivide $C$ at the endpoints of $P$ and count edge by edge: the
+edges of $P$ occur in both $J_i$ and cancel, while $A_1,A_2$ partition
+the edges of $C$. The two consequences restate \eqref{eq:split} using
+$\pi_C=1$ on $\Int(C)$ and $\pi_C=0$ on $\Ext(C)$
+(Theorem~\ref{thm:pjct}).
+\end{proof}
 
 \begin{theorem}[Polygonal crosscuts]\label{thm:pcross}
-Let $P$ be a simple polygonal arc with endpoints $p\ne q$ on $C$ and
-no other point on $C$, and let $A_1,A_2$ be the two arcs of $C$ from
-$p$ to $q$, so $J_i=A_i\cup P$ are polygonal Jordan curves. If
-$P^\circ\subseteq\operatorname{int}(C)$, then
-$\operatorname{int}(C)\setminus P
-=\operatorname{int}(J_1)\sqcup\operatorname{int}(J_2)$; if
-$P^\circ\subseteq\operatorname{ext}(C)$, then
-$\operatorname{ext}(C)\setminus P$ has exactly two regions, with
-boundaries $J_1$ and $J_2$. In either case
-$\mathbb R^2\setminus(C\cup P)$ has exactly three regions, with
-boundaries $C,J_1,J_2$.
+In the situation of Lemma~\ref{lem:split}, $\Omega\setminus P$ has
+exactly two regions, namely $V_1$ and $V_2$; and
+$\mathbb R^2\setminus(C\cup P)$ has exactly three, namely
+$V_1,V_2,\Omega^\dagger$, with boundaries $J_1,J_2,C$.
 \end{theorem}
 \begin{proof}
-Subdivide $C$ at $p,q$; rotate so no edge of $C\cup P$ is horizontal.
-Counting edge by edge, for every point off $C\cup P$,
-\begin{equation}\label{eq:split}
-\pi_C=\pi_{J_1}+\pi_{J_2}\pmod 2,
-\end{equation}
-since the edges of $P$ occur in both $J_i$ and cancel, while
-$A_1,A_2$ partition the edges of $C$.
-
-Inside case. $\operatorname{ext}(C)$ is connected, unbounded and
-disjoint from $J_i$, hence lies in $\operatorname{ext}(J_i)$. The open
-set $\operatorname{int}(J_i)$ contains no point of $C\setminus J_i$:
-such a point is a boundary point of $\operatorname{ext}(C)$, so a
-neighborhood inside $\operatorname{int}(J_i)$ would meet
-$\operatorname{ext}(C)\subseteq\operatorname{ext}(J_i)$. Thus
-$\operatorname{int}(J_i)\subseteq\operatorname{int}(C)\setminus P$.
-On $\operatorname{int}(C)\setminus P$ the left side of
-\eqref{eq:split} is $1$, so each point lies in exactly one
-$\operatorname{int}(J_i)$: the two interiors partition
-$\operatorname{int}(C)\setminus P$, and being open, connected, and
-mutually complementary there, they are its two components.
-
-Outside case. $\operatorname{int}(C)$ is connected and disjoint from
-both $J_i$; by \eqref{eq:split} its parities differ, say
-$\operatorname{int}(C)\subseteq
-\operatorname{int}(J_1)\cap\operatorname{ext}(J_2)$. As before,
-$\operatorname{int}(J_2)$ avoids $C\setminus J_2$ (a neighborhood
-would meet $\operatorname{int}(C)\subseteq\operatorname{ext}(J_2)$)
-and avoids $\operatorname{int}(C)$, hence lies in
-$\operatorname{ext}(C)\setminus P$; symmetrically so does
-$\operatorname{ext}(J_1)$. For $z\in\operatorname{ext}(C)\setminus P$,
-\eqref{eq:split} makes the two $J_i$-parities equal: both $1$ puts $z$
-in $\operatorname{int}(J_2)$, both $0$ in $\operatorname{ext}(J_1)$.
-The two sets are disjoint --- a common point would have parities
-$1,0$, hence $\pi_C=1$, contradicting $z\in\operatorname{ext}(C)$ ---
-so they partition $\operatorname{ext}(C)\setminus P$ into its two
-components. The boundary and three-region statements now follow from
-Theorem~\ref{thm:pjct} applied to $C,J_1,J_2$.
+By Lemma~\ref{lem:cells} the $V_i$ are two distinct components of
+$\Omega\setminus P$, so only exhaustion is at issue, and it is read off
+Lemma~\ref{lem:split}. If $\Omega=\Int(C)$ then
+$\Omega^\dagger=\Ext(C)$ lies in $\Ext(J_i)$ for both $i$ --- being
+connected, unbounded, and disjoint from $J_i$ --- so $V_i=\Int(J_i)$,
+and each point of $\Int(C)\setminus P$ lies inside exactly one $J_i$,
+that is, in exactly one $V_i$. If instead $\Omega=\Ext(C)$, then
+$\Omega^\dagger=\Int(C)$ lies inside exactly one $J_i$, say $J_1$, so
+$V_1=\Ext(J_1)$ and $V_2=\Int(J_2)$; and a point of
+$\Ext(C)\setminus P$ lies inside both $J_i$ --- hence in $V_2$ --- or
+inside neither --- hence in $V_1$. Finally $\Omega^\dagger$ is a region
+disjoint from $C\cup P$ whose boundary $C$ misses
+$\mathbb R^2\setminus(C\cup P)$, so it is the third component
+(Lemma~\ref{lem:clopen}).
 \end{proof}
 
 \begin{corollary}[Alternating crosscuts meet]\label{cor:alt}
@@ -282,15 +414,15 @@ If two polygonal crosscuts of the same side of $C$ have four distinct
 endpoints alternating around $C$, they intersect.
 \end{corollary}
 \begin{proof}
-The first crosscut splits its side into two regions whose closures
-meet $C$ in the two complementary arcs between its endpoints. If the
-second were disjoint from the first, its connected interior would lie
-in one region, and both its endpoints in the closure of that region,
-hence on one arc; but alternation puts them in the relative interiors
-of different arcs.
+The first crosscut splits its side into $V_1,V_2$, whose closures meet
+$C$ in the two complementary arcs $A_1,A_2$ between its endpoints. If
+the second crosscut were disjoint from the first, its connected
+interior would lie in one $V_i$ and both its endpoints in
+$\overline{V_i}\cap C=A_i$; but alternation puts them in the relative
+interiors of different arcs.
 \end{proof}
 
-\section{\texorpdfstring{Plane graphs and $K_{3,3}$}{Plane graphs and K3,3}}
+\section{\texorpdfstring{Plane graphs and $K_{3,3}$}{Plane graphs and K3,3}}\label{sec:graphs}
 
 A finite plane graph has distinct vertex points and simple arc edges
 with pairwise disjoint interiors avoiding all vertices; loops are
@@ -436,14 +568,15 @@ different maximal subpaths, and its edges are not $C$-edges (a single
 $C$-edge from $u$ would stay inside $P$ by maximality). Then $R$ is a
 geometric crosscut of one side of $C$; each of the two arcs
 $C_1,C_2$ of $C$ between $u,v$ contains an edge outside
-$\Gamma_{j-1}$, since its ends lie on different maximal subpaths. By
-Theorem~\ref{thm:pcross}, exactly one of the cycles $R\cup C_1$,
+$\Gamma_{j-1}$, since its ends lie on different maximal subpaths. Since
+$x$ lies inside $C$ and off $R$, Lemma~\ref{lem:split} says that
+exactly one of the cycles $R\cup C_1$,
 $R\cup C_2$ encloses $x$; it lies in the same union and has strictly
 fewer edges outside $\Gamma_{j-1}$, a contradiction. So no bounded
 face contains $x$.
 \end{proof}
 
-\section{Arc complements and the Jordan curve theorem}
+\section{Arc complements and the Jordan curve theorem}\label{sec:jct}
 
 \begin{theorem}[Arc-complement theorem]\label{thm:arc}
 The complement of a simple arc $A$ is connected.
@@ -584,9 +717,12 @@ $C$ a boundary point of both, boundaries lie in $C$, and exactly one
 component is unbounded.
 \end{proof}
 
-Write $\Int(C)$, $\Ext(C)$ for the two regions.
+Every Jordan curve is therefore separating, and the two lemmas of
+Section~\ref{sec:polygonal} that were proved from that word alone ---
+absorption and crosscut cells --- are from now on available for all of
+them.
 
-\section{Crosscuts of Jordan domains; reduction to the square}
+\section{Crosscuts of Jordan domains; reduction to the square}\label{sec:reduce}
 
 \begin{lemma}[At most two sides]\label{lem:twosides}
 If $P$ is a polygonal crosscut of $D=\Int(C)$, then $D\setminus P$ has
@@ -618,42 +754,17 @@ $q$; and $\mathbb R^2\setminus(C\cup P)$ has exactly three regions,
 with boundaries $C$, $A_1\cup P$, $A_2\cup P$.
 \end{theorem}
 \begin{proof}
-\emph{At least two components.} Fix $z$ interior to a straight edge
-of $P$ and, by Lemma~\ref{lem:sep}(c), a short segment
-$L_2\subseteq D$ crossing $P$ exactly at $z$, with endpoints
-$x_-,x_+$ on the two local sides. If the sides were not separated,
-$x_-$ and $x_+$ would be joined by a simple polygonal arc $R$ in the
-open set $D\setminus P$ (Lemma~\ref{lem:polyconn}, in the component
-containing both). Overlay $R\cup L_2$ into a finite graph. The edge of
-that graph containing $z$ is not a bridge: after deleting it, its
-endpoints connect through the halves of $L_2$ to $x_\mp$ and then
-through $R$. So it lies on a cycle $J$
-(Lemma~\ref{lem:graphfacts}(a)), a simple closed polygonal curve
-agreeing with $L_2$ in a small disk at $z$
-(Lemma~\ref{lem:sep}(c)). Take a very short subsegment $L_1$ of $P$
-through $z$: since $L_2$ crosses the straight piece of $P$
-transversally, the endpoints of $L_1$ lie in the two half-disks of
-that disk minus $J$, hence in different regions of $J$
-(Theorem~\ref{thm:pjct}). But they are joined off $J$ by the route
-that follows $P$ from each endpoint away from $z$ to $p$ and $q$ and
-then along one arc of $C$: the route avoids
-$R\subseteq D\setminus P$, and it meets $L_2$ only at $z$, which it
-omits --- contradiction. So the endpoints of every such crossing
-segment, and with them the two components of a small disk at $z$
-minus $P$, lie in different components of $D\setminus P$; by
-Lemma~\ref{lem:twosides} there are exactly two.
-
-\emph{Identification.} Each $J_i=A_i\cup P$ is a Jordan curve
-(two arcs meeting at $p,q$). $\Ext(C)$ is connected, unbounded, and
-disjoint from $J_i$, hence lies in $\Ext(J_i)$; and $\Int(J_i)$
-contains no point of $C\setminus J_i$, since every neighborhood of
-such a point meets $\Ext(C)\subseteq\Ext(J_i)$. So
-$\Int(J_i)\subseteq D\setminus P$; it is open and connected, and its
-boundary $J_i$ misses $D\setminus P$, so it is a whole component. The
-two are distinct because their closures meet $C$ in the different sets
-$A_1,A_2$; with exactly two components, they are both, and the
-boundary statements follow from Theorem~\ref{thm:jct} for
-$C,J_1,J_2$.
+Each $J_i=A_i\cup P$ is a Jordan curve, and all three of $C,J_1,J_2$
+are separating by Theorem~\ref{thm:jct}; so Lemma~\ref{lem:cells}
+applies with $\Omega=D$. Here $\Omega^\dagger=\Ext(C)$ is connected,
+unbounded and disjoint from $J_i$, hence lies in $\Ext(J_i)$, so the
+lemma's $V_i$ is $\Int(J_i)$: the two regions $\Int(J_1),\Int(J_2)$ are
+distinct components of $D\setminus P$, and by
+Lemma~\ref{lem:twosides} they are the only ones. Finally $\Ext(C)$ is
+a region disjoint from $C\cup P$ whose boundary $C$ misses
+$\mathbb R^2\setminus(C\cup P)$, so it is the third component
+(Lemma~\ref{lem:clopen}); the boundaries are those given by
+Theorem~\ref{thm:jct} for $C,J_1,J_2$.
 \end{proof}
 
 \begin{lemma}[Accessible endpoints can be joined]\label{lem:join}
@@ -705,7 +816,7 @@ accessible points, dense in $C$ because $C=\partial D$
 (Theorem~\ref{thm:jct}) gives rational $q$ with $\|q-p\|<\varepsilon/2$
 and then $\|a(q)-p\|\le2\|q-p\|<\varepsilon$. Fix this $A$.
 
-\section{Matched cellulations}
+\section{Matched cellulations}\label{sec:cell}
 
 \begin{proposition}[Initial pair]\label{prop:init}
 Subdivide $C$ at six boundary vertices: the four $u$-preimages of the
@@ -846,7 +957,7 @@ none of the statements above assumes that connectedness; a
 nonboundary parts connected and the skeletons 2-connected, which the
 constructions below verify for their final outputs.
 
-\section{Finite transfer}
+\section{Finite transfer}\label{sec:transfer}
 
 \begin{lemma}[Local sectors and face access]\label{lem:sector}
 Let $x$ be a point of a finite polygonal plane graph. Small closed
@@ -941,7 +1052,7 @@ nonboundary parts of the two skeletons are homeomorphic via $g$, which
 matches $C$ with $S$. Hence the final pair is a matched cellulation.
 \end{proof}
 
-\section{The refinement scheme}
+\section{The refinement scheme}\label{sec:scheme}
 
 Let $B=\mathbb Q^2\cap D$, let $b_1,b_2,\dots$ list $B$ with every
 point occurring infinitely often, and put $\varepsilon_n=2^{-n}$. For
@@ -1081,7 +1192,7 @@ When an anchor is introduced its spoke is a nonboundary edge at it,
 and an initial subedge of the spoke remains incident at all later
 stages.
 
-\section{The interior homeomorphism}
+\section{The interior homeomorphism}\label{sec:interior}
 
 For $x\in D$ let $T_n(x)$ be the closed target star of
 $\sigma_n'(x)$. Parent compatibility makes these nested, their
@@ -1156,7 +1267,7 @@ $F^{-1}(z)$ lies in the source star of $x$ and
 $\|F^{-1}(z)-x\|<\eta$.
 \end{proof}
 
-\section{Continuity at the Jordan curve, and the square extension}
+\section{Continuity at the Jordan curve, and the square extension}\label{sec:boundary}
 
 Extend $F$ to $\overline F:\overline D\to Q$ by $\overline F=u$ on
 $C$; it is a bijection onto $Q$, continuous on $D$, and we must prove
@@ -1223,7 +1334,7 @@ compact set $\overline D$ makes it a homeomorphism onto $Q$. For
 sequences approaching $p$ within $C$, continuity is that of $u$;
 mixed sequences follow by combining. \end{proof}
 
-\section{From the square extension to the plane}
+\section{From the square extension to the plane}\label{sec:plane}
 
 \begin{lemma}[Moving a point of the square]\label{lem:mover}
 For interior points $x,y$ of $Q$ there is a homeomorphism of $Q$
