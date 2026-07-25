@@ -839,123 +839,162 @@ $u(a),u(b)$ are interior to opposite sides, the interior of
 $[u(a),u(b)]$ lies in $Q^\circ$ by convexity. Apply
 Theorem~\ref{thm:cross} on both sides (for the square, its polygonal
 case). Each skeleton --- a six-vertex cycle plus a chord --- is
-2-connected, and its open nonboundary part, the open chord, is
+2-connected, and its open inner part, the open chord, is
 connected.
 \end{proof}
 
-We now build nested \emph{matched cellulations}: pairs of finite
-decompositions of $\overline D$ and $Q$ into open \emph{cells} ---
-vertices, open edges, and open 2-cells (\emph{faces}) --- together
-with a homeomorphism $g$ of the 1-skeletons that equals $u$ on $C$ and
-matches cells bijectively. The initial cellulation is that of
-Proposition~\ref{prop:init}, with $g=u$ on $C$ and any homeomorphism
-$P\to P'$ fixing the ends, and each closed decomposition consists of
-the six boundary vertices, the six outer edges, the crosscut, and the
-two faces. All later ones arise by finitely many simultaneous
-\emph{elementary refinements}:
+A \emph{cellulation} of $\overline D$ is a finite partition of
+$\overline D$ into open \emph{cells} --- points (\emph{vertices}), open
+arcs (\emph{edges}), and regions (\emph{faces}) --- obtained from the
+decomposition of Proposition~\ref{prop:init} by finitely many
+applications of the two constructors below; a cellulation of $Q$ is the
+same with $S$ in place of $C$. The initial cellulation consists of the
+six boundary vertices, the six outer edges, the crosscut, and the two
+faces. The constructors are:
 \begin{itemize}
-\item[(i)] \emph{edge subdivision}: a point is inserted into an edge
-and the corresponding point (via $g$, i.e.\ via $u$ on outer edges)
-into the corresponding edge;
-\item[(ii)] \emph{face split}: a crosscut is inserted into a face,
-between two boundary points that are vertices (subdividing first if
-necessary), and a corresponding crosscut into the corresponding face;
-the two boundary paths together with the crosscut bound the two new
-faces on each side, $g$ is extended by a chosen homeomorphism of the
-crosscuts, and corresponding new faces are the ones whose boundaries
-correspond.
+\item[(i)] \emph{edge subdivision}: choose an interior point of an edge
+$e$ and replace $e$ by that point and the two edges it cuts $e$ into;
+\item[(ii)] \emph{face split}: choose a face $R$ and two distinct
+vertices on its boundary, insert a crosscut of $R$ joining them, and
+replace $R$ by the crosscut's interior and the two regions the crosscut
+cuts off.
 \end{itemize}
-Nonboundary edges are always polygonal arcs with interiors in $D$
-(resp.\ $Q^\circ$). Write $\sigma\preceq\tau$ (``$\sigma$ is a subcell
-of $\tau$'') when the open cell $\sigma$ lies in the closure of the
-open cell $\tau$; the relation is reflexive and transitive.
+Cells contained in $C$ (resp.\ $S$) are \emph{outer}, the rest
+\emph{inner}; inner edges are always polygonal arcs with interiors in
+$D$ (resp.\ $Q^\circ$). The \emph{carrier} of a point is the cell
+containing it. Write $\sigma\preceq\tau$ (``$\sigma$ is a subcell of
+$\tau$'') when $\sigma\subseteq\overline\tau$, and let the
+\emph{closed star} $\St(\sigma)$ be the union of the closures of the
+supercells of $\sigma$.
 
-\begin{lemma}[Cellulation invariants]\label{lem:inv}
-At every stage of every such construction, in each of the two
-realizations:
-\begin{itemize}
-\item[(i)] the open cells partition the closed domain, and every
+A \emph{matched pair} is a cellulation of $\overline D$ together with
+one of $Q$ built by the \emph{same} sequence of constructors, and a
+homeomorphism $g$ of the two $1$-skeletons which restricts to $u$ on
+$C$ and carries every vertex and edge to its counterpart. To apply a
+constructor to a matched pair is to apply it on both sides at once: a
+subdivision inserts corresponding points (via $g$, hence via $u$ on
+outer edges); a split inserts crosscuts of corresponding faces between
+corresponding vertices, $g$ is extended over them by any homeomorphism
+fixing the endpoints, and the two new faces on each side are matched by
+their boundary paths, which correspond.
+
+Three lemmas record what this arrangement provides. The first is
+geometry and holds in either realization separately; the second is
+bookkeeping; the third is the reason for the whole construction.
+
+\begin{lemma}[Cell geometry]\label{lem:cellgeom}
+In any cellulation:
+\textup{(a)} the open cells partition the closed domain, and every
 closed cell is the disjoint union of the open cells it contains;
-\item[(ii)] \textup{(frontier)} if an open cell meets the closure of a
-cell, it is contained in it;
-\item[(iii)] every face's boundary walk is realized by a Jordan curve,
-of which the face is the interior; every boundary walk contains a
-nonboundary edge; every outer edge lies on exactly one face boundary;
-\item[(iv)] distinct faces are never comparable under $\preceq$;
-\item[(v)] every cell of a refinement lies in the closure of a unique
-$\preceq$-least old cell, its \emph{parent}: the subdivided edge for
-its three new cells, the split face for the crosscut's cells and the
-two new faces, and each unchanged cell for itself;
-\item[(vi)] corresponding cells satisfy the same subcell relations,
-the same incidences with the outer cycle, and correspond under
-parents; consequently corresponding closed cells meet
-$C$, respectively $S$, simultaneously, and corresponding closed
-stars intersect simultaneously.
-\end{itemize}
-Here the \emph{closed star} $\St(\sigma)$ is the union of the closures
-of the supercells of $\sigma$, and the \emph{carrier} of a point is
-its unique open cell.
+\textup{(b)} \textup(frontier\textup) an open cell that meets the
+closure of a cell is contained in it;
+\textup{(c)} every face is the interior of a Jordan curve assembled
+from closed cells, its \emph{boundary cycle}; every boundary cycle
+contains an inner edge; every outer edge lies on exactly one boundary
+cycle;
+\textup{(d)} distinct faces are incomparable under $\preceq$.
 \end{lemma}
 \begin{proof}
-Induction over the refinements; all claims hold at the initial stage
-by the crosscut theorem's closure identities
-$\overline{R_i}=R_i\cup P\cup A_i$, valid in both realizations, where
-$A_i$ is the union of the closed boundary edges of the corresponding
-path: the cells below $R_i$ are those of that path and of the
-crosscut, the cells below an edge are its endpoint vertices, and the
-two paths share only $a,b$. An
-edge subdivision replaces $\overline e$ by
-$\overline{e_1}\cup\overline{e_2}$ meeting at the new vertex; the only
+Induction along the constructors. At the initial stage the crosscut
+theorem supplies the closure identities
+$\overline{R_i}=R_i\cup P\cup A_i$, where $A_i$ is the union of the
+closed boundary edges of the $i$th path: the cells below $R_i$ are
+those of that path and of the crosscut, the cells below an edge are its
+two endpoints, and the two paths share only $a$ and $b$. This gives
+(a)--(c).
+
+An edge subdivision replaces $\overline e$ by
+$\overline{e_1}\cup\overline{e_2}$, meeting at the new vertex. The only
 old closed cells containing a new cell are $\overline e$ and, by the
-old frontier property, the $\overline\tau$ with $e\preceq\tau$ ---
-the same collection in both realizations --- which gives (i), (ii),
-(v), and the correspondence of the new incidences; nothing
-two-dimensional changes. A face split applies
-Theorem~\ref{thm:cross} inside the Jordan region furnished by the old
-(iii), in both realizations at once: the identities
-$\overline{R_i}=R_i\cup P\cup B_i$ prove (i)--(iii) for the new cells,
-identically on both sides; each new boundary walk contains the
-inserted crosscut, a nonboundary edge; and every outer edge of the old
-face lies on exactly one boundary path $B_i$. (Subdivisions keep a
-nonboundary subedge on every walk that had a nonboundary edge.) For (iv): if a face $R$ lay in
-$\overline T\setminus T=\partial T$ for another face $T$, then, every
-point of the Jordan boundary $\partial T$ being a limit of $T$, the
-nonempty open set $R$ would meet $T$, contradicting (i). For (v) in a
-split, a new cell lies in the open set $R$; a closed old vertex or
-edge is by (i) a union of open cells other than $R$, hence disjoint
-from $R$, and an old face $\overline T$ containing the new cell forces
-$R\subseteq\overline T$ by (ii) and $T=R$ by (iv): so $\overline R$ is
-the only old closed cell involved. Uniqueness of least cells in
-general reduces to antisymmetry: if distinct cells satisfied
-$\sigma\preceq\tau\preceq\sigma$, each would lie in the other's
-closure minus itself; a vertex leaves the other cell an empty set to
-lie in, an edge leaves at most two points while edges and faces are
-infinite, and two faces are excluded by (iv). The subcell relations and outer incidences created by each
-constructor are the same on both sides, being read off the same
-formulas, and the parent assignments follow the same rule, so all of
-(vi)'s correspondences propagate. For the star statements: if a point
-lies in $\St(\sigma)\cap\St(\tau)$, it lies in
-$\overline\alpha\cap\overline\beta$ for supercells
-$\alpha\succeq\sigma$, $\beta\succeq\tau$, and its carrier is, by
-(ii), a common subcell of $\alpha$ and $\beta$; the corresponding
-cell, nonempty, then witnesses the intersection of the corresponding
-stars. And a closed cell meets $C$ exactly when it has an outer
-subcell: points of $C$ have outer carriers, since nonboundary edges
-and vertices lie in $D$ and faces are disjoint from the outer cells;
-apply (ii) again. Both conditions are combinatorial and correspond.
+old frontier property, the $\overline\tau$ with $e\preceq\tau$; this
+gives (a) and (b), nothing two-dimensional changes, and a boundary
+cycle that had an inner edge retains an inner subedge of it.
+
+A face split applies Theorem~\ref{thm:cross} inside the Jordan region
+supplied by (c). The resulting identities
+$\overline{V_i}=V_i\cup P\cup B_i$ give (a)--(c) for the new cells;
+each new boundary cycle contains the inserted crosscut, which is an
+inner edge; and every outer edge of the split face lies on exactly one
+of the two boundary paths $B_i$.
+
+For (d), suppose $R\preceq T$ for distinct faces $R,T$. By (a) the two
+are disjoint, so $R\subseteq\overline T\setminus T=\partial T$. But
+every point of the Jordan curve $\partial T$ is a limit of points of
+$T$, so the nonempty open set $R$ would meet $T$, contradicting (a).
 \end{proof}
 
-Parents compose along a sequence of refinements; by (v), the parent of
-the carrier of a point is its carrier at the previous stage, and the
-star of a cell is contained in the star of its parent: closed stars of
-a fixed point shrink (weakly) under refinement. During the
-finite-transfer induction below, intermediate stages may temporarily
-have a disconnected nonboundary part $|\Gamma|\setminus C$ --- for
-instance after an ear with both endpoints on the outer cycle --- and
-none of the statements above assumes that connectedness; a
-\emph{matched cellulation} proper additionally requires the
-nonboundary parts connected and the skeletons 2-connected, which the
-constructions below verify for their final outputs.
+\begin{lemma}[Order, parents, stars]\label{lem:cellorder}
+\textup{(a)} $\preceq$ is a partial order.
+\textup{(b)} Every cell produced by a constructor lies in the closure
+of a unique $\preceq$-least old cell, its \emph{parent}: the subdivided
+edge for its three new cells, the split face for the crosscut's
+interior and the two new faces, and each unchanged cell for itself.
+\textup{(c)} A closed cell meets $C$ if and only if it has an outer
+subcell.
+\end{lemma}
+\begin{proof}
+(a) Reflexivity and transitivity are immediate. For antisymmetry, let
+$\sigma\ne\tau$ satisfy $\sigma\preceq\tau\preceq\sigma$; being
+disjoint, each lies in the other's closure minus itself. If $\sigma$
+were a vertex, $\tau$ would lie in $\overline\sigma\setminus
+\sigma=\varnothing$; if $\sigma$ were an edge, $\tau$ would lie in its
+two endpoints and so be a vertex, which the previous case excludes. By
+symmetry both are faces, and Lemma~\ref{lem:cellgeom}(d) forbids that.
+
+(b) For a subdivision this is the list of containing old closed cells
+displayed in the previous proof, of which $\overline e$ is least. For a
+split, each new cell lies in the open set $R$; a closed old vertex or
+edge is by Lemma~\ref{lem:cellgeom}(a) a union of open cells other than
+$R$, hence disjoint from $R$; and an old face $\overline T$ containing
+a new cell forces $R\subseteq\overline T$ by the frontier property and
+then $T=R$ by incomparability. So $\overline R$ is the only old closed
+cell in question.
+
+(c) Every point of $C$ has an outer carrier, since inner edges and
+vertices lie in $D$ and faces are disjoint from $C$. So a closed cell
+meeting $C$ contains a point whose carrier is outer, and the frontier
+property makes that carrier a subcell. The converse is immediate.
+\end{proof}
+
+\begin{lemma}[Correspondence]\label{lem:corr}
+Let $\sigma\mapsto\sigma'$ be the cell bijection of a matched pair.
+Then $\sigma\preceq\tau$ if and only if $\sigma'\preceq\tau'$; $\sigma$
+is outer if and only if $\sigma'$ is; and parents correspond.
+Consequently $\overline\sigma$ meets $C$ exactly when
+$\overline{\sigma'}$ meets $S$, and
+$\St(\sigma)\cap\St(\tau)\ne\varnothing$ exactly when
+$\St(\sigma')\cap\St(\tau')\ne\varnothing$.
+\end{lemma}
+\begin{proof}
+Each constructor creates its new cells together with their subcell
+relations and their outer status by the same formulas on both sides ---
+the closure identities in the proof of Lemma~\ref{lem:cellgeom} are
+literally identical in the two realizations --- and the parent rule of
+Lemma~\ref{lem:cellorder}(b) is combinatorial. Since the two
+cellulations are built by the same sequence of constructors, induction
+along it propagates all three correspondences. The first consequence is
+then Lemma~\ref{lem:cellorder}(c), whose criterion mentions only
+$\preceq$ and outerness. For the second, a point of
+$\St(\sigma)\cap\St(\tau)$ lies in $\overline\alpha\cap\overline\beta$
+for some $\alpha\succeq\sigma$ and $\beta\succeq\tau$, and its carrier
+is, by the frontier property, a common subcell of $\alpha$ and $\beta$;
+the corresponding cell is nonempty and witnesses the intersection on
+the other side.
+\end{proof}
+
+Parents compose along a sequence of refinements. By
+Lemma~\ref{lem:cellorder}(b) the parent of the carrier of a point is
+its carrier at the previous stage, and the star of a cell is contained
+in the star of its parent; so the closed stars of a fixed point shrink,
+weakly, under refinement.
+
+One caution. During the finite-transfer induction of the next section,
+intermediate stages may temporarily have a disconnected inner part
+$|\Gamma|\setminus C$ --- after an ear with both endpoints on the outer
+cycle, for instance. None of the three lemmas above assumes otherwise.
+A \emph{matched cellulation} is a matched pair whose two skeletons are
+moreover 2-connected with connected inner part; the constructions below
+verify this of their final outputs, not of every intermediate stage.
 
 \section{Finite transfer}\label{sec:transfer}
 
@@ -974,12 +1013,12 @@ Segments and vertices not through $x$ are avoided by
 Lemma~\ref{lem:sep}(c); segments through $x$ meet a small disk in
 radial segments, of distinct directions since edge interiors are
 disjoint, avoid vertices, and edges are injective. For access on the
-source side, apply this to the polygonal nonboundary skeleton and
+source side, apply this to the polygonal inner skeleton and
 shrink the disk off the compact set $C$; the disk then meets the whole
 skeleton in the radial segments. Since $F$ accumulates at
 $x\in\partial F$ and meets the disk only inside sectors, some sector
 meets $F$; being connected and disjoint from the skeleton it lies in a
-single face by Lemma~\ref{lem:inv}(i), namely $F$, and a short straight
+single face by Lemma~\ref{lem:cellgeom}(a), namely $F$, and a short straight
 segment from $x$ into it is an access arc. On the target the whole
 graph is polygonal; at $x\in S$ some sectors lie outside $Q$ and
 belong to no face, but the sector meeting $F$ is connected, misses
@@ -1010,19 +1049,19 @@ each fresh point $u(a)$ --- is inserted into the outer cycle first.
 By Lemma~\ref{lem:graphfacts}(e), the new graph is then obtained by a
 finite sequence of ears, and we transfer them one at a time; each ear
 insertion is at most two subdivisions plus one face split, so all
-intermediate stages satisfy Lemma~\ref{lem:inv}, whether or not their
-nonboundary parts are momentarily disconnected.
+intermediate stages satisfy Lemmas~\ref{lem:cellgeom}--\ref{lem:corr}, whether or not their
+inner parts are momentarily disconnected.
 
 The interior of the next ear is connected and disjoint from the
 current skeleton, hence lies in one current face $F$
-(Lemma~\ref{lem:inv}(i)), whose boundary is a Jordan curve containing
+(Lemma~\ref{lem:cellgeom}(a)), whose boundary is a Jordan curve containing
 the ear's endpoints; the ear is a crosscut of $F$. Let $F^*$ be the
 corresponding face on the other side, and let $v^*,w^*$ be the points
 corresponding to the ear's endpoints. In case (a) these lie on the
 skeleton off $S$ or on $S$ as images of boundary vertices already
 present, and are accessible from $F^*$ by
 Lemma~\ref{lem:sector}. In case (b), an endpoint of the reproduced
-crosscut is either a nonboundary skeleton point, accessible by
+crosscut is either an inner skeleton point, accessible by
 Lemma~\ref{lem:sector}, or a fresh anchor $a\in A$: there, the open cone of straight access
 segments furnished by strong accessibility can be shrunk, using
 Lemma~\ref{lem:sep}(c), until its short segments avoid the compact
@@ -1030,7 +1069,7 @@ remainder of the skeleton; the segment then lies
 in the unique current face incident with $a$. That face is $F^*$: when
 $a$ was inserted it was incident with exactly one face, because each
 outer edge lies on exactly one face boundary
-(Lemma~\ref{lem:inv}(iii)), and whenever a later ear split the face
+(Lemma~\ref{lem:cellgeom}(c)), and whenever a later ear split the face
 incident with $a$, exactly one of the two boundary paths contained
 $a$; the correspondence preserves this face throughout, and on the
 target side the spoke at $u(a)$, the unique new edge at $u(a)$, is
@@ -1046,9 +1085,9 @@ the last ear, the prescribed-side skeleton is the given graph and the
 other side is its reproduced counterpart, which is 2-connected because
 it grew by subdivisions and ears from the 2-connected old skeleton
 (Lemma~\ref{lem:graphfacts}(d)); and the given graph's connected
-nonboundary part transfers to the reproduced side by the
-correspondence of incidences (Lemma~\ref{lem:inv}(vi)): the
-nonboundary parts of the two skeletons are homeomorphic via $g$, which
+inner part transfers to the reproduced side by the
+correspondence of incidences (Lemma~\ref{lem:corr}): the
+inner parts of the two skeletons are homeomorphic via $g$, which
 matches $C$ with $S$. Hence the final pair is a matched cellulation.
 \end{proof}
 
@@ -1080,7 +1119,7 @@ and whose closed rectangles have diameter $<\varepsilon_n$.
 \end{proposition}
 \begin{proof}
 Let $K$ be such a grid on $W$ (mesh below $\varepsilon_n/2$),
-subdivided against the nonboundary skeleton of $\Gamma_{n-1}$
+subdivided against the inner skeleton of $\Gamma_{n-1}$
 (Lemma~\ref{lem:graphfacts}(f)). If the two graphs share at least two
 vertices, their union is 2-connected
 (Lemma~\ref{lem:graphfacts}(c)). If they share none, $K$ lies in one
@@ -1096,14 +1135,14 @@ through a grid-edge point $y\ne x$, along a line missing $x$, giving a
 crosscut $E$ with $x,y$ as two common points. In each case the union,
 overlaid, is 2-connected and contains the grid.
 
-Its nonboundary part may be disconnected (an auxiliary crosscut may
+Its inner part may be disconnected (an auxiliary crosscut may
 have both ends on $C$). While it is, pick points in two components,
 join them by a simple polygonal arc in the region $D$
 (Lemma~\ref{lem:polyconn}), and overlay: each component of the arc
 outside the graph is an ear; ears preserve 2-connectivity, no ear
-creates a new component of the nonboundary part since the arc lies in
+creates a new component of the inner part since the arc lies in
 $D$, and once all its ears are present the whole arc joins the two
-chosen components inside the nonboundary part. Each round strictly
+chosen components inside the inner part. Each round strictly
 lowers the number of components, so finitely many rounds finish.
 \end{proof}
 
@@ -1130,22 +1169,22 @@ $[z_i,\lambda z_i]$ --- disjoint, since two radial segments of the
 collar meet only on a common ray --- cutting the collar into the
 rectangles $R_i=\{tz:z\in A_i,\ \lambda\le t\le1\}$, each of diameter
 at most $2\sqrt2(1-\lambda)+\delta/4<\delta$ by the estimate
-$\|tz-sw\|\le\|tz-z\|+\|z-w\|+\|w-sw\|$. Grid the inner square
+$\|tz-sw\|\le\|tz-z\|+\|z-w\|+\|w-sw\|$. Grid the core square
 $\lambda Q$ with mesh $<\delta/2$ so that its rectangles have diameter
 $<\delta$, and overlay everything. The faces are the grid rectangles
 and the collar rectangles; the skeleton is 2-connected by
-Lemma~\ref{lem:graphfacts}(c): start from the inner grid, subdivided
+Lemma~\ref{lem:graphfacts}(c): start from the core grid, subdivided
 at all the points $\lambda z_i$, which is 2-connected; each
 collar-rectangle boundary $\partial R_i$ is a cycle --- two spokes,
-one boundary arc, one inner arc --- sharing at least the two vertices
+one boundary arc, one core arc --- sharing at least the two vertices
 $\lambda z_i,\lambda z_{i+1}$ with the graph built so far, so
 adjoining these cycles one after another preserves 2-connectivity,
 and their union with the grid is the whole skeleton. And
-$|T|\setminus S$ is connected: the inner grid and $\partial(\lambda Q)$ form a connected
+$|T|\setminus S$ is connected: the core grid and $\partial(\lambda Q)$ form a connected
 set in $Q^\circ$, to which each spoke minus its outer endpoint is
 attached. Overlaying $T$ with $\Gamma_{n-1}'$ preserves 2-connectivity, since
 both graphs contain the outer cycle $S$ and so share at least two
-vertices (Lemma~\ref{lem:graphfacts}(c)); if the two nonboundary
+vertices (Lemma~\ref{lem:graphfacts}(c)); if the two inner
 parts are disjoint, adding the ears of one joining arc in $Q^\circ$,
 as in Proposition~\ref{prop:grid}, connects them. This yields the
 required refinement; the only new edges meeting $S$ are the spokes.
@@ -1188,7 +1227,7 @@ Let $A_\infty\subseteq A$ be the preimages of all fresh anchors ever
 used. Since stage-$n$ anchors cut $S$ into arcs of diameter
 $<\varepsilon_n/4$, the set $u(A_\infty)$ is dense in $S$; and
 $A_\infty$ is dense in $C$ because $u^{-1}$ is a continuous surjection.
-When an anchor is introduced its spoke is a nonboundary edge at it,
+When an anchor is introduced its spoke is an inner edge at it,
 and an initial subedge of the spoke remains incident at all later
 stages.
 
@@ -1221,34 +1260,34 @@ $g_N(x)=g_n(x)\in T_n(x)$; hence $F(x)=g_N(x)$.
 \emph{Continuity.} Given $x$ and $\eta$, pick $n$ with
 $\diam T_n(x)<\eta$; in the stage-$n$ source star neighborhood at $x$,
 shrunk into $D$, every point $z$ has carrier above that of $x$, the
-corresponding target relation holds (Lemma~\ref{lem:inv}(vi)), so
+corresponding target relation holds (Lemma~\ref{lem:corr}), so
 $T_n(z)\subseteq T_n(x)$ and $\|F(z)-F(x)\|<\eta$.
 
 \emph{Interior image.} Choose $n$ with the source star of $x$ smaller
 than $\dist(x,C)$, hence disjoint from $C$; the corresponding target
-star misses $S$ (Lemma~\ref{lem:inv}(vi)), so $F(x)\in Q^\circ$.
+star misses $S$ (Lemma~\ref{lem:corr}), so $F(x)\in Q^\circ$.
 
 \emph{Injectivity.} If $F(x)=F(y)$, the target stars of $x,y$ meet at
 every stage, hence so do the source stars
-(Lemma~\ref{lem:inv}(vi)); a common point gives
+(Lemma~\ref{lem:corr}); a common point gives
 $\|x-y\|\le\diam\St_{\Gamma_n}(x)+\diam\St_{\Gamma_n}(y)\to0$.
 
 \emph{Surjectivity.} Skeleton points off $S$ are dense in $Q^\circ$:
-every face has small diameter and its boundary contains a nonboundary
+every face has small diameter and its boundary contains an inner
 edge. Given $y\in Q^\circ$, take skeleton points $y_k\to y$ off $S$
 and $x_k=g_\infty^{-1}(y_k)\in D$. Choose $n$ with the target star of
 $y$ off $S$, and its target star neighborhood $V$; let $K$ be the
 union of the source closed cells corresponding to the finitely many
-supercells of the carrier of $y$: by Lemma~\ref{lem:inv}(vi), $K$ is a
+supercells of the carrier of $y$: by Lemma~\ref{lem:corr}, $K$ is a
 compact subset of $D$. For large $k$, $y_k\in V$, and viewing
 $x_k,y_k$ as corresponding skeleton points at a late common stage,
 their stage-$n$ carriers correspond; so $x_k\in K$. The sequence
 $x_k$ has a limit point $x\in K\subseteq D$ along a subsequence, and
 by continuity and agreement $F(x)=\lim y_k=y$.
 
-\emph{Cells map to cells.} For corresponding nonboundary open cells:
+\emph{Cells map to cells.} For corresponding inner open cells:
 on vertices and edges $F=g_n$. For a face $R$: by
-Lemma~\ref{lem:inv}(iv) the closed star of $R$ is $\overline R$
+Lemma~\ref{lem:cellgeom}(d) the closed star of $R$ is $\overline R$
 itself, so $F(R)\subseteq\overline{R'}$, and indeed
 $F(R)\subseteq R'$: a value on $\partial R'$, which lies in the
 target skeleton and in $Q^\circ$, has a source-skeleton preimage in
@@ -1279,9 +1318,9 @@ crosscut $P$ of $D$ from $a$ to $b$ inside the stage's skeleton, whose
 image $P'=g(P)$ is a crosscut of $Q^\circ$ from $u(a)$ to $u(b)$.
 \end{lemma}
 \begin{proof}
-Write $X=|\Gamma|\setminus C$, a connected set. If some nonboundary
+Write $X=|\Gamma|\setminus C$, a connected set. If some inner
 edge has both endpoints on $C$, its interior is clopen in $X$, hence
-all of $X$, and $a,b$, being incident with nonboundary edges
+all of $X$, and $a,b$, being incident with inner edges
 (anchors), are its endpoints: take that edge. Otherwise let $\Lambda$
 be the vertices and edges entirely in $D$; attaching to each of its
 components the half-open interiors of edges with one endpoint on $C$
@@ -1303,7 +1342,7 @@ Then $F(U_i)=U_i'$.
 $F$ is a homeomorphism agreeing with $g$ on $P\cap D$, so it maps the
 components of $D\setminus P$ onto those of $Q^\circ\setminus P'$; only
 the labels need identifying. Pick $c\in A_\infty$ in the relative
-interior of $A_i$, at a stage containing $P$, $c$, and a nonboundary
+interior of $A_i$, at a stage containing $P$, $c$, and an inner
 edge $e$ at $c$. Since $\overline{U_{3-i}}\cap C=A_{3-i}$ misses $c$,
 a short initial subarc $J$ of $e$, with $c$ removed, avoids
 $\overline{U_{3-i}}$ and $P$, hence lies in $U_i$; likewise its image
