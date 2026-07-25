@@ -59,8 +59,9 @@
 
 \begin{abstract}
 We prove: every homeomorphism between two Jordan curves extends to a
-homeomorphism of the plane. The proof is complete --- every claim is
-argued --- but written at ordinary mathematical granularity. It is the
+homeomorphism of the plane. The proof is self-contained --- the Jordan
+curve theorem and the crosscut theorem are proved here too --- and
+written at ordinary mathematical granularity. It is the
 compact companion of a longer manuscript prepared as a formalization
 blueprint. The two documents follow the same route and are sectioned
 alike, so any step here can be expanded by consulting it; where they
@@ -158,8 +159,21 @@ a closed set lies in that closed set, that a continuous surjection
 carries dense sets to dense sets, and that $\mathbb Q^2$ is dense.
 From finite graph theory we use only that any walk between two
 vertices contains a simple path (shorten at repeated vertices) and
-that minimal objects exist by finiteness. Four small lemmas of the
-same character are used often enough to state.
+that minimal objects exist by finiteness.
+
+Several objects recur for twenty pages, so the letters are fixed here.
+Jordan curves are $C,C'$, together with the curves $J_1,J_2$ that a
+crosscut builds from one; an arc of a curve is $A_1,A_2$, and $C_1,C_2$
+when the curve is a cycle of a graph. Crosscuts and polygonal arcs are
+$P$. Graphs are $G,H$, and $\Gamma$ for the skeleton of a cellulation.
+Compact sets are $K$. Regions are $\Omega$, or $D$ for the Jordan domain
+being mapped and $R,F,V_i$ for its pieces. Homeomorphisms between
+domains are $F$ and capital Greek. The one calligraphic letter,
+$\mathcal A$, is reserved for the set of strongly accessible boundary
+points fixed at the end of Section~\ref{sec:reduce}.
+
+Four small lemmas of the same character are used often enough to
+state.
 
 \begin{lemma}[Compact separation]\label{lem:sep}
 \textup{(a)} A compact set contained in an open set $U$ has an open
@@ -585,8 +599,9 @@ leaves or have degree $2$.
 \textup{(c)} If two finite 2-connected graphs share two vertices,
 their union is 2-connected.
 \textup{(d)} Subdividing edges of a 2-connected graph, or attaching a
-path (an \emph{ear}) with distinct endpoints in the graph and new
-internal vertices, preserves 2-connectivity.
+path (an \emph{ear}) with distinct endpoints in the graph and any
+number of new internal vertices, possibly none, preserves
+2-connectivity.
 \textup{(e)} If $H\subseteq G$ are finite 2-connected graphs, $G$ is
 obtained from $H$ by adding ears.
 \textup{(f)} The union of finitely many polygonal plane graphs becomes
@@ -610,10 +625,13 @@ deletion would leave a component with a second vertex, whose indicated
 endpoint would then be a cut vertex). For an ear: deleting an old
 vertex leaves the old graph connected with the pieces of the ear
 attached at the ear's endpoints; deleting a new vertex leaves the old
-graph intact with two attached ear pieces.
-(e) Given the part $K$ built so far, a component $L$ of $G-V(K)$ has
+graph intact with two attached ear pieces. An ear with no internal
+vertices is a single new edge between two existing vertices, and only
+the first case arises --- deleting any vertex leaves the old graph
+minus that vertex, which is connected.
+(e) Given the part $H_0$ built so far, a component $L$ of $G-V(H_0)$ has
 two distinct neighbors in $K$ (a unique neighbor would be a cut
-vertex, since $K$ has other vertices and all $L$-to-$K$ paths pass
+vertex, since $H_0$ has other vertices and all $L$-to-$H_0$ paths pass
 through it); a shortest path through $L$ between two neighbors is an
 ear. When all vertices are present, add missing edges as ears.
 (f) Segments intersect in nothing, a point, or an interval; subdivide
@@ -785,21 +803,29 @@ The complement of a simple arc $A$ is connected.
 Given $p,q\notin A$, choose $d>0$ so that both points are at
 $\ell^\infty$-distance $>4d$ from $A$. By uniform continuity split $A=A_1\cup\cdots\cup A_k$ ($k\ge3$) into
 subarcs of $\ell^\infty$-diameter $<d$ from their initial points
-$a_i$, and let $d'>0$ be the least distance between nonadjacent
-subarcs (Lemma~\ref{lem:sep}(b)); put $\delta=\min(d,d')$. Sample each
+$a_i$, and let $d'>0$ be the least $\ell^\infty$-distance between
+nonadjacent subarcs (Lemma~\ref{lem:sep}(b)); put
+$\delta=\min(d,d')$. Every distance in this proof is $\ell^\infty$, to
+match the squares about to be drawn. Sample each
 $A_i$ so finely that every point of the subarc between two consecutive
 samples is within $\delta/4$ of the earlier one (hence in particular
 consecutive samples are within $\delta/4$), taking the common endpoint
 of adjacent subarcs as a sample for both, and
 around every sample draw the boundary of the $\ell^\infty$-square of
 radius $\delta/4$; let $\Gamma_i$ be the overlay of the $A_i$-squares.
-Two consecutive squares are distinct congruent overlapping squares or
-coincide; in the first case each boundary has points inside and
-outside the other square (each center lies in the other's interior,
-while containment of one boundary would force, by convexity,
-containment of the whole square), so the boundaries meet, and in at
-least two points, since one shared point would disconnect a closed
-curve into its nonempty inside and outside parts. Hence each
+Two consecutive squares coincide, or are distinct congruent squares
+with centers $c\ne c'$ at distance $m=\|c-c'\|_\infty\le\delta/4$. In
+the second case their boundaries meet in at least two points. They meet
+at all: travelling from $c$ toward $c'$ until the first boundary is
+reached lands at $z=c+(\delta/4)(c'-c)/m$, and
+$\|z-c'\|_\infty=\delta/4-m<\delta/4$, so $z$ is interior to the second
+square, while the first boundary is not contained in the second square
+--- a square is the convex hull of its boundary, so that would put the
+whole first square inside the second, and congruent squares one inside
+the other coincide. So the first boundary meets both the interior and
+the complement of the second square; were the two boundaries to share
+exactly one point, that circle minus a point --- still connected ---
+would split into two nonempty relatively open pieces. Hence each
 $\Gamma_i$ is 2-connected by Lemma~\ref{lem:graphfacts}(c,d), and
 consecutive $\Gamma_i$ share a whole square, while for $|i-j|\ge2$ the
 graphs are disjoint ($\delta$ apart minus radii $\delta/2$). Each pair
@@ -862,8 +888,8 @@ square case follows via radial projection.
   \node[cut,font=\scriptsize,anchor=west] at (0.52,-0.75) {$L_4$};
   \node[cut,font=\scriptsize,anchor=south] at (-0.9,2.32) {$L_5$};
   \node[cut,font=\scriptsize,anchor=west] at (2.02,1.30) {$L_6$};
-  \node[font=\scriptsize] at (-1.15,0.95) {$P_1$};
-  \node[font=\scriptsize] at (-1.05,-1.15) {$P_2$};
+  \node[font=\scriptsize] at (-1.15,0.95) {$C_1$};
+  \node[font=\scriptsize] at (-1.05,-1.15) {$C_2$};
 \end{tikzpicture}
 \caption{The configuration behind ``a Jordan curve separates''. Squares
 mark $p_1,p_2,c'$; circles mark $a,b,d'$. Every square is joined to
@@ -885,12 +911,12 @@ connected subset of it, a closed interval, which one interior point
 disconnects, while the circle minus a point is connected. Rotate so
 the horizontal width is positive; let $L_1,L_2$ be the vertical
 supporting lines, $p_i$ the highest point of $C\cap L_i$, and
-$P_1,P_2$ the two arcs of $C$ between $p_1,p_2$. A vertical line
+$C_1,C_2$ the two arcs of $C$ between $p_1,p_2$. A vertical line
 $L_3$ strictly between meets both arcs (their horizontal projections
 are connected and contain both extremes). The compact sets
-$P_i\cap L_3$ are disjoint (the $p_i$ are off $L_3$); choose a closest
-pair $a\in P_1$, $b\in P_2$ on $L_3$; the open segment between them
-misses $C$, since a $C$-point on it, lying on some $P_i$, would be
+$C_i\cap L_3$ are disjoint (the $p_i$ are off $L_3$); choose a closest
+pair $a\in C_1$, $b\in C_2$ on $L_3$; the open segment between them
+misses $C$, since a $C$-point on it, lying on some $C_i$, would be
 closer to the other endpoint. Call the closed segment $L_4$. Join
 $p_1$ to $p_2$ by the polygonal path $L_5$ running up the supporting
 lines and across a horizontal line above $C$; each interior point of
@@ -907,7 +933,7 @@ subarc between, meeting $L_4\cup L_5$ only at its ends and missing
 $C$. Then $C\cup L_4\cup L_5\cup L_6$ is a plane subdivision of
 $K_{3,3}$ with parts $\{p_1,p_2,c'\}$ and $\{a,b,d'\}$
 (Figure~\ref{fig:sep}): the four
-subarcs of $P_1,P_2$ cut at $a,b$, the two subsegments of $L_4$ cut at
+subarcs of $C_1,C_2$ cut at $a,b$, the two subsegments of $L_4$ cut at
 $c'$, the two subpaths of $L_5$ cut at $d'$, and $L_6$ are nine
 internally disjoint branch paths (all the required disjointness is by
 construction: $C$ meets $L_4$ in $\{a,b\}$, $L_5$ in $\{p_1,p_2\}$,
@@ -1081,7 +1107,8 @@ $C\cup\Int(C)\to C'\cup\Int(C')$.
 \end{proposition}
 \begin{proof}
 Choose $h:C'\to S$ (Lemma~\ref{lem:circle}), extend $h\circ f$ and $h$
-to $H,K$ by Theorem~\ref{thm:square}, and take $K^{-1}\circ H$.
+to $\Phi,\Psi$ by Theorem~\ref{thm:square}, and take
+$\Psi^{-1}\circ\Phi$.
 \end{proof}
 
 The next five sections prove Theorem~\ref{thm:square}. Fix $C$, $u$,
@@ -1099,16 +1126,16 @@ unit $w$ with $\langle v,w\rangle>\tfrac12$ and $0<t<r$,
 \]
 so a whole open cone of short straight segments at $p$ enters
 $B(q,r)\subseteq D$. Taking a nearest point $a(q)\in C$ for every
-$q\in\mathbb Q^2\cap D$ gives a countable set $A$ of strongly
+$q\in\mathbb Q^2\cap D$ gives a countable set $\mathcal A$ of strongly
 accessible points, dense in $C$ because $C=\partial D$
 (Theorem~\ref{thm:jct}) gives rational $q$ with $\|q-p\|<\varepsilon/2$
-and then $\|a(q)-p\|\le2\|q-p\|<\varepsilon$. Fix this $A$.
+and then $\|a(q)-p\|\le2\|q-p\|<\varepsilon$. Fix this $\mathcal A$.
 
 \section{Matched cellulations}\label{sec:cell}
 
 \begin{proposition}[Initial pair]\label{prop:init}
 Subdivide $C$ at six boundary vertices: the four $u$-preimages of the
-corners of $Q$, and two further points $a,b\in A$ chosen in two
+corners of $Q$, and two further points $a,b\in\mathcal A$ chosen in two
 nonadjacent corner arcs, so that $u(a),u(b)$ lie in the relative
 interiors of opposite sides of $Q$; subdivide $S$ correspondingly.
 There is a polygonal crosscut $P$ of $D$ from $a$ to $b$, and the
@@ -1120,7 +1147,7 @@ $\overline{R_i}\cap C=A_i\leftrightarrow
 $C$ from $a$ to $b$, each realized as a path of boundary edges.
 \end{proposition}
 \begin{proof}
-The dense set $A$ meets both chosen open corner arcs, even after any
+The dense set $\mathcal A$ meets both chosen open corner arcs, even after any
 finite exclusions. Short straight access segments at $a,b$ exist by
 strong accessibility, and Lemma~\ref{lem:join} gives $P$. Since
 $u(a),u(b)$ are interior to opposite sides, the interior of
@@ -1291,7 +1318,7 @@ and reproduce it on the other. In the direction source-to-target this is
 unobstructed, because the target skeleton is polygonal everywhere,
 including on $S$. In the direction target-to-source it is not: a new edge
 that reaches $C$ must land at a point one can actually reach from inside,
-which is why the anchors are taken from the strongly accessible set $A$,
+which is why the anchors are taken from the strongly accessible set $\mathcal A$,
 and why each of them is given exactly one spoke.
 
 \begin{lemma}[Local sectors and face access]\label{lem:sector}
@@ -1333,7 +1360,7 @@ $(\Gamma,\Gamma')$ whose source skeleton is $H$.
 
 \textup{(b)} Symmetrically from the target side, provided every new
 edge meeting $S$ has exactly one endpoint on $S$, at a fresh point of
-$u(A)$ that becomes a boundary vertex with exactly one incident new
+$u(\mathcal A)$ that becomes a boundary vertex with exactly one incident new
 edge.
 \end{theorem}
 \begin{proof}
@@ -1343,8 +1370,10 @@ an old edge to the other realization by the edge parametrization ($u$
 on outer edges); in particular every new boundary vertex --- in (b),
 each fresh point $u(a)$ --- is inserted into the outer cycle first.
 By Lemma~\ref{lem:graphfacts}(e), the new graph is then obtained by a
-finite sequence of ears, and we transfer them one at a time; each ear
-insertion is at most two subdivisions plus one face split, so all
+finite sequence of ears, and we transfer them one at a time. Each ear
+is inserted by a single face split, preceded by at most two
+subdivisions --- to make its two endpoints vertices --- and followed by
+one subdivision for each of its internal vertices; so all
 intermediate stages satisfy Lemmas~\ref{lem:cellgeom}--\ref{lem:corr}, whether or not their
 inner parts are momentarily disconnected.
 
@@ -1358,7 +1387,7 @@ skeleton off $S$ or on $S$ as images of boundary vertices already
 present, and are accessible from $F^*$ by
 Lemma~\ref{lem:sector}. In case (b), an endpoint of the reproduced
 crosscut is either an inner skeleton point, accessible by
-Lemma~\ref{lem:sector}, or a fresh anchor $a\in A$: there, the open cone of straight access
+Lemma~\ref{lem:sector}, or a fresh anchor $a\in\mathcal A$: there, the open cone of straight access
 segments furnished by strong accessibility can be shrunk, using
 Lemma~\ref{lem:sep}(c), until its short segments avoid the compact
 remainder of the skeleton; the segment then lies
@@ -1449,7 +1478,7 @@ $W_n(p)\subseteq D$ and $r(p)-s_n(p)\le\varepsilon_n$.
 below $\varepsilon_n$ is attached to the source inside the square
 $W_n(b_n)$ and carried to the target; then an anchored mesh --- a
 gridded core $\lambda Q$ and a collar cut into rectangles by spokes
-dropped from fresh anchor points $z_i\in u(A)$ --- is laid over the
+dropped from fresh anchor points $z_i\in u(\mathcal A)$ --- is laid over the
 target and carried back. Refining one side alone would shrink that
 side's cells only; the alternation shrinks
 both.}\label{fig:stage}
@@ -1505,7 +1534,7 @@ faces have diameter $<\delta$, whose skeleton is 2-connected with
 $|T|\setminus S$ connected, in which every prescribed boundary vertex
 of $\Gamma_{n-1}'$ appears, and whose only new edges meeting $S$ are
 single \emph{spokes}, one at each of finitely many fresh points of
-$u(A)$.
+$u(\mathcal A)$.
 \end{proposition}
 \begin{proof}
 Radial coordinates $x=tz$ ($t=\|x\|_\infty$, $z\in S$) identify the
@@ -1513,7 +1542,7 @@ collar $Q\setminus(\lambda Q)^\circ$ with $S\times[\lambda,1]$; fix
 $\lambda<1$ with $\sqrt2(1-\lambda)<\delta/4$. Parametrize $S$ by a
 circle, partition it into arcs of image-diameter $<\delta/8$ (uniform
 continuity), and choose one fresh point $z_i$ of the dense set
-$u(A)$ in the relative interior of each, avoiding the finitely many
+$u(\mathcal A)$ in the relative interior of each, avoiding the finitely many
 excluded points --- possible since a dense set meets every open subarc
 even after finitely many deletions. Consecutive $z_i$ then bound arcs
 $A_i\subseteq S$ of diameter $<\delta/4$; insert the old boundary
@@ -1576,10 +1605,10 @@ $\diam\St_{\Gamma_n}(x)<2\varepsilon_n$; and stars only shrink at
 later stages.
 \end{proof}
 
-Let $A_\infty\subseteq A$ be the preimages of all fresh anchors ever
+Let $\mathcal A_\infty\subseteq\mathcal A$ be the preimages of all fresh anchors ever
 used. Since stage-$n$ anchors cut $S$ into arcs of diameter
-$<\varepsilon_n/4$, the set $u(A_\infty)$ is dense in $S$; and
-$A_\infty$ is dense in $C$ because $u^{-1}$ is a continuous surjection.
+$<\varepsilon_n/4$, the set $u(\mathcal A_\infty)$ is dense in $S$; and
+$\mathcal A_\infty$ is dense in $C$ because $u^{-1}$ is a continuous surjection.
 When an anchor is introduced its spoke is an inner edge at it,
 and an initial subedge of the spoke remains incident at all later
 stages.
@@ -1670,7 +1699,7 @@ $C$; it is a bijection onto $Q$, continuous on $D$, and we must prove
 continuity at each $p\in C$.
 
 \begin{lemma}[Skeleton crosscuts]\label{lem:skelcross}
-For distinct $a,b\in A_\infty$ in a common finite stage, there is a
+For distinct $a,b\in \mathcal A_\infty$ in a common finite stage, there is a
 crosscut $P$ of $D$ from $a$ to $b$ inside the stage's skeleton, whose
 image $P'=g(P)$ is a crosscut of $Q^\circ$ from $u(a)$ to $u(b)$.
 \end{lemma}
@@ -1698,7 +1727,7 @@ Then $F(U_i)=U_i'$.
 \begin{proof}
 $F$ is a homeomorphism agreeing with $g$ on $P\cap D$, so it maps the
 components of $D\setminus P$ onto those of $Q^\circ\setminus P'$; only
-the labels need identifying. Pick $c\in A_\infty$ in the relative
+the labels need identifying. Pick $c\in \mathcal A_\infty$ in the relative
 interior of $A_i$, at a stage containing $P$, $c$, and an inner
 edge $e$ at $c$. Since $\overline{U_{3-i}}\cap C=A_{3-i}$ misses $c$,
 a short initial subarc $J$ of $e$, with $c$ removed, avoids
@@ -1716,15 +1745,19 @@ Suppose $x_k\to p\in C$ in $D$ but
 $\overline F(x_k)\not\to u(p)$. Passing to a subsequence in the
 compact set $Q$, $F(x_k)\to q\ne u(p)$; and $q\in S$, since a limit in
 $Q^\circ$ would force $x_k\to F^{-1}(q)\in D$. Let $r=u^{-1}(q)\ne p$.
-By density of $A_\infty$, choose $a,b\in A_\infty$, distinct from
+By density of $\mathcal A_\infty$, choose $a,b\in \mathcal A_\infty$, distinct from
 $p,r$, separating them on $C$; the stages being nested, $a,b$ share a
 finite stage, giving crosscuts $P,P'$
-(Lemma~\ref{lem:skelcross}). Since $p\notin P$ and the closure of the
-non-$p$ side meets $C$ only in the arc not containing $p$
-(Theorem~\ref{thm:cross}), all $x_k$ near $p$ lie on the $p$-side of
-$P$; by Lemma~\ref{lem:sides} their images lie on the $u(p)$-side of
-$P'$, whose closure meets $S$ only in the arc of $u(p)$. But
-$q=u(r)$ lies in the relative interior of the other arc ---
+(Lemma~\ref{lem:skelcross}). Let $U_1,U_2$ be the two sides of $P$,
+labelled so that $\overline{U_i}\cap C=A_i$ with $p$ interior to $A_1$.
+Two compact sets are to be avoided near $p$: the crosscut $P$ itself,
+which misses $p$ because $P\cap C=\{a,b\}$, and $\overline{U_2}$, which
+misses $p$ because $\overline{U_2}\cap C=A_2$
+(Theorem~\ref{thm:cross}). So some neighborhood of $p$ meets neither,
+and every $x_k$ near $p$ lies in $U_1$ --- not merely in its closure.
+By Lemma~\ref{lem:sides} the images lie in $U_1'$, so
+$q=\lim\overline F(x_k)$ lies in $\overline{U_1'}$, whose intersection
+with $S$ is $u(A_1)$. But $q=u(r)$ with $r$ interior to $A_2$ ---
 contradiction. Continuity of the bijection $\overline F$ on the
 compact set $\overline D$ makes it a homeomorphism onto $Q$. For
 sequences approaching $p$ within $C$, continuity is that of $u$;
@@ -1758,10 +1791,11 @@ $z$ to $z'$.
 \end{proposition}
 \begin{proof}
 Choose a homeomorphism $C'\to S$ (Lemma~\ref{lem:circle}) and extend
-it to $J:C'\cup\Int(C')\to Q$ (Theorem~\ref{thm:square}); let $H$ be
-an extension of $f$ from Proposition~\ref{prop:reduce}. Insert the
-mover (Lemma~\ref{lem:mover}) taking $J(H(z))$ to $J(z')$:
-$J^{-1}\circ M\circ J\circ H$ extends $f$ and sends $z\mapsto z'$.
+it to $\Theta:C'\cup\Int(C')\to Q$ (Theorem~\ref{thm:square}); let
+$\Phi$ be an extension of $f$ from Proposition~\ref{prop:reduce}.
+Insert the mover $M$ (Lemma~\ref{lem:mover}) carrying $\Theta(\Phi(z))$
+to $\Theta(z')$: then $\Theta^{-1}\circ M\circ\Theta\circ\Phi$ extends
+$f$ and sends $z\mapsto z'$.
 \end{proof}
 
 \begin{lemma}[Inversion]\label{lem:inversion}
@@ -1792,10 +1826,10 @@ $F_{\mathrm{int}}:C\cup\Int(C)\to C'\cup\Int(C')$
 $a\in\Int(C)$, $b\in\Int(C')$ and set
 $f^*=I_b\circ f\circ I_a:C^a\to(C')^b$. By
 Proposition~\ref{prop:pointed} extend $f^*$ to
-$H^*$ over the closed interiors with $H^*(a)=b$; then
+$\Phi^*$ over the closed interiors with $\Phi^*(a)=b$; then
 \[
 F_{\mathrm{ext}}
- =I_b\circ H^*\circ I_a
+ =I_b\circ \Phi^*\circ I_a
  :\;C\cup\Ext(C)\longrightarrow C'\cup\Ext(C'),
 \]
 using Lemma~\ref{lem:inversion} on both sides and removing the
