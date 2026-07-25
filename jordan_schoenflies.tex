@@ -208,6 +208,20 @@ so $x\in K_m$. Hence $x\in\bigcap_nK_n$. If $y$ also lies in the
 intersection, then $\|x-y\|\le\operatorname{diam}K_n\to0$, so $y=x$.
 \end{proof}
 
+\begin{lemma}[Recognizing a component]\label{lem:clopen-component}
+Let $V\subseteq\mathbb R^2$ be open and let $U\subseteq V$ be a region
+with $\partial U\cap V=\varnothing$. Then $U$ is a connected component
+of $V$.
+\end{lemma}
+\begin{proof}
+The set $U$ is open, hence open in $V$. It is also closed in $V$,
+because
+$\overline U\cap V=(U\cup\partial U)\cap V=U\cap V=U$. Let $K$ be the
+component of $V$ containing the nonempty connected set $U$. Then $U$ is
+a nonempty subset of $K$ which is both open and closed in $K$, and $K$
+is connected, so $U=K$.
+\end{proof}
+
 The next lemma is the point at which a merely local picture must be
 made globally consistent. We use the orientation of the plane to keep
 track of the two sides.
@@ -383,10 +397,9 @@ so the two local sides have opposite parity.
 \begin{theorem}[Polygonal Jordan curve theorem]\label{thm:polygonal-jordan}
 If $C$ is a simple closed polygonal curve, then
 $\mathbb R^2\setminus C$ has exactly two regions. One is bounded and
-one unbounded, and both have boundary $C$. Moreover, if $B$ is a disk
-centered at a point in the relative interior of an edge of $C$ and
-meeting $C$ in a straight diameter, then the two half-disks of
-$B\setminus C$ lie in different regions.
+one unbounded, and both have boundary $C$. Moreover $\pi_C=1$ on the
+bounded region $\operatorname{Int}(C)$ and $\pi_C=0$ on the unbounded
+region $\operatorname{Ext}(C)$.
 \end{theorem}
 \begin{proof}
 Choose a two-sided strip $N=N_L\sqcup C\sqcup N_R$ as in
@@ -407,11 +420,14 @@ there are exactly two. The complement of a sufficiently large disk is
 connected and disjoint from $C$; it lies in one component, which is
 therefore the unique unbounded component. The other is bounded.
 
-For the final assertion of the theorem, the two half-disks are
-connected, so the parity of Lemma~\ref{lem:polygon-parity} is constant
-on each; by the same lemma, points on the two sides of the edge near
-its center have opposite parity. Hence the two half-disks lie in
-different regions.
+For the parity values, take a point $q$ whose first coordinate exceeds
+that of every point of the compact set $C$. No edge crosses the
+horizontal line through $q$ strictly to the right of $q$, so
+$\pi_C(q)=0$; and $q$ lies in the unbounded region, since the
+complement of a large disk is connected and disjoint from $C$. As
+parity is constant on each region and the two regions have opposite
+parity, $\pi_C=0$ on the unbounded region and $\pi_C=1$ on the bounded
+one.
 
 By the local two-sidedness assertion of
 Lemma~\ref{lem:polygonal-collar}, every point of $C$ has points of
@@ -422,14 +438,122 @@ of both components. Conversely, the boundary of a component of the
 open set $\mathbb R^2\setminus C$ is contained in $C$.
 \end{proof}
 
-Write $\operatorname{int}(C)$ and $\operatorname{ext}(C)$ for the
+\begin{definition}[Separating Jordan curve]\label{def:separating}
+A Jordan curve $C$ is \emph{separating} if $\mathbb R^2\setminus C$ has
+exactly two regions, one bounded and one unbounded, and each has
+boundary $C$. The bounded region is written $\operatorname{Int}(C)$ and
+the unbounded one $\operatorname{Ext}(C)$.
+\end{definition}
+
+Theorem~\ref{thm:polygonal-jordan} says that every polygonal Jordan
+curve is separating, and Theorem~\ref{thm:jordan} will remove the word
+``polygonal''. The next two lemmas are needed on both sides of that
+divide. They are therefore proved from Definition~\ref{def:separating}
+alone, and are never invoked for a curve whose separation has not
+already been established.
+
+\begin{lemma}[Absorption]\label{lem:absorption}
+Let $C$ and $J$ be separating Jordan curves, let $\Omega$ be a region
+of $\mathbb R^2\setminus C$, and let $V$ be a region of
+$\mathbb R^2\setminus J$ with $\Omega\subseteq V$. Then
+$C\setminus J\subseteq V$.
+\end{lemma}
+\begin{proof}
+Since $C$ is separating, $C=\partial\Omega$, so
+$C\subseteq\overline\Omega$. From $\Omega\subseteq V$ we get
+$\overline\Omega\subseteq\overline V$, and since $J$ is separating,
+$\overline V=V\cup\partial V=V\cup J$. Hence $C\subseteq V\cup J$.
+\end{proof}
+
+\begin{lemma}[Crosscut cells]\label{lem:crosscut-cells}
+Let $C$ be a separating Jordan curve and let $P$ be a simple arc whose
+endpoints $p\ne q$ lie on $C$ and which has no other point on $C$. Let
+$A_1,A_2$ be the two arcs of $C$ from $p$ to $q$ and put $J_i=A_i\cup
+P$; these are Jordan curves, and we assume them separating. Let
+$\Omega$ be the region of $\mathbb R^2\setminus C$ containing
+$P\setminus\{p,q\}$ and $\Omega^\dagger$ the other region. For each
+$i$, let $W_i$ be the region of $\mathbb R^2\setminus J_i$ containing
+$\Omega^\dagger$, and let $V_i$ be the other region. Then
+\begin{enumerate}\alphlabels
+\item $V_1$ and $V_2$ are connected components of $\Omega\setminus P$;
+\item $V_1\ne V_2$;
+\item $\overline{V_i}\cap C=A_i$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+Each $A_i$ is a simple arc from $p$ to $q$ meeting $P$ exactly in
+$\{p,q\}$, so each $J_i$ is a Jordan curve. The set $P\setminus\{p,q\}$
+is connected and disjoint from $C$, so it lies in one region of
+$\mathbb R^2\setminus C$; this defines $\Omega$. The region
+$\Omega^\dagger$ is disjoint from $C$ and from $P$, hence from
+$J_i\subseteq C\cup P$; being connected it lies in one region of
+$\mathbb R^2\setminus J_i$, so $W_i$ and $V_i$ are well defined.
+
+Apply Lemma~\ref{lem:absorption} to $\Omega^\dagger\subseteq W_i$: it
+gives $C\setminus J_i\subseteq W_i$, a set disjoint from $V_i$. The
+remaining part of $C$, namely $C\cap J_i=A_i$, lies in $J_i$ and is
+also disjoint from $V_i$. Hence $V_i\cap C=\varnothing$.
+
+So $V_i$ is a region contained in $\mathbb R^2\setminus C$ and disjoint
+from $\Omega^\dagger$; being connected, it lies in $\Omega$. It is also
+disjoint from $P\subseteq J_i$. Therefore
+$V_i\subseteq\Omega\setminus P$. Its boundary is $J_i\subseteq C\cup
+P$, which is disjoint from the open set $\Omega\setminus P$, so
+Lemma~\ref{lem:clopen-component} makes $V_i$ a component of
+$\Omega\setminus P$. This proves (a).
+
+For (b), suppose $V_1=V_2$. Taking boundaries gives $J_1=J_2$, and
+removing $P\setminus\{p,q\}$ from both sides gives
+$A_1\cup\{p,q\}=A_2\cup\{p,q\}$, that is, $A_1=A_2$. But
+$A_1\cap A_2=\{p,q\}$, while each $A_i$ is a nondegenerate arc; so
+$A_1=A_2$ would force $C=A_1=\{p,q\}$, which is absurd.
+
+For (c), $\overline{V_i}=V_i\cup J_i$ and $V_i\cap C=\varnothing$, so
+$\overline{V_i}\cap C=J_i\cap C=A_i$.
+\end{proof}
+
+
+Write $\operatorname{Int}(C)$ and $\operatorname{Ext}(C)$ for the
 bounded and unbounded regions. Since the crossing count is zero far to
 the right of the polygon, its value is $0$ on
-$\operatorname{ext}(C)$ and $1$ on $\operatorname{int}(C)$.
+$\operatorname{Ext}(C)$ and $1$ on $\operatorname{Int}(C)$.
 
 A \emph{crosscut} of a region $\Omega$ is a simple arc whose two
 endpoints are distinct points of $\partial\Omega$ and whose remaining
 points lie in $\Omega$.
+
+\begin{lemma}[Parity splitting]\label{lem:parity-splitting}
+Let $C$ be a simple closed polygonal curve, let $P$ be a simple
+polygonal arc with distinct endpoints $p,q\in C$ and no other point on
+$C$, let $A_1,A_2$ be the two arcs of $C$ from $p$ to $q$, and put
+$J_i=A_i\cup P$. Subdivide $C$ at $p$ and $q$ and rotate coordinates so
+that no edge of $C\cup P$ is horizontal. Then at every point off
+$C\cup P$,
+\begin{equation}\label{eq:parity-splitting}
+ \pi_C=\pi_{J_1}+\pi_{J_2}\pmod 2.
+\end{equation}
+Consequently a point of $\operatorname{Int}(C)$ off $P$ lies inside
+exactly one of $J_1,J_2$, and a point of $\operatorname{Ext}(C)$ off
+$P$ lies inside both or inside neither.
+\end{lemma}
+\begin{proof}
+Subdividing changes no parity function, by
+Lemma~\ref{lem:parity-subdivision}. After the subdivision the edge set
+of $C$ is the disjoint union of the edge sets of $A_1$ and $A_2$, and
+the edge set of $J_i$ is that of $A_i$ together with that of $P$.
+Counting edge by edge, each edge of $P$ contributes once to
+$\pi_{J_1}$ and once to $\pi_{J_2}$, so its contributions cancel modulo
+$2$; the remaining contributions to $\pi_{J_1}+\pi_{J_2}$ are those of
+the edges of $A_1$ and $A_2$, which are exactly the contributions to
+$\pi_C$. This is \eqref{eq:parity-splitting}.
+
+By Theorem~\ref{thm:polygonal-jordan} the parity function of each of
+the three curves is $1$ on its bounded region and $0$ on its unbounded
+region. So at a point of $\operatorname{Int}(C)$ off $P$ the left side
+of \eqref{eq:parity-splitting} is $1$ and exactly one $\pi_{J_i}$ is
+$1$; at a point of $\operatorname{Ext}(C)$ off $P$ the left side is $0$
+and the two agree.
+\end{proof}
 
 \begin{longtheorem}[Two-sided polygonal crosscuts]\label{thm:polygonal-crosscut}
 Let $C$ be a simple closed polygonal curve and let $P$ be a simple
@@ -437,93 +561,57 @@ polygonal arc with distinct endpoints $p,q\in C$ and no other point on
 $C$. Let $A_1,A_2$ be the two arcs of $C$ from $p$ to $q$.
 
 \begin{enumerate}\alphlabels
-\item If $P\setminus\{p,q\}\subseteq\operatorname{int}(C)$, then
-      $\operatorname{int}(C)\setminus P$ consists of the bounded
+\item If $P\setminus\{p,q\}\subseteq\operatorname{Int}(C)$, then
+      $\operatorname{Int}(C)\setminus P$ consists of the bounded
       regions of the Jordan curves $J_i=A_i\cup P$.
-\item If $P\setminus\{p,q\}\subseteq\operatorname{ext}(C)$, then
-      $\operatorname{ext}(C)\setminus P$ has exactly two regions, and
+\item If $P\setminus\{p,q\}\subseteq\operatorname{Ext}(C)$, then
+      $\operatorname{Ext}(C)\setminus P$ has exactly two regions, and
       their boundaries are $J_1$ and $J_2$.
 \end{enumerate}
 In either case $\mathbb R^2\setminus(C\cup P)$ has exactly three
 regions, with boundaries $C,J_1,J_2$.
 \end{longtheorem}
 \begin{proof}
-Subdivide $C$ at $p,q$ --- which changes no parity function, by
-Lemma~\ref{lem:parity-subdivision} --- and rotate coordinates so that no
-edge of $C\cup P$ is horizontal. By Theorem~\ref{thm:polygonal-jordan}, the parity
-function of Lemma~\ref{lem:polygon-parity} is the indicator of the bounded
-component for each of the three polygonal Jordan curves. For every
-point outside $C\cup P$,
-\begin{equation}\label{eq:parity-splitting}
- \pi_C=\pi_{J_1}+\pi_{J_2}\pmod 2,
-\end{equation}
-because the edges of $P$ occur twice and cancel, while $A_1,A_2$
-partition $C$.
+All three curves are separating, by
+Theorem~\ref{thm:polygonal-jordan}. Let $\Omega$ be the region of
+$\mathbb R^2\setminus C$ containing $P\setminus\{p,q\}$, let
+$\Omega^\dagger$ be the other region, and let $W_i,V_i$ be as in
+Lemma~\ref{lem:crosscut-cells}. That lemma exhibits $V_1$ and $V_2$ as
+two distinct components of $\Omega\setminus P$; only exhaustion
+remains, and it is read off Lemma~\ref{lem:parity-splitting}.
 
-Suppose first that $P$ lies in $\operatorname{int}(C)$. The connected
-unbounded set $\operatorname{ext}(C)$ is disjoint from $J_i$, hence is
-contained in $\operatorname{ext}(J_i)$. The set
-$\operatorname{int}(J_i)$ contains no point of $C\setminus J_i$: if it
-did, a neighborhood of that point would also meet
-$\operatorname{ext}(C)\subseteq\operatorname{ext}(J_i)$, because $C$
-is the boundary of $\operatorname{ext}(C)$. Thus
-$\operatorname{int}(J_i)$ is a connected subset of
-$\operatorname{int}(C)$. On $\operatorname{int}(C)\setminus P$ the
-left side of \eqref{eq:parity-splitting} is $1$, so every point belongs to exactly one of
-$\operatorname{int}(J_1),\operatorname{int}(J_2)$. This proves (a).
+Suppose first that $P\setminus\{p,q\}\subseteq\operatorname{Int}(C)$,
+so $\Omega=\operatorname{Int}(C)$ and
+$\Omega^\dagger=\operatorname{Ext}(C)$. The latter is connected,
+unbounded and disjoint from $J_i$, so it lies in
+$\operatorname{Ext}(J_i)$; hence $W_i=\operatorname{Ext}(J_i)$ and
+$V_i=\operatorname{Int}(J_i)$. Every point of
+$\operatorname{Int}(C)\setminus P$ lies inside exactly one $J_i$, that
+is, in exactly one $V_i$. Therefore
+$\operatorname{Int}(C)\setminus P=V_1\sqcup V_2$, which is (a).
 
-Now suppose that $P$ lies in $\operatorname{ext}(C)$. The connected set
-$\operatorname{int}(C)$ is disjoint from both $J_i$, so its parity with
-respect to each $J_i$ is constant. Equation~\eqref{eq:parity-splitting} shows that, after
-interchanging the labels if necessary,
-\[
- \operatorname{int}(C)\subseteq\operatorname{int}(J_1)
- \cap\operatorname{ext}(J_2).
-\]
-The bounded region $\operatorname{int}(J_2)$ cannot meet
-$C\setminus J_2$: every neighborhood of such a point meets
-$\operatorname{int}(C)\subseteq\operatorname{ext}(J_2)$. It also
-cannot lie in $\operatorname{int}(C)$, and hence it is contained in
-$\operatorname{ext}(C)$. Similarly,
-$\operatorname{ext}(J_1)$ cannot meet $C\setminus J_1$, because every
-neighborhood of such a point meets
-$\operatorname{int}(C)\subseteq\operatorname{int}(J_1)$. It is
-disjoint from $\operatorname{int}(C)$ and therefore contained in
-$\operatorname{ext}(C)$. For a point of
-$\operatorname{ext}(C)\setminus P$, \eqref{eq:parity-splitting} says that its two
-$J_i$-parities are equal. If they are both $1$, the point lies in
-$\operatorname{int}(J_2)$; if both are $0$, it lies in
-$\operatorname{ext}(J_1)$. The two sets are disjoint: a common point
-would have $J_2$-parity $1$ and $J_1$-parity $0$, hence $\pi_C=1$ by
-\eqref{eq:parity-splitting}, placing it in $\operatorname{int}(C)$
-rather than $\operatorname{ext}(C)$. These two connected sets therefore
-partition $\operatorname{ext}(C)\setminus P$, proving (b).
+Suppose instead that $P\setminus\{p,q\}\subseteq\operatorname{Ext}(C)$,
+so $\Omega=\operatorname{Ext}(C)$ and
+$\Omega^\dagger=\operatorname{Int}(C)$. The latter lies inside exactly
+one of $J_1,J_2$; relabel so that it lies inside $J_1$. Then
+$W_1=\operatorname{Int}(J_1)$ and $V_1=\operatorname{Ext}(J_1)$, while
+$W_2=\operatorname{Ext}(J_2)$ and $V_2=\operatorname{Int}(J_2)$. A point
+of $\operatorname{Ext}(C)\setminus P$ lies inside both $J_i$ or inside
+neither; in the first case it lies in $V_2$, in the second in $V_1$.
+Therefore $\operatorname{Ext}(C)\setminus P=V_1\sqcup V_2$, with
+boundaries $\partial V_1=J_1$ and $\partial V_2=J_2$, which is (b).
 
-For the final assertion, note that $P$ meets exactly one of the two
-sides of $C$, so that in the first case
+In either case $\Omega^\dagger$ is a region disjoint from $C\cup P$
+whose boundary $C$ misses $\mathbb R^2\setminus(C\cup P)$, so
+Lemma~\ref{lem:clopen-component} makes it a component of that set.
+Since
 \[
  \mathbb R^2\setminus(C\cup P)
- =\operatorname{ext}(C)\ \sqcup\
- \bigl(\operatorname{int}(C)\setminus P\bigr)
- =\operatorname{ext}(C)\sqcup\operatorname{int}(J_1)
- \sqcup\operatorname{int}(J_2),
+ =\bigl(\Omega\setminus P\bigr)\ \sqcup\ \Omega^\dagger
+ =V_1\sqcup V_2\sqcup\Omega^\dagger,
 \]
-and in the second case
-\[
- \mathbb R^2\setminus(C\cup P)
- =\operatorname{int}(C)\ \sqcup\
- \bigl(\operatorname{ext}(C)\setminus P\bigr)
- =\operatorname{int}(C)\sqcup\operatorname{int}(J_2)
- \sqcup\operatorname{ext}(J_1).
-\]
-Each of the three sets listed is open and connected, and by
-Theorem~\ref{thm:polygonal-jordan} its boundary is $C$, $J_1$, or
-$J_2$; in particular that boundary lies in $C\cup P$ and hence misses
-$\mathbb R^2\setminus(C\cup P)$. A region whose boundary misses an
-open set containing it is a whole component of that set. Thus in
-either case the three listed sets are exactly the regions of
-$\mathbb R^2\setminus(C\cup P)$, and their boundaries are
-$C,J_1,J_2$.
+the three regions are $V_1,V_2,\Omega^\dagger$, with boundaries
+$J_1,J_2,C$.
 \end{proof}
 
 \begin{corollary}[Alternating crosscuts intersect]\label{cor:alternating-crosscuts}
@@ -531,7 +619,7 @@ Let $C$ be a simple closed polygonal curve. Let $P_1,P_2$ be simple
 polygonal arcs, each having two distinct endpoints on $C$ and no other
 point on $C$. Assume that their four endpoints are distinct, that the
 interiors of both arcs lie in the same one of
-$\operatorname{int}(C),\operatorname{ext}(C)$, and that their endpoints
+$\operatorname{Int}(C),\operatorname{Ext}(C)$, and that their endpoints
 alternate around $C$. Then $P_1\cap P_2\ne\varnothing$.
 \end{corollary}
 \begin{proof}
@@ -731,9 +819,9 @@ endpoints are already present and whose internal vertices are new.
 Such a path is called an \emph{ear}.
 \end{lemma}
 \begin{proof}
-Let $K$ be the graph constructed so far. If a component $L$ of
-$G-V(K)$ contains a vertex, it has at least two distinct neighbors in
-$K$; otherwise its unique neighbor would be a cut vertex of $G$. A
+Let $H_0$ be the graph constructed so far. If a component $L$ of
+$G-V(H_0)$ contains a vertex, it has at least two distinct neighbors in
+$H_0$; otherwise its unique neighbor would be a cut vertex of $G$. A
 shortest path through $L$ between two such neighbors is an ear. If all
 vertices are already present, add a missing edge as an ear of length
 one. Finiteness terminates the process.
@@ -804,8 +892,8 @@ $H=\Gamma_i\cup\Gamma_{i+1}$ when $i=j<k$,
 $H=\Gamma_{i-1}\cup\Gamma_i$ when $i=j=k$, and
 $H=\Gamma_i\cup\Gamma_{i+1}$ when $j=i+1$. The face of $H$ containing
 $x$ is connected and disjoint from $C$. Since it contains the point
-$x\in\operatorname{int}(C)$, it lies in the bounded set
-$\operatorname{int}(C)$ and therefore is not the outer face of $H$.
+$x\in\operatorname{Int}(C)$, it lies in the bounded set
+$\operatorname{Int}(C)$ and therefore is not the outer face of $H$.
 This contradicts the hypothesis on consecutive pairs.
 
 Assume $j-i\ge2$. Among all cycles in this fixed union
@@ -972,12 +1060,12 @@ which the projection of $C$ has nonzero width, and rotate coordinates
 so that this is the horizontal direction. Let $L_1,L_2$ be the
 distinct vertical supporting lines at the minimum and maximum
 $x$-coordinates of $C$. On each $L_i$, let $p_i$ be the highest point
-of $C\cap L_i$. Let $P_1,P_2$ be the two arcs of $C$ from
+of $C\cap L_i$. Let $C_1,C_2$ be the two arcs of $C$ from
 $p_1$ to $p_2$. Choose a vertical line $L_3$ strictly between
 $L_1,L_2$. Both arcs meet $L_3$, and the compact disjoint sets
-$P_1\cap L_3$ and $P_2\cap L_3$ have positive distance along the
-line. Choose closest points $a\in P_1\cap L_3$ and
-$b\in P_2\cap L_3$. The open segment between them misses $C$; denote
+$C_1\cap L_3$ and $C_2\cap L_3$ have positive distance along the
+line. Choose closest points $a\in C_1\cap L_3$ and
+$b\in C_2\cap L_3$. The open segment between them misses $C$; denote
 the closed segment by $L_4$.
 
 Join $p_1$ to $p_2$ by the polygonal arc $L_5$ which runs upward on the
@@ -1005,7 +1093,7 @@ $L_4\cup L_5$.
 
 The union $C\cup L_4\cup L_5\cup L_6$ is a subdivision of $K_{3,3}$.
 Indeed, take one bipartition to be $\{p_1,p_2,c'\}$ and the other to be
-$\{a,b,d'\}$. The four subarcs of $P_1,P_2$, the two subsegments of
+$\{a,b,d'\}$. The four subarcs of $C_1,C_2$, the two subsegments of
 each of $L_4,L_5$, and $L_6$ give the nine internally disjoint branch
 paths. This contradicts Corollary~\ref{cor:k33-subdivision}. Hence
 $L_4$ contains a point
@@ -1137,55 +1225,19 @@ $\mathbb R^2\setminus(C\cup P)$ has precisely three regions, whose
 boundaries are $C,A_1\cup P,A_2\cup P$.
 \end{theorem}
 \begin{proof}
-By Theorem~\ref{thm:jordan}, $D$ is the bounded complementary region of
-$C$ and has boundary $C$. By Lemma~\ref{lem:crosscut-at-most-two},
-$D\setminus P$ has at most two components. We first show that it is
-disconnected.
+By Theorem~\ref{thm:jordan} the curve $C$ is separating, with
+$D=\operatorname{Int}(C)$; each $J_i=A_i\cup P$ is a Jordan curve and
+so is separating too. Apply Lemma~\ref{lem:crosscut-cells} with
+$\Omega=D$. Here $\Omega^\dagger=\operatorname{Ext}(C)$ is connected,
+unbounded and disjoint from $J_i$, hence lies in
+$\operatorname{Ext}(J_i)$; so $W_i=\operatorname{Ext}(J_i)$ and
+$V_i=\operatorname{Int}(J_i)$. The lemma therefore exhibits
+$\operatorname{Int}(J_1)$ and $\operatorname{Int}(J_2)$ as two distinct
+components of $D\setminus P$. By
+Lemma~\ref{lem:crosscut-at-most-two} there are at most two components,
+so these are both of them.
 
-Choose a point $z$ in the interior of a straight edge of $P$. Let
-$L_1$ be a short subsegment of that edge centered at $z$, and choose a
-short transverse segment $L_2\subseteq D$ meeting $C\cup P$ only at
-$z$. Let $x_-,x_+$ be its endpoints. Suppose they lie in the same
-component of $D\setminus P$. Join them there by a simple polygonal arc
-$R$, using Lemma~\ref{lem:polygonal-connected}.
-
-Form the finite polygonal graph $R\cup L_2$. The edge of its
-subdivision which contains $z$ is not a bridge: after deleting it, its
-endpoints are still connected by following the remaining parts of
-$L_2$ to $x_-,x_+$ and then $R$. By Lemma~\ref{lem:cycle-criterion},
-that edge lies on a cycle, whose realization is a simple closed
-polygonal curve $J$. Shrinking around $z$ by
-Lemma~\ref{lem:compact-separation}\textup{(c)}, we may assume that in a
-small disk centered at $z$ the cycle $J$ agrees with $L_2$, so that
-the disk meets $J$ in a straight diameter. The two endpoints of a
-sufficiently short $L_1$ lie in the two half-disks, and therefore lie
-in different components of $\mathbb R^2\setminus J$ by the final
-assertion of Theorem~\ref{thm:polygonal-jordan}.
-
-On the other hand, they can be joined without meeting $J$: follow $P$
-from one endpoint of $L_1$ to $p$, follow either boundary arc of $C$
-from $p$ to $q$, and follow $P$ back to the other endpoint. This route
-avoids $R$, because $R\subseteq D\setminus P$, and avoids $L_2$
-because $L_2\cap(C\cup P)=\{z\}$ while the route omits the segment of
-$P$ containing $z$. This contradiction proves that $D\setminus P$ has
-two components.
-
-Put $J_i=A_i\cup P$. Each $J_i$ is a Jordan curve. The connected
-unbounded set $\operatorname{Ext}(C)$ is disjoint from $J_i$, hence is
-contained in $\operatorname{Ext}(J_i)$. As in the polygonal crosscut
-proof, $\operatorname{Int}(J_i)$ contains no point of
-$C\setminus J_i$; otherwise an interior neighborhood would meet
-$\operatorname{Ext}(C)\subseteq\operatorname{Ext}(J_i)$. Therefore
-$\operatorname{Int}(J_i)\subseteq D\setminus P$.
-
-The set $\operatorname{Int}(J_i)$ is open and connected. It is also
-closed relative to $D\setminus P$, because its boundary $J_i$ is
-contained in $C\cup P$, which is disjoint from $D\setminus P$. Hence
-it is one whole component. The two sets are distinct: if they were
-equal, their plane boundaries would be equal, giving $J_1=J_2$. Since
-there are exactly two components, these are both of them.
-
-Finally, $P$ is disjoint from $\operatorname{Ext}(C)$, since its
+Finally $P$ is disjoint from $\operatorname{Ext}(C)$, since its
 endpoints lie on $C$ and its remaining points in $D$; hence
 \[
  \mathbb R^2\setminus(C\cup P)
@@ -1193,11 +1245,12 @@ endpoints lie on $C$ and its remaining points in $D$; hence
  =\operatorname{Ext}(C)\sqcup\operatorname{Int}(J_1)
  \sqcup\operatorname{Int}(J_2).
 \]
-Each of the three sets is open and connected with boundary $C$, $J_1$,
-or $J_2$ by Theorem~\ref{thm:jordan}; those boundaries lie in $C\cup P$
-and hence miss $\mathbb R^2\setminus(C\cup P)$, so each set is a whole
-component. This proves the three-region statement together with the
-asserted boundaries.
+The region $\operatorname{Ext}(C)$ has boundary $C$, which misses
+$\mathbb R^2\setminus(C\cup P)$, so it is a component by
+Lemma~\ref{lem:clopen-component}; the other two are components of
+$D\setminus P$ and their boundaries $J_1,J_2$ miss
+$\mathbb R^2\setminus(C\cup P)$ likewise. This proves the three-region
+statement together with the asserted boundaries.
 \end{proof}
 
 \begin{lemma}[Accessible endpoints can be joined]\label{lem:accessible-endpoints}
@@ -1251,11 +1304,11 @@ Choose any homeomorphism $h:C'\to S$; one exists by
 Lemma~\ref{lem:jordan-circle}. Extend $h\circ f$ and $h$ to
 homeomorphisms
 \[
-H:C\cup\operatorname{Int}(C)\longrightarrow Q,
+\Phi:C\cup\operatorname{Int}(C)\longrightarrow Q,
 \qquad
-K:C'\cup\operatorname{Int}(C')\longrightarrow Q.
+\Psi:C'\cup\operatorname{Int}(C')\longrightarrow Q.
 \]
-Then $K^{-1}\circ H$ is the required extension of $f$.
+Then $\Psi^{-1}\circ\Phi$ is the required extension of $f$.
 \end{proof}
 
 \section{Strongly accessible boundary points}\label{strongly-accessible-boundary-points}
@@ -1326,7 +1379,7 @@ For $0<t<r$,
 \end{proof}
 
 \begin{proposition}[Countable dense strong-access set]\label{prop:countable-strong-access}
-There is a countable dense set $A\subseteq C$ every point of which is
+There is a countable dense set $\mathcal A\subseteq C$ every point of which is
 strongly accessible from $D$.
 \end{proposition}
 \begin{proof}
@@ -1341,7 +1394,7 @@ $q\in D$ with $\|q-p\|<\varepsilon/2$. Then
 so $A$ is dense.
 \end{proof}
 
-Fix such a set $A$ for the rest of the construction.
+Fix such a set $\mathcal A$ for the rest of the construction.
 
 \section{Matched finite decompositions}\label{matched-finite-decompositions}
 
@@ -2062,7 +2115,7 @@ a subdivision of $\Gamma'$, with outer cycle $S$, and with
 $|H'|\setminus S$ connected. Assume that every new nonboundary edge of
 $H'\setminus\Gamma'$ meeting $S$ has exactly one endpoint on $S$, that
 this endpoint is a fresh point
-$u(a)$ with $a\in A$, and that exactly one new nonboundary edge is
+$u(a)$ with $a\in\mathcal A$, and that exactly one new nonboundary edge is
 incident with each such fresh boundary point. Then the common
 subdivision can be made on $\Gamma$, and $H'$ can be transferred to an
 admissible source realization $H$.
@@ -2239,7 +2292,7 @@ $H_n$ of Proposition~\ref{prop:local-grid-attachment}. We obtain a matched targe
 
 We now refine the whole target square. The mesh must be small everywhere, but a new inward edge may meet \(S\) only where it can later be pulled back to an accessible source point.
 
-Let \(V_\partial\subseteq S\) be the finite set of boundary vertices already present. At stage \(n\), only finitely many points of \(A\) have previously been used. The set \(A\) is dense in \(C\) by Proposition~\ref{prop:countable-strong-access}, so \(u(A)\) is dense in \(S\); removing the images of previously used points and the finite set \(V_\partial\) leaves a dense subset of \(S\): if a nonempty relatively open arc of \(S\) met the dense set in only finitely many points, deleting those points would leave a nonempty open subarc disjoint from the dense set, contradicting density; hence every nonempty open arc meets the dense set in infinitely many points, and finitely many deletions cannot remove them all.
+Let \(V_\partial\subseteq S\) be the finite set of boundary vertices already present. At stage \(n\), only finitely many points of \(\mathcal A\) have previously been used. The set \(\mathcal A\) is dense in \(C\) by Proposition~\ref{prop:countable-strong-access}, so \(u(\mathcal A)\) is dense in \(S\); removing the images of previously used points and the finite set \(V_\partial\) leaves a dense subset of \(S\): if a nonempty relatively open arc of \(S\) met the dense set in only finitely many points, deleting those points would leave a nonempty open subarc disjoint from the dense set, contradicting density; hence every nonempty open arc meets the dense set in infinitely many points, and finitely many deletions cannot remove them all.
 
 \begin{longproposition}[Anchored square mesh]\label{prop:anchored-square-mesh}
 For every \(\delta>0\), there is a finite polygonal cellulation \(T\) of \(Q\) such that:
@@ -2254,7 +2307,7 @@ For every \(\delta>0\), there is a finite polygonal cellulation \(T\) of \(Q\) s
 \item
   every point of \(V_\partial\) is a boundary vertex of \(T\);
 \item
-  every new internal edge of \(T\) meeting \(S\) ends at a fresh point of \(u(A)\);
+  every new internal edge of \(T\) meeting \(S\) ends at a fresh point of \(u(\mathcal A)\);
 \item
   exactly one new internal edge is incident with each fresh boundary point;
 \item
@@ -2294,7 +2347,7 @@ is a homeomorphism.
 Choose finitely many fresh points
 
 \[
-z_0,z_1,\ldots,z_{m-1}\in u(A)\setminus V_\partial
+z_0,z_1,\ldots,z_{m-1}\in u(\mathcal A)\setminus V_\partial
 \]
 
 in cyclic order so that every closed boundary arc \(A_i\) from \(z_i\) to \(z_{i+1}\) has diameter \(<\delta/4\). This is possible by parametrizing \(S\) by a circle (Lemma~\ref{lem:jordan-circle}), using uniform continuity to partition the circle into arcs whose images in \(S\) have diameter \(<\delta/8\), and choosing one fresh dense-set point in the relative interior of each --- density supplies such a point after the finitely many exclusions --- so that the chosen points are distinct and in cyclic order: two consecutive chosen points then bound an arc of \(S\) contained in the union of two consecutive image arcs, hence of diameter \(<\delta/4\). Insert the old points of \(V_\partial\) merely as subdivisions of the outer arcs \(A_i\).
@@ -2473,19 +2526,19 @@ Finally, we record the density of the anchor points, which will be
 used when continuity at the boundary is proved.
 
 \begin{lemma}[Density of anchors]\label{lem:anchor-density}
-Let \(A_\infty\subseteq A\) be the set of preimages under $u$ of all
-fresh target anchors used over all stages. Then \(u(A_\infty)\) is
-dense in \(S\) and \(A_\infty\) is dense in \(C\). Moreover, at every
-stage containing a given point of \(A_\infty\), that point is incident
+Let \(\mathcal A_\infty\subseteq\mathcal A\) be the set of preimages under $u$ of all
+fresh target anchors used over all stages. Then \(u(\mathcal A_\infty)\) is
+dense in \(S\) and \(\mathcal A_\infty\) is dense in \(C\). Moreover, at every
+stage containing a given point of \(\mathcal A_\infty\), that point is incident
 with a nonboundary edge.
 \end{lemma}
 \begin{proof}
 At stage \(n\), consecutive fresh anchors of the mesh of
 Proposition~\ref{prop:anchored-square-mesh} bound arcs of \(S\) of
-diameter \(<\varepsilon_n/4\); hence \(u(A_\infty)\) is dense in
+diameter \(<\varepsilon_n/4\); hence \(u(\mathcal A_\infty)\) is dense in
 \(S\). Since \(u^{-1}\) is a continuous surjection onto \(C\), and a
 continuous surjection carries dense subsets of its domain to dense
-subsets of its codomain, \(A_\infty\) is dense in \(C\).
+subsets of its codomain, \(\mathcal A_\infty\) is dense in \(C\).
 When an anchor is introduced, its spoke is a nonboundary edge incident
 with it, and at all later stages an initial subedge of that spoke
 remains incident with it.
@@ -2774,14 +2827,14 @@ u(x),&x\in C.
 
 It remains to prove continuity at points of \(C\).
 
-Let \(A_\infty\subseteq A\) be the set of anchor preimages of
+Let \(\mathcal A_\infty\subseteq\mathcal A\) be the set of anchor preimages of
 Lemma~\ref{lem:anchor-density}; it is dense in \(C\), every
-\(a\in A_\infty\) is incident with a nonboundary edge at every stage
+\(a\in\mathcal A_\infty\) is incident with a nonboundary edge at every stage
 containing it, and the open nonboundary part at every stage is
 connected. The following lemma extracts the required crosscuts without allowing a graph path to pass through an unintended boundary vertex.
 
 \begin{lemma}[Skeleton crosscuts between anchors]\label{lem:skeleton-crosscuts}
-Let \(a,b\in A_\infty\) be distinct anchors occurring in a common finite stage. Then that stage contains a polygonal crosscut \(P\) of \(D\) from \(a\) to \(b\), and its image under the finite skeleton homeomorphism is a polygonal crosscut \(P'\) of \(Q^\circ\) from \(u(a)\) to \(u(b)\).
+Let \(a,b\in\mathcal A_\infty\) be distinct anchors occurring in a common finite stage. Then that stage contains a polygonal crosscut \(P\) of \(D\) from \(a\) to \(b\), and its image under the finite skeleton homeomorphism is a polygonal crosscut \(P'\) of \(Q^\circ\) from \(u(a)\) to \(u(b)\).
 \end{lemma}
 \begin{proof}
 Write \(X=|\Gamma_n|\setminus C\), which is connected by admissibility. Suppose first that a nonboundary edge \(e\) has both endpoints on \(C\). Its open interior \(e^\circ\) is a connected component of \(X\), because an edge interior meets the rest of the graph only at its endpoints, and those endpoints have been removed. Hence \(X=e^\circ\). There is then only one nonboundary edge. Since both \(a\) and \(b\) are incident with nonboundary edges, they are the endpoints of \(e\), and \(e\) itself is the required crosscut.
@@ -2800,7 +2853,7 @@ The finite skeleton homeomorphism sends \(P\) to a simple path \(P'\). It agrees
 We need to know which side maps to which side.
 
 \begin{lemma}[Correspondence of crosscut sides]\label{lem:crosscut-side-correspondence}
-Let \(P\) be a crosscut contained in a finite source skeleton, with endpoints \(a,b\in A_\infty\), and let \(P'\) be its target image. Let \(A_1,A_2\) be the two boundary arcs of \(C\) from \(a\) to \(b\), and label the components \(U_1,U_2\) of \(D\setminus P\) by
+Let \(P\) be a crosscut contained in a finite source skeleton, with endpoints \(a,b\in\mathcal A_\infty\), and let \(P'\) be its target image. Let \(A_1,A_2\) be the two boundary arcs of \(C\) from \(a\) to \(b\), and label the components \(U_1,U_2\) of \(D\setminus P\) by
 
 \[
 \overline{U_i}\cap C=A_i.
@@ -2862,7 +2915,7 @@ x_k=F^{-1}(F(x_k))\longrightarrow F^{-1}(q)\in D,
 
 contrary to \(x_k\to p\in C\).
 
-Put \(r=u^{-1}(q)\), so \(r\ne p\). Since \(A_\infty\) is dense, choose \(a,b\in A_\infty\), distinct from \(p,r\), such that \(p\) and \(r\) lie in opposite components of \(C\setminus\{a,b\}\). The stages are nested, so \(a\) and \(b\) occur in a common finite stage; let \(P\) and \(P'\) be the crosscuts supplied by Lemma~\ref{lem:skeleton-crosscuts}.
+Put \(r=u^{-1}(q)\), so \(r\ne p\). Since \(\mathcal A_\infty\) is dense, choose \(a,b\in\mathcal A_\infty\), distinct from \(p,r\), such that \(p\) and \(r\) lie in opposite components of \(C\setminus\{a,b\}\). The stages are nested, so \(a\) and \(b\) occur in a common finite stage; let \(P\) and \(P'\) be the crosscuts supplied by Lemma~\ref{lem:skeleton-crosscuts}.
 
 Since \(p\notin P\) and \(P\) is compact, points sufficiently close to \(p\) avoid \(P\); and by Theorem~\ref{thm:general-crosscut} the closure of the opposite side meets \(C\) only in the boundary arc not containing \(p\). Hence points of \(D\) sufficiently close to \(p\) lie on the \(p\)-side of \(P\). Thus all large \(x_k\) lie on that side. Lemma~\ref{lem:crosscut-side-correspondence} puts their images on the corresponding \(u(p)\)-side of \(P'\). The closure of that target side meets \(S\) only in the boundary arc containing \(u(p)\), whereas \(q=u(r)\) lies in the relative interior of the other arc. Hence a sequence on the first side cannot converge to \(q\), a contradiction. \end{proof}
 
@@ -2924,7 +2977,7 @@ there is a closed-interior extension \(H\) with \(H(a)=b\).
 By Theorem~\ref{thm:closed-interior-extension}, take a closed-interior extension
 
 \[
-H_0:C\cup\operatorname{Int}(C)
+\Phi:C\cup\operatorname{Int}(C)
  \longrightarrow
 C'\cup\operatorname{Int}(C').
 \]
@@ -2934,10 +2987,10 @@ Using Lemma~\ref{lem:jordan-circle}, choose a homeomorphism
 homeomorphism
 
 \[
-J:C'\cup\operatorname{Int}(C')\longrightarrow Q.
+\Theta:C'\cup\operatorname{Int}(C')\longrightarrow Q.
 \]
 
-By Lemma~\ref{lem:square-point-mover}, choose a boundary-fixing homeomorphism of \(Q\) sending \(J(H_0(a))\) to \(J(b)\). Conjugating it by \(J\) and composing with \(H_0\) changes the image of \(a\) to \(b\) without changing the map on \(C\). \end{proof}
+By Lemma~\ref{lem:square-point-mover}, choose a boundary-fixing homeomorphism of \(Q\) sending \(\Theta(\Phi(a))\) to \(\Theta(b)\). Conjugating it by \(\Theta\) and composing with \(\Phi\) changes the image of \(a\) to \(b\) without changing the map on \(C\). \end{proof}
 
 \section{The closed exteriors}\label{the-closed-exteriors}
 
@@ -3039,13 +3092,13 @@ C^a\longrightarrow(C')^b.
 By Proposition~\ref{prop:pointed-extension}, \(f^*\) extends to a homeomorphism
 
 \[
-H^*:
+\Phi^*:
 C^a\cup\operatorname{Int}(C^a)
  \longrightarrow
 (C')^b\cup\operatorname{Int}((C')^b)
 \]
 
-such that \(H^*(a)=b\). It therefore restricts to a homeomorphism after the two points \(a,b\) are removed. Conjugating that restriction by \(I_a\) and \(I_b\), using Lemma~\ref{lem:inversion-sides}, gives the required exterior extension. On \(C\) the conjugated map is exactly \(f\). \end{proof}
+such that \(\Phi^*(a)=b\). It therefore restricts to a homeomorphism after the two points \(a,b\) are removed. Conjugating that restriction by \(I_a\) and \(I_b\), using Lemma~\ref{lem:inversion-sides}, gives the required exterior extension. On \(C\) the conjugated map is exactly \(f\). \end{proof}
 
 \section{Pasting the two sides}\label{pasting-the-two-sides}
 
@@ -3121,11 +3174,16 @@ Lemma~\ref{lem:nearest-segment}\newline\emph{Nearest-point segment} & Definition
 Lemma~\ref{lem:compact-separation}\newline\emph{Compact separation} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:diameter-closure}\newline\emph{Closure and diameter} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:nested-compact}\newline\emph{Nested compact singleton} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:clopen-component}\newline\emph{Recognizing a component} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:polygonal-collar}\newline\emph{Two-sided polygonal strips} & Lemma~\ref{lem:compact-separation} \\
 Lemma~\ref{lem:parity-subdivision}\newline\emph{Subdivision invariance} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:polygon-parity}\newline\emph{Crossing parity} & Lemma~\ref{lem:compact-separation} \\
 Theorem~\ref{thm:polygonal-jordan}\newline\emph{Polygonal Jordan curve theorem} & Lemma~\ref{lem:polygonal-collar}, Lemma~\ref{lem:nearest-segment} and Lemma~\ref{lem:polygon-parity} \\
-Theorem~\ref{thm:polygonal-crosscut}\newline\emph{Two-sided polygonal crosscuts} & Lemma~\ref{lem:parity-subdivision}, Theorem~\ref{thm:polygonal-jordan} and Lemma~\ref{lem:polygon-parity} \\
+Definition~\ref{def:separating}\newline\emph{Separating Jordan curve} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:absorption}\newline\emph{Absorption} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:crosscut-cells}\newline\emph{Crosscut cells} & Lemma~\ref{lem:absorption} and Lemma~\ref{lem:clopen-component} \\
+Lemma~\ref{lem:parity-splitting}\newline\emph{Parity splitting} & Lemma~\ref{lem:parity-subdivision} and Theorem~\ref{thm:polygonal-jordan} \\
+Theorem~\ref{thm:polygonal-crosscut}\newline\emph{Two-sided polygonal crosscuts} & Theorem~\ref{thm:polygonal-jordan}, Lemma~\ref{lem:crosscut-cells}, Lemma~\ref{lem:parity-splitting} and Lemma~\ref{lem:clopen-component} \\
 Corollary~\ref{cor:alternating-crosscuts}\newline\emph{Alternating crosscuts intersect} & Theorem~\ref{thm:polygonal-crosscut} \\
 Lemma~\ref{lem:cycle-criterion}\newline\emph{Cycle criterion} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:three-leaf-tree}\newline\emph{Trees with three leaves} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
@@ -3144,7 +3202,7 @@ Proposition~\ref{prop:jordan-disconnected}\newline\emph{A Jordan curve separates
 Lemma~\ref{lem:accessible-dense}\newline\emph{Density of accessible points} & Lemma~\ref{lem:jordan-circle} and Theorem~\ref{thm:arc-complement} \\
 Theorem~\ref{thm:jordan}\newline\emph{Jordan curve theorem} & Proposition~\ref{prop:jordan-disconnected}, Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:accessible-dense}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:three-leaf-tree} and Corollary~\ref{cor:k33-subdivision} \\
 Lemma~\ref{lem:crosscut-at-most-two}\newline\emph{At most two sides} & Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:polygonal-connected} and Lemma~\ref{lem:polygonal-collar} \\
-Theorem~\ref{thm:general-crosscut}\newline\emph{Crosscut theorem} & Lemma~\ref{lem:jordan-circle}, Theorem~\ref{thm:jordan}, Lemma~\ref{lem:crosscut-at-most-two}, Lemma~\ref{lem:polygonal-connected}, Lemma~\ref{lem:cycle-criterion}, Lemma~\ref{lem:compact-separation} and Theorem~\ref{thm:polygonal-jordan} \\
+Theorem~\ref{thm:general-crosscut}\newline\emph{Crosscut theorem} & Lemma~\ref{lem:jordan-circle}, Theorem~\ref{thm:jordan}, Lemma~\ref{lem:crosscut-cells}, Lemma~\ref{lem:crosscut-at-most-two} and Lemma~\ref{lem:clopen-component} \\
 Lemma~\ref{lem:accessible-endpoints}\newline\emph{Accessible endpoints can be joined} & Lemma~\ref{lem:polygonal-connected} and Lemma~\ref{lem:finite-polygonal-union} \\
 Theorem~\ref{thm:square-extension}\newline\emph{Square extension} & Proposition~\ref{prop:interior-homeomorphism} and Proposition~\ref{prop:boundary-continuity} \\
 Proposition~\ref{prop:square-reduction}\newline\emph{Reduction to the square} & Theorem~\ref{thm:square-extension} and Lemma~\ref{lem:jordan-circle} \\
@@ -3193,7 +3251,7 @@ Lemma~\ref{lem:square-point-mover}\newline\emph{Moving an interior point of the 
 Proposition~\ref{prop:pointed-extension}\newline\emph{Pointed closed-interior extension} & Theorem~\ref{thm:closed-interior-extension}, Lemma~\ref{lem:jordan-circle}, Theorem~\ref{thm:square-extension} and Lemma~\ref{lem:square-point-mover} \\
 Lemma~\ref{lem:inversion-sides}\newline\emph{Inversion exchanges the two sides} & Theorem~\ref{thm:jordan} \\
 Proposition~\ref{prop:exterior-extension}\newline\emph{Closed-exterior extension} & Theorem~\ref{thm:jordan}, Proposition~\ref{prop:pointed-extension} and Lemma~\ref{lem:inversion-sides} \\
-\emph{Narrative outside labeled statements}\newline(construction prose of Parts~I--II) & Theorem~\ref{thm:polygonal-crosscut}, Theorem~\ref{thm:square-extension}, Proposition~\ref{prop:initial-pair}, Lemma~\ref{lem:cellulation-invariants}, Proposition~\ref{prop:local-grid-attachment}, Theorem~\ref{thm:finite-transfer}, Proposition~\ref{prop:anchored-square-mesh}, Proposition~\ref{prop:countable-strong-access}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:polygonal-connected}, Lemma~\ref{lem:subdivision-ear-preserve}, Lemma~\ref{lem:diameter-closure}, Lemma~\ref{lem:star-face-mesh}, Lemma~\ref{lem:refinement-compatibility}, Proposition~\ref{prop:shrinking-stars}, Lemma~\ref{lem:nested-compact} and Lemma~\ref{lem:anchor-density} \\
+\emph{Narrative outside labeled statements}\newline(construction prose of Parts~I--II) & Theorem~\ref{thm:polygonal-crosscut}, Theorem~\ref{thm:polygonal-jordan}, Theorem~\ref{thm:jordan}, Definition~\ref{def:separating}, Theorem~\ref{thm:square-extension}, Proposition~\ref{prop:initial-pair}, Lemma~\ref{lem:cellulation-invariants}, Proposition~\ref{prop:local-grid-attachment}, Theorem~\ref{thm:finite-transfer}, Proposition~\ref{prop:anchored-square-mesh}, Proposition~\ref{prop:countable-strong-access}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:polygonal-connected}, Lemma~\ref{lem:subdivision-ear-preserve}, Lemma~\ref{lem:diameter-closure}, Lemma~\ref{lem:star-face-mesh}, Lemma~\ref{lem:refinement-compatibility}, Proposition~\ref{prop:shrinking-stars}, Lemma~\ref{lem:nested-compact} and Lemma~\ref{lem:anchor-density} \\
 \end{longtable}
 
 \section{Suggested module order}\label{app:module-order}
@@ -3293,6 +3351,80 @@ should obtain these from its ambient libraries.
 The list is intended to cover the imported inferences, without a
 claim of demonstrated exhaustiveness; reviewers are invited to report
 any use of background not covered by an item above.
+
+\section{Concordance with the compact companion}\label{app:concordance}
+
+The compact companion states its results under the names in the left
+column. A reader of that text who wants a step expanded should consult
+the statements listed opposite. The two documents do not correspond one
+to one: the compact text bundles the whole limit construction into a
+single proposition, while this one splits several arguments that the
+compact text shares between two places. Every named statement of the
+compact text appears here.
+
+Notation agrees across the two documents. In particular $\mathcal A$ is
+the strongly accessible set, $A_1,A_2$ are arcs of a Jordan curve,
+$C_1,C_2$ are arcs of a graph cycle, $P$ is a crosscut, $G,H,\Gamma$
+are graphs, $K$ is a compact set, and homeomorphisms between domains
+are capital Greek.
+
+\begin{longtable}{@{}p{0.40\textwidth}p{0.52\textwidth}@{}}
+\textbf{Compact companion} & \textbf{This document}\\
+\hline
+\endfirsthead
+\textbf{Compact companion} & \textbf{This document}\\
+\hline
+\endhead
+\emph{Relative Jordan--Schönflies} & Theorem~\ref{thm:main} \\
+\emph{Compact separation} & Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:nearest-segment} \\
+\emph{Nested compact singleton} & Lemma~\ref{lem:nested-compact}, Lemma~\ref{lem:diameter-closure} \\
+\emph{Recognizing a component} & Lemma~\ref{lem:clopen-component} \\
+\emph{Polygonal connectedness} & Lemma~\ref{lem:polygonal-connected}, Lemma~\ref{lem:finite-polygonal-union} \\
+\emph{Two-sided strips} & Lemma~\ref{lem:polygonal-collar} \\
+\emph{The count has no degenerate cases} (remark) & Lemma~\ref{lem:parity-subdivision} \\
+\emph{Crossing parity} & Lemma~\ref{lem:polygon-parity} \\
+\emph{Polygonal Jordan curve theorem} & Theorem~\ref{thm:polygonal-jordan} \\
+\emph{Absorption} & Lemma~\ref{lem:absorption} \\
+\emph{Crosscut cells} & Definition~\ref{def:separating}, Lemma~\ref{lem:crosscut-cells} \\
+\emph{Parity splits} & Lemma~\ref{lem:parity-splitting} \\
+\emph{Polygonal crosscuts} & Theorem~\ref{thm:polygonal-crosscut} \\
+\emph{Alternating crosscuts meet} & Corollary~\ref{cor:alternating-crosscuts} \\
+Untitled graph-facts lemma, parts (a)--(f) & Lemma~\ref{lem:cycle-criterion}, Lemma~\ref{lem:three-leaf-tree}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:subdivision-ear-preserve}, Lemma~\ref{lem:relative-ear}, Lemma~\ref{lem:polygonal-overlay} \\
+\emph{Polygonal redrawing} & Lemma~\ref{lem:polygonal-redrawing} \\
+Untitled $K_{3,3}$ lemma & Lemma~\ref{lem:k33}, Corollary~\ref{cor:k33-subdivision} \\
+\emph{Face cycles} & Lemma~\ref{lem:face-cycles} \\
+\emph{Outer face of a chain} & Lemma~\ref{lem:outer-chain} \\
+\emph{Arc-complement theorem} & Theorem~\ref{thm:arc-complement} \\
+\emph{Circular parametrization} & Lemma~\ref{lem:jordan-circle} \\
+\emph{A Jordan curve separates} & Proposition~\ref{prop:jordan-disconnected} \\
+\emph{Accessible points are dense} & Lemma~\ref{lem:accessible-dense} \\
+\emph{Jordan curve theorem} & Theorem~\ref{thm:jordan} \\
+\emph{At most two sides} & Lemma~\ref{lem:crosscut-at-most-two} \\
+\emph{Crosscut theorem} & Theorem~\ref{thm:general-crosscut} \\
+\emph{Accessible endpoints can be joined} & Lemma~\ref{lem:accessible-endpoints} \\
+\emph{Square extension} & Theorem~\ref{thm:square-extension} \\
+\emph{Reduction to the square} & Proposition~\ref{prop:square-reduction} \\
+``Strong accessibility'' paragraph & Definition~\ref{def:strong-accessibility}, Lemma~\ref{lem:nearest-strong}, Lemma~\ref{lem:tangent-dense}, Lemma~\ref{lem:tangent-cone}, Proposition~\ref{prop:countable-strong-access} \\
+\emph{Initial pair} & Proposition~\ref{prop:initial-pair} \\
+Definition of a cellulation and its two constructors & Definition~\ref{def:admissible-graph}, Definition~\ref{def:matched-pair}, Definition~\ref{def:matched-cellulation}, Definition~\ref{def:generated-structure}, Remark~\ref{rem:intermediate-disconnection} \\
+\emph{Cell geometry} & Lemma~\ref{lem:cellulation-invariants} \\
+\emph{Order, parents, stars} & Lemma~\ref{lem:cellulation-invariants}, Lemma~\ref{lem:outer-incidence} \\
+\emph{Correspondence} & Lemma~\ref{lem:combinatorial-invariance}, Lemma~\ref{lem:outer-incidence}, Lemma~\ref{lem:star-intersection} \\
+\emph{Stars} & Lemma~\ref{lem:star-face-mesh}, Lemma~\ref{lem:refinement-compatibility} \\
+\emph{Local sectors and face access} & Lemma~\ref{lem:local-skeleton-structure}, Lemma~\ref{lem:polygonal-side-accessibility} \\
+\emph{Finite transfer} & Theorem~\ref{thm:finite-transfer} \\
+\emph{Local grid} & Proposition~\ref{prop:local-grid-attachment} \\
+\emph{Anchored mesh} & Proposition~\ref{prop:anchored-square-mesh} \\
+\emph{Shrinking stars} & Lemma~\ref{lem:grid-star-estimate}, Proposition~\ref{prop:shrinking-stars} \\
+Density of the anchor set & Lemma~\ref{lem:anchor-density} \\
+\emph{The interior map} & Lemma~\ref{lem:cell-neighborhood}, Proposition~\ref{prop:skeleton-agreement}, Proposition~\ref{prop:F-continuous}, Proposition~\ref{prop:image-interior}, Proposition~\ref{prop:F-injective}, Proposition~\ref{prop:target-skeleton-dense}, Proposition~\ref{prop:F-surjective}, Lemma~\ref{lem:exact-cell-correspondence}, Proposition~\ref{prop:inverse-continuous}, Proposition~\ref{prop:interior-homeomorphism} \\
+\emph{Skeleton crosscuts} & Lemma~\ref{lem:skeleton-crosscuts} \\
+\emph{Sides correspond} & Lemma~\ref{lem:crosscut-side-correspondence} \\
+\emph{Boundary continuity} & Proposition~\ref{prop:boundary-continuity}, Theorem~\ref{thm:closed-interior-extension} \\
+\emph{Moving a point of the square} & Lemma~\ref{lem:square-point-mover} \\
+\emph{Pointed extension} & Proposition~\ref{prop:pointed-extension} \\
+\emph{Inversion} & Lemma~\ref{lem:inversion-sides}, Proposition~\ref{prop:exterior-extension} \\
+\end{longtable}
 
 \section*{Concluding remarks}
 The proof is organized so that every nontrivial planar-separation result used in the Schönflies construction has been established in Part I. The global two-sidedness of a polygonal curve is proved by an oriented strip construction. The route then follows the graph-theoretic strategy of Thomassen~\cite{Thomassen}, with tangent-disk accessibility, a common cell structure for matched refinements, a shrinking-star limit, and inversion for the exterior. Hales used Thomassen's Jordan-curve argument as the conventional guide for his HOL Light formalization~\cite{Hales}; the present document expands the same dependency chain in a form intended to serve as a guide for a new formal development.

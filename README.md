@@ -14,11 +14,15 @@ not assumed — they are proved along the way.
 | [`jordan_schoenflies_compact.tex`](jordan_schoenflies_compact.tex) | 25 | The paper. Written at ordinary mathematical granularity, with figures. |
 | [`jordan_schoenflies.tex`](jordan_schoenflies.tex) | 49 | The same proof expanded to formalization granularity, with a statement-level citation index, a suggested module order, and an explicit imported-background appendix. |
 
-Both follow the same route and are sectioned alike, so any step in the
-compact paper can be expanded by consulting the long one. Where they differ,
-it is because an argument has been shared between two places in the compact
-text rather than written out twice; the long text also splits faces by a
-whole ear where the compact one inserts a single crosscut edge.
+Both follow the same route and share notation, and **Appendix D of the
+blueprint is a concordance**: every named statement of the compact paper,
+opposite the statement or statements in the blueprint that expand it. The two
+are not in one-to-one correspondence — the compact text bundles the whole
+limit construction into one proposition, and the blueprint splits arguments
+the compact text shares between two places — so the concordance, not a
+section-number match, is the way across. One deliberate divergence remains:
+the blueprint splits faces by a whole ear where the compact paper inserts a
+single crosscut edge.
 
 Compiled PDFs are committed alongside the sources.
 
