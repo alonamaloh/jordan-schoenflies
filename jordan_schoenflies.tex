@@ -1,0 +1,3281 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=28mm,headheight=14pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{longtable,array}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\hypersetup{pdftitle={The Jordan--Schönflies Theorem from Elementary Plane Topology},
+  pdfsubject={A self-contained proof},pdfauthor={}}
+
+\newtheoremstyle{mainplain}{9pt}{9pt}{\itshape}{}{\bfseries}{.}{0.55em}{}
+\newtheoremstyle{mainroman}{9pt}{9pt}{\normalfont}{}{\bfseries}{.}{0.55em}{}
+\theoremstyle{mainplain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{mainroman}
+\newtheorem{longtheorem}[theorem]{Theorem}
+\newtheorem{longlemma}[theorem]{Lemma}
+\newtheorem{longproposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\setlength{\parindent}{1.25em}\setlength{\parskip}{0pt}\setlength{\emergencystretch}{2em}
+\newcommand{\alphlabels}{\renewcommand{\labelenumi}{\textup{(\alph{enumi})}}%
+  \renewcommand{\theenumi}{\alph{enumi}}}
+\newcommand{\romanlabels}{\renewcommand{\labelenumi}{\textup{(\roman{enumi})}}%
+  \renewcommand{\theenumi}{\roman{enumi}}}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\numberwithin{equation}{section}
+\setcounter{tocdepth}{2}\setcounter{secnumdepth}{2}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Jordan--Schönflies}\fancyhead[R]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0.3pt}
+\title{The Jordan--Schönflies Theorem\\from Elementary Plane Topology}
+\author{}\date{}
+
+\begin{document}
+\maketitle\vspace{-2.2em}
+\begin{abstract}
+We give a complete, self-contained proof of the relative Jordan--Schönflies theorem. The first part proves polygonal separation, the nonplanarity of $K_{3,3}$, connectedness of the complement of a simple arc, the Jordan curve theorem, and the crosscut theorem. The second part constructs nested matched cellulations of a Jordan domain and a square; the intersections of corresponding shrinking closed stars define the extension. Inversion handles the exterior. The background is elementary metric topology of the plane, compactness, and elementary finite graph theory; the specialized planar and graph-theoretic results used in the construction are proved in the text.
+\end{abstract}
+\begin{theorem}[Relative Jordan--Schönflies]\label{thm:main}
+Let $C,C'\subseteq\mathbb R^2$ be Jordan curves, and let $f:C\to C'$ be a homeomorphism.  Then there is a homeomorphism $F:\mathbb R^2\to\mathbb R^2$ whose restriction to $C$ is $f$.
+\end{theorem}
+\tableofcontents\clearpage
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+The Jordan--Schönflies theorem strengthens the Jordan curve theorem:
+not only does a Jordan curve separate the plane into two regions, but
+every homeomorphism between two Jordan curves extends to a
+homeomorphism of the entire plane. The result is classical, yet
+complete elementary accounts are difficult to find. Standard routes
+either pass through Carathéodory's theory of the boundary behavior of
+conformal maps, or compress the combinatorial and point-set details.
+Classical treatments appear in Newman~\cite{Newman} and
+Moise~\cite{Moise}; Thomassen~\cite{Thomassen} gave an elementary
+graph-theoretic route to both theorems; Siebenmann~\cite{Siebenmann}
+gives a detailed modern account of the Osgood--Schoenflies theorem and
+its history. Hales~\cite{Hales}, in his formalization of the Jordan
+curve theorem, documented how large the distance between a published
+proof and a formal one can be. Formal developments concern the Jordan
+curve theorem rather than the Schönflies extension: after the Mizar
+and HOL Light proofs, recent reformalization work of Guilloud, Gambhir, and
+Chassot~\cite{GuilloudGambhirChassot} has transferred Jordan-curve
+formalizations to further systems, including Lean and Agda, while, to
+the author's knowledge, no formalization of the Schönflies extension
+is available in the major libraries. Siebenmann's published
+errata~\cite{SiebenmannErrata} should be read alongside his account.
+
+This document has two purposes. First, it is intended as a complete
+and precise proof of the relative Schönflies theorem stated above,
+self-contained relative to the imported background package of
+\hyperref[app:background]{Appendix~C}: every planar-separation and
+graph-theoretic fact used beyond that background is proved in the
+text; in
+particular, the Jordan curve theorem and the crosscut theorem are
+themselves proved here. Second, it is written to
+serve as the human-readable blueprint for a formal development.
+\hyperref[app:dependency-graph]{Appendix~A} records the
+statement-level citation index, and
+\hyperref[app:module-order]{Appendix~B} a suggested module order.
+
+Part I develops polygonal separation from first principles: two-sided
+strips around polygonal curves, the crossing-parity function, the
+polygonal Jordan and crosscut theorems, the nonplanarity of $K_{3,3}$,
+connectedness of the complement of a simple arc, and finally the
+Jordan curve theorem and the crosscut theorem for arbitrary Jordan
+curves. Part II proves the Schönflies extension theorem for the closed
+Jordan domain by constructing nested matched cellulations of the
+domain and of a square, transferring finite refinements back and forth
+between the two sides; the intersections of corresponding shrinking
+closed stars define the extension, and inversion handles the
+exterior. The overall strategy of Part II follows
+Thomassen~\cite{Thomassen}; the contribution of this document is to
+expand that dependency chain into a complete and precise form.
+
+\part{Separation by a Jordan curve}
+
+\section{Polygonal paths and two-sided strips}
+
+A \emph{simple arc} is the image of an injective continuous map from
+$[0,1]$ into the plane. A \emph{Jordan curve} is the image of a
+continuous map $\gamma:[0,1]\to\mathbb R^2$ which is injective on
+$[0,1)$ and satisfies $\gamma(0)=\gamma(1)$. An arc or curve is
+\emph{polygonal} if it is a finite union of line segments. A
+\emph{region} is a nonempty open connected subset of the plane. For a
+subset $E$ of the plane, $E^\circ$ denotes its topological interior.
+Throughout, an unadorned norm $\|\cdot\|$, distance, or diameter refers
+to the Euclidean metric, while a subscript $\infty$ denotes the sup
+metric $\|x\|_\infty=\max(|x_1|,|x_2|)$; the comparison
+$\|x\|_\infty\le\|x\|\le\sqrt2\,\|x\|_\infty$ is used without comment.
+
+\begin{lemma}[Polygonal connectedness]\label{lem:polygonal-connected}
+Any two points of a region $\Omega$ can be joined in $\Omega$ by a
+simple polygonal arc.
+\end{lemma}
+\begin{proof}
+Fix $x\in\Omega$, and let $R$ be the set of points that can be joined
+to $x$ by a polygonal path in $\Omega$. A small disk contained in
+$\Omega$ shows that $R$ is open. Its complement in $\Omega$ is open as
+well: if $y\notin R$ and a disk $B(y,r)\subseteq\Omega$ met $R$, a
+segment in the disk would join $y$ to a point of $R$, contrary to the
+definition of $R$. Hence $R=\Omega$ by connectedness.
+
+A polygonal path may have self-intersections. Subdivide its line
+segments at all isolated intersections and at the endpoints of every
+overlapping interval, delete duplicate subsegments, and take a simple
+path in the resulting finite graph.
+\end{proof}
+
+\begin{lemma}[Finite polygonal unions]\label{lem:finite-polygonal-union}
+If a connected set is the union of finitely many polygonal arcs, then
+any two of its points are joined in it by a simple polygonal arc.
+\end{lemma}
+\begin{proof}
+The same subdivision procedure turns the union into a finite connected
+graph. A simple graph path has the required realization.
+\end{proof}
+
+\begin{lemma}[Nearest-point segment]\label{lem:nearest-segment}
+Let $K\subseteq\mathbb R^2$ be nonempty and compact, let $x\notin K$,
+and let $a\in K$ minimize $\|x-a\|$. Then
+$[x,a)\cap K=\varnothing$.
+\end{lemma}
+\begin{proof}
+A point of $K$ in $[x,a)$ would be closer to $x$ than $a$.
+\end{proof}
+
+\begin{longlemma}[Compact separation]\label{lem:compact-separation}
+The following elementary consequences of compactness will be used
+repeatedly. Empty compact sets are allowed in parts \textup{(a)} and
+\textup{(c)}.
+\begin{enumerate}\alphlabels
+\item If a compact set $K$ is contained in an open set $U$, then there
+      is $\rho>0$ such that the open $\rho$-neighborhood
+      \[
+        N_\rho(K)=\{x:\text{some }y\in K\text{ satisfies }\|x-y\|<\rho\}
+      \]
+      is contained in $U$. In particular,
+      $N_\rho(\varnothing)=\varnothing$.
+\item Two disjoint nonempty compact sets have positive distance.
+\item If $x\in U\setminus K$, where $U$ is open and $K$ is compact,
+      then some ball $B(x,\rho)$ is contained in $U\setminus K$.
+\end{enumerate}
+\end{longlemma}
+\begin{proof}
+For (a), the empty case is immediate. If $K$ is nonempty and
+$\mathbb R^2\setminus U$ is nonempty, the continuous function
+$z\mapsto\operatorname{dist}(z,\mathbb R^2\setminus U)$ has a
+positive minimum on $K$; if the complement is empty, any $\rho>0$
+works. Part (b) follows by minimizing the distance function on the
+compact product of the two sets. For (c), choose first a ball about
+$x$ contained in $U$. If $K=\varnothing$ this already suffices; if
+$K\ne\varnothing$, shrink it below the positive distance from $x$ to
+$K$.
+\end{proof}
+
+\begin{lemma}[Closure and diameter]\label{lem:diameter-closure}
+If $E$ is a nonempty bounded subset of a metric space, then
+\[
+ \operatorname{diam}\overline E=\operatorname{diam}E.
+\]
+\end{lemma}
+\begin{proof}
+The inequality $\operatorname{diam}E\le
+\operatorname{diam}\overline E$ is immediate. Conversely, approximate
+any two points of $\overline E$ by points of $E$ and use continuity of
+the distance function.
+\end{proof}
+
+\begin{lemma}[Nested compact singleton]\label{lem:nested-compact}
+Let $K_0\supseteq K_1\supseteq\cdots$ be nonempty compact subsets of
+the plane with $\operatorname{diam}K_n\to0$. Then $\bigcap_nK_n$
+consists of exactly one point.
+\end{lemma}
+\begin{proof}
+Choose $x_n\in K_n$. The sequence lies in the compact set $K_0$, so a
+subsequence converges to some $x$. For each fixed $m$, all but
+finitely many terms of that subsequence lie in the closed set $K_m$,
+so $x\in K_m$. Hence $x\in\bigcap_nK_n$. If $y$ also lies in the
+intersection, then $\|x-y\|\le\operatorname{diam}K_n\to0$, so $y=x$.
+\end{proof}
+
+The next lemma is the point at which a merely local picture must be
+made globally consistent. We use the orientation of the plane to keep
+track of the two sides.
+
+\begin{longlemma}[Two-sided polygonal strips]\label{lem:polygonal-collar}
+Let $P$ be a simple polygonal arc or a simple closed polygonal curve.
+
+\begin{enumerate}\alphlabels
+\item If $P$ is closed, it has an open neighborhood $N$ such that
+      $N\setminus P$ is the disjoint union of two connected open sets
+      $N_L,N_R$.
+\item If $P$ is an arc and $K$ is a compact subarc of
+      $P\setminus\partial P$, then $K$ has an open neighborhood $N$
+      for which $N\setminus P=N_L\sqcup N_R$, with $N_L,N_R$
+      connected.
+\end{enumerate}
+In either case the two sets $N_L,N_R$ are the two \emph{local sides}
+of the curve in the following precise sense: for every point $x$ of
+$P$ (of $K$, in case \textup{(b)}) and every sufficiently small disk
+$B$ centered at $x$, the set $B\setminus P$ has exactly two
+components, one contained in $N_L$ and the other in $N_R$. The
+neighborhoods may be chosen inside any prescribed open set
+containing the relevant curve or compact subarc.
+\end{longlemma}
+\begin{proof}
+Delete redundant vertices at which two consecutive edges are
+collinear, and orient the polygonal curve or arc. Around every remaining
+vertex choose a small closed disk. The disks are pairwise disjoint,
+meet no nonincident edge, and meet each incident edge in a radial
+segment. For every edge, choose a thin rectangular block around its
+straight core and extend the block a short distance into its two
+incident vertex disks. By Lemma~\ref{lem:compact-separation}, the blocks may
+be chosen so that consecutive edge and vertex blocks overlap in the
+prescribed small rectangles around the radial segments, while the
+closures of all nonadjacent blocks are disjoint.
+
+For a directed edge with unit tangent $u$, call the side in the
+direction obtained by rotating $u$ counterclockwise through $\pi/2$
+the left side. We claim that at a vertex the left sides of the incoming
+and outgoing strips enter the same component of the vertex disk minus
+the two incident rays. Rotate coordinates so that the incoming tangent
+has angle $0$, and let the outgoing tangent have angle $\theta$. The
+ray from the vertex toward the preceding edge has angle $\pi$. A point
+on the left of the incoming strip has polar angle $\pi-\delta$, while
+a point on the left of the outgoing strip has angle
+$\theta+\delta$, for a sufficiently small $\delta>0$. These two angles
+lie in the same component of the circle with the directions $\pi$ and
+$\theta$ removed. The two right-side points, with angles
+$\pi+\delta$ and $\theta-\delta$, lie in the other component. This argument covers either sign of the turn. There are two
+degenerate collinear possibilities. If $\theta=0$, the polygon goes
+straight through the vertex, and that redundant vertex was deleted at
+the start. If $\theta=\pi$, the rays from the vertex toward the
+preceding and following edges coincide; the two incident segments then
+overlap in a nondegenerate initial segment, contrary to simplicity.
+Thus neither degenerate case occurs.
+
+Make the strips narrow enough that this side matching holds in every
+vertex disk. Let $N$ be the union of the interiors of the vertex disks
+and the edge strips. In an edge strip minus its core, label the two
+components left and right. In a vertex disk minus the two incident
+rays, label the sector joining the two left half-strips left and the
+other sector right. By the disjointness conditions on the blocks, every
+point of $N\setminus P$ receives exactly one label, and the two labeled
+sets are open. Consecutive edge and vertex blocks overlap in a nonempty
+labeled half-strip, so the union of all left pieces is connected; the
+same is true on the right. Thus
+\[
+ N\setminus P=N_L\sqcup N_R.
+\]
+
+For a closed polygon, the labels are defined independently on every
+directed edge by the fixed orientation of the plane, and the preceding
+angle calculation shows left joins to left at every vertex. Thus the
+labels return consistently after one circuit.
+
+The local two-sidedness assertion follows from the construction. Let
+$x\in P$ and let $B$ be a disk centered at $x$, small enough to be
+contained in the blocks containing $x$ and to meet $P$ only in the
+edge or the two edge germs through $x$. If $x$ lies in the relative
+interior of an edge, $B\setminus P$ consists of two half-disks; if $x$
+is a vertex, it consists of the two open sectors between the incident
+radial segments. In either case each component is connected and lies
+in $N\setminus P$, so it carries a single label, and the two
+components carry the two different labels: at an edge point the two
+half-disks lie in the two labeled half-strips, and at a vertex the
+two sectors lie in the two labeled sectors of the vertex disk.
+
+For an arc, choose a slightly larger compact subarc $K'$ contained in
+the interior of $P$ and containing $K$ in its relative interior. Carry
+out the same construction along the finite chain of blocks meeting
+$K'$, and take the open part between two end cross-sections beyond $K$.
+No cap joining the two tracks is included. Since the resulting open
+set contains a neighborhood of every point of $K$, the disk argument
+above yields the local two-sidedness assertion along $K$. Finally,
+Lemma~\ref{lem:compact-separation}\textup{(a)} lets all disks and strips be
+chosen inside the prescribed open set.
+\end{proof}
+
+\section{The polygonal Jordan and crosscut theorems}
+
+Let $C$ be a simple closed polygonal curve. Rotate the coordinate system
+slightly so that no edge is horizontal. For
+$q=(\xi,\eta)\notin C$, orient each edge from its lower endpoint $a$ to
+its upper endpoint $b$, count the edges for which
+\[
+ a_y\leq\eta<b_y
+\]
+and whose intersection with the line $y=\eta$ lies strictly to the
+right of $q$, and reduce the count modulo $2$. Denote the resulting
+number by $\pi_C(q)$.
+
+\begin{lemma}[Crossing parity]\label{lem:polygon-parity}
+The function $\pi_C$ is locally constant on
+$\mathbb R^2\setminus C$. Near a point in the relative interior of an
+edge, the two local sides have opposite parity.
+\end{lemma}
+\begin{proof}
+First suppose the height of $q$ is not the height of a vertex. In a
+small neighborhood of $q$, the active edges and the left-to-right order
+of their intersections with the horizontal line are unchanged unless
+$q$ crosses the curve. Hence the count is locally constant.
+
+Now let the height of $q$ equal the height of one or more vertices, and
+choose a small neighborhood of $q$ containing no point of $C$. The
+horizontal relation ``to the right of $q$'' is fixed for every such
+vertex. As the height passes a vertex, there are three possibilities.
+If one incident edge goes upward and the other downward, one active
+edge is replaced by the other. At a local minimum two edges become
+active together, and at a local maximum two cease together. Thus the
+change in the count is even. Summing over the finitely many vertices at
+that height proves local constancy there as well.
+
+Finally, using Lemma~\ref{lem:compact-separation}\textup{(c)}, choose
+a disk around an interior point of an edge which meets
+no other part of $C$. A short horizontal segment across the edge meets
+it exactly once. Moving along that segment changes the count by one,
+so the two local sides have opposite parity.
+\end{proof}
+
+\begin{theorem}[Polygonal Jordan curve theorem]\label{thm:polygonal-jordan}
+If $C$ is a simple closed polygonal curve, then
+$\mathbb R^2\setminus C$ has exactly two regions. One is bounded and
+one unbounded, and both have boundary $C$. Moreover, if $B$ is a disk
+centered at a point in the relative interior of an edge of $C$ and
+meeting $C$ in a straight diameter, then the two half-disks of
+$B\setminus C$ lie in different regions.
+\end{theorem}
+\begin{proof}
+Choose a two-sided strip $N=N_L\sqcup C\sqcup N_R$ as in
+Lemma~\ref{lem:polygonal-collar}. Choose a sufficiently small disk
+$B$ around an interior point of an edge, as in the local
+two-sidedness assertion of that lemma, and reference points
+$z_L\in B\cap N_L$, $z_R\in B\cap N_R$ in its two components.
+
+Let $x\notin C$, and choose a nearest point $a\in C$. By
+Lemma~\ref{lem:nearest-segment}, $[x,a)$ avoids $C$. Its final portion lies
+in $N_L$ or $N_R$, and that track is connected. Hence $x$ lies in the
+component of either $z_L$ or $z_R$. There are at most two components.
+
+The two reference points have opposite parity by
+Lemma~\ref{lem:polygon-parity}, while parity is constant on a connected
+subset of the complement. Hence they lie in distinct components, so
+there are exactly two. The complement of a sufficiently large disk is
+connected and disjoint from $C$; it lies in one component, which is
+therefore the unique unbounded component. The other is bounded.
+
+For the final assertion of the theorem, the two half-disks are
+connected, so the parity of Lemma~\ref{lem:polygon-parity} is constant
+on each; by the same lemma, points on the two sides of the edge near
+its center have opposite parity. Hence the two half-disks lie in
+different regions.
+
+By the local two-sidedness assertion of
+Lemma~\ref{lem:polygonal-collar}, every point of $C$ has points of
+both $N_L$ and $N_R$ arbitrarily near it. The connected sets $N_L$ and
+$N_R$ contain $z_L$ and $z_R$, respectively, and hence lie in the two
+different components. Thus every point of $C$ belongs to the boundary
+of both components. Conversely, the boundary of a component of the
+open set $\mathbb R^2\setminus C$ is contained in $C$.
+\end{proof}
+
+Write $\operatorname{int}(C)$ and $\operatorname{ext}(C)$ for the
+bounded and unbounded regions. Since the crossing count is zero far to
+the right of the polygon, its value is $0$ on
+$\operatorname{ext}(C)$ and $1$ on $\operatorname{int}(C)$.
+
+A \emph{crosscut} of a region $\Omega$ is a simple arc whose two
+endpoints are distinct points of $\partial\Omega$ and whose remaining
+points lie in $\Omega$.
+
+\begin{longtheorem}[Two-sided polygonal crosscuts]\label{thm:polygonal-crosscut}
+Let $C$ be a simple closed polygonal curve and let $P$ be a simple
+polygonal arc with distinct endpoints $p,q\in C$ and no other point on
+$C$. Let $A_1,A_2$ be the two arcs of $C$ from $p$ to $q$.
+
+\begin{enumerate}\alphlabels
+\item If $P\setminus\{p,q\}\subseteq\operatorname{int}(C)$, then
+      $\operatorname{int}(C)\setminus P$ consists of the bounded
+      regions of the Jordan curves $J_i=A_i\cup P$.
+\item If $P\setminus\{p,q\}\subseteq\operatorname{ext}(C)$, then
+      $\operatorname{ext}(C)\setminus P$ has exactly two regions, and
+      their boundaries are $J_1$ and $J_2$.
+\end{enumerate}
+In either case $\mathbb R^2\setminus(C\cup P)$ has exactly three
+regions, with boundaries $C,J_1,J_2$.
+\end{longtheorem}
+\begin{proof}
+Subdivide $C$ at $p,q$ and rotate coordinates so that no edge of
+$C\cup P$ is horizontal. By Theorem~\ref{thm:polygonal-jordan}, the parity
+function of Lemma~\ref{lem:polygon-parity} is the indicator of the bounded
+component for each of the three polygonal Jordan curves. For every
+point outside $C\cup P$,
+\begin{equation}\label{eq:parity-splitting}
+ \pi_C=\pi_{J_1}+\pi_{J_2}\pmod 2,
+\end{equation}
+because the edges of $P$ occur twice and cancel, while $A_1,A_2$
+partition $C$.
+
+Suppose first that $P$ lies in $\operatorname{int}(C)$. The connected
+unbounded set $\operatorname{ext}(C)$ is disjoint from $J_i$, hence is
+contained in $\operatorname{ext}(J_i)$. The set
+$\operatorname{int}(J_i)$ contains no point of $C\setminus J_i$: if it
+did, a neighborhood of that point would also meet
+$\operatorname{ext}(C)\subseteq\operatorname{ext}(J_i)$, because $C$
+is the boundary of $\operatorname{ext}(C)$. Thus
+$\operatorname{int}(J_i)$ is a connected subset of
+$\operatorname{int}(C)$. On $\operatorname{int}(C)\setminus P$ the
+left side of \eqref{eq:parity-splitting} is $1$, so every point belongs to exactly one of
+$\operatorname{int}(J_1),\operatorname{int}(J_2)$. This proves (a).
+
+Now suppose that $P$ lies in $\operatorname{ext}(C)$. The connected set
+$\operatorname{int}(C)$ is disjoint from both $J_i$, so its parity with
+respect to each $J_i$ is constant. Equation~\eqref{eq:parity-splitting} shows that, after
+interchanging the labels if necessary,
+\[
+ \operatorname{int}(C)\subseteq\operatorname{int}(J_1)
+ \cap\operatorname{ext}(J_2).
+\]
+The bounded region $\operatorname{int}(J_2)$ cannot meet
+$C\setminus J_2$: every neighborhood of such a point meets
+$\operatorname{int}(C)\subseteq\operatorname{ext}(J_2)$. It also
+cannot lie in $\operatorname{int}(C)$, and hence it is contained in
+$\operatorname{ext}(C)$. Similarly,
+$\operatorname{ext}(J_1)$ cannot meet $C\setminus J_1$, because every
+neighborhood of such a point meets
+$\operatorname{int}(C)\subseteq\operatorname{int}(J_1)$. It is
+disjoint from $\operatorname{int}(C)$ and therefore contained in
+$\operatorname{ext}(C)$. For a point of
+$\operatorname{ext}(C)\setminus P$, \eqref{eq:parity-splitting} says that its two
+$J_i$-parities are equal. If they are both $1$, the point lies in
+$\operatorname{int}(J_2)$; if both are $0$, it lies in
+$\operatorname{ext}(J_1)$. The two sets are disjoint: a common point
+would have $J_2$-parity $1$ and $J_1$-parity $0$, hence $\pi_C=1$ by
+\eqref{eq:parity-splitting}, placing it in $\operatorname{int}(C)$
+rather than $\operatorname{ext}(C)$. These two connected sets therefore
+partition $\operatorname{ext}(C)\setminus P$, proving (b).
+
+For the final assertion, note that $P$ meets exactly one of the two
+sides of $C$, so that in the first case
+\[
+ \mathbb R^2\setminus(C\cup P)
+ =\operatorname{ext}(C)\ \sqcup\
+ \bigl(\operatorname{int}(C)\setminus P\bigr)
+ =\operatorname{ext}(C)\sqcup\operatorname{int}(J_1)
+ \sqcup\operatorname{int}(J_2),
+\]
+and in the second case
+\[
+ \mathbb R^2\setminus(C\cup P)
+ =\operatorname{int}(C)\ \sqcup\
+ \bigl(\operatorname{ext}(C)\setminus P\bigr)
+ =\operatorname{int}(C)\sqcup\operatorname{int}(J_2)
+ \sqcup\operatorname{ext}(J_1).
+\]
+Each of the three sets listed is open and connected, and by
+Theorem~\ref{thm:polygonal-jordan} its boundary is $C$, $J_1$, or
+$J_2$; in particular that boundary lies in $C\cup P$ and hence misses
+$\mathbb R^2\setminus(C\cup P)$. A region whose boundary misses an
+open set containing it is a whole component of that set. Thus in
+either case the three listed sets are exactly the regions of
+$\mathbb R^2\setminus(C\cup P)$, and their boundaries are
+$C,J_1,J_2$.
+\end{proof}
+
+\begin{corollary}[Alternating crosscuts intersect]\label{cor:alternating-crosscuts}
+Let $C$ be a simple closed polygonal curve. Let $P_1,P_2$ be simple
+polygonal arcs, each having two distinct endpoints on $C$ and no other
+point on $C$. Assume that their four endpoints are distinct, that the
+interiors of both arcs lie in the same one of
+$\operatorname{int}(C),\operatorname{ext}(C)$, and that their endpoints
+alternate around $C$. Then $P_1\cap P_2\ne\varnothing$.
+\end{corollary}
+\begin{proof}
+By Theorem~\ref{thm:polygonal-crosscut}, the first crosscut splits the chosen side into two regions whose
+boundaries meet $C$ in the two complementary arcs between its
+endpoints. The alternating endpoints of the second crosscut lie on
+different such arcs. If the crosscuts were disjoint, the connected
+interior of the second would lie in one region, whose closure meets only
+one of the two boundary arcs, a contradiction.
+\end{proof}
+
+\section{Plane graphs and the utility graph}
+
+A finite graph embedded in the plane is represented by distinct
+vertices and simple arc edges whose interiors are pairwise disjoint and
+avoid all vertices. Loop edges are excluded; multiple edges between
+distinct vertices are allowed. The \emph{faces} of a finite plane
+graph are the connected components of the complement of the union of
+its vertices and edges; exactly one face is unbounded, the
+\emph{outer face}. Throughout this paper, a finite graph is
+\emph{2-connected} if it has at least three vertices, is connected, and
+remains connected after deletion of any one vertex. With this convention
+a 2-connected graph has no cut vertex, and the one-edge graph is not
+2-connected.
+
+A \emph{cycle} in a multigraph is a connected subgraph in which every
+vertex has degree exactly two. A cycle through at least three vertices
+is a cycle in the usual sense; a cycle through exactly two vertices
+consists of two parallel edges. In a plane graph the realization of a
+cycle is a Jordan curve: its edges are simple arcs with pairwise
+disjoint interiors, and consecutive edges meet exactly at their shared
+vertices, so the edge arcs concatenate injectively into a simple
+closed curve. Two-vertex cycles do occur below, as boundaries of faces
+created by overlays and by ears parallel to an existing edge.
+
+\begin{lemma}[Cycle criterion]\label{lem:cycle-criterion}
+In a finite graph, an edge lies on a cycle if and only if deleting it
+does not disconnect its endpoints.
+\end{lemma}
+\begin{proof}
+If the edge $e$, with endpoints $x,y$, lies on a cycle, then after $e$
+is deleted the rest of the cycle still joins $x$ to $y$. Conversely,
+suppose $x$ and $y$ remain connected after $e$ is deleted, and take a
+shortest walk from $x$ to $y$ avoiding $e$. A shortest walk repeats no
+vertex, so it is a simple path. Together with $e$ it forms a connected
+subgraph in which every vertex has degree exactly two, that is, a
+cycle; if the path is a single edge parallel to $e$, this is a
+two-vertex cycle.
+\end{proof}
+
+\begin{lemma}[Trees with three leaves]\label{lem:three-leaf-tree}
+A finite tree with exactly three leaves has exactly one vertex of
+degree at least three; that vertex has degree exactly three, and every
+other vertex is a leaf or has degree two.
+\end{lemma}
+\begin{proof}
+A finite tree with $n$ vertices has exactly $n-1$ edges: a tree with
+an edge has a leaf, since an endpoint of a maximal simple path has no
+neighbor off the path, and a second neighbor on the path would close a
+cycle; deleting a leaf and its edge leaves a tree, and induction gives
+the count. The degree sum is twice the number of edges, so
+\[
+ \sum_v(\deg v-2)=2(n-1)-2n=-2 .
+\]
+In a tree with at least two vertices every vertex has degree at least
+one, and the vertices of degree one are the leaves. The three leaves
+contribute $-1$ each, and every other vertex contributes
+$\deg v-2\ge0$; hence the nonnegative contributions sum to $1$, which
+forces exactly one vertex of degree three and no vertex of larger
+degree.
+\end{proof}
+
+\begin{lemma}[Polygonal redrawing]\label{lem:polygonal-redrawing}
+Every finite plane graph has an isomorphic plane drawing in which every
+edge is polygonal.
+\end{lemma}
+\begin{proof}
+For every vertex $v$, choose a small closed axis-parallel square
+$D_v$ centered at $v$. The squares are pairwise disjoint and $D_v$
+meets no edge not incident with $v$. Parametrize an edge $e=vw$ from
+$v$ to $w$. Let $c_{v,e}$ be the last point of the edge in $D_v$, and
+let $c_{w,e}$ be its first subsequent point in $D_w$. The intervening
+core $K_e$ meets the two endpoint squares only at its endpoints and
+meets no other vertex square. Distinct cores are disjoint compact arcs,
+and the boundary points $c_{v,e}$ belonging to distinct edges are
+distinct.
+
+Put
+\[
+ M=\mathbb R^2\setminus\bigcup_v D_v^\circ.
+\]
+The space $M$ is locally path connected. The finitely many cores
+are pairwise disjoint compact sets, and their endpoint sets on the
+square boundaries are finite and pairwise disjoint. Repeated use of
+Lemma~\ref{lem:compact-separation} therefore permits choices
+$\varepsilon_e>0$ for which the relative-open sets
+\[
+ O_e=\{x\in M:\operatorname{dist}(x,K_e)<\varepsilon_e\}
+\]
+are pairwise disjoint and meet a vertex-square boundary only in a small
+arc around the designated endpoint of $K_e$. Let $U_e$ be the
+component of $O_e$ containing $K_e$. The connected set $K_e$ lies in a
+single component; because $M$ is locally path connected, components of
+relative-open subsets of $M$ are relative-open. Thus the $U_e$ are
+pairwise disjoint connected relative-open neighborhoods with the
+required endpoint behavior. The endpoint arcs may be made pairwise
+disjoint for distinct edges incident with the same vertex.
+
+The proof of Lemma~\ref{lem:polygonal-connected} works in every connected
+relative-open subset of $M$. Indeed, every point of $M$ has a small
+relative neighborhood which is polygonally connected: a disk, a
+half-disk along a side of a square, or a three-quarter disk at a
+corner. Hence $c_{v,e}$ and $c_{w,e}$ can be joined in $U_e$ by a
+simple polygonal arc. Its interior avoids all vertex-square interiors;
+any contacts with a square boundary lie in the designated small
+endpoint arc. The replacement cores are pairwise disjoint.
+
+Finally join $v$ to each $c_{v,e}$ by the radial segment in the convex
+square $D_v$. Distinct radial segments in the same square meet only at
+$v$. They meet the replacement cores only at their designated boundary
+points, because the small endpoint arcs were chosen disjoint and the
+cores avoid the square interiors. The resulting edge arcs are
+polygonal and give an isomorphic plane drawing.
+\end{proof}
+
+\begin{lemma}[Nonplanarity of $K_{3,3}$]\label{lem:k33}
+The complete bipartite graph $K_{3,3}$ is not planar.
+\end{lemma}
+\begin{proof}
+Suppose it had a plane drawing, and make the drawing polygonal using
+Lemma~\ref{lem:polygonal-redrawing}. Regard $K_{3,3}$ as the six-cycle
+\[
+ x_1y_1x_2y_2x_3y_3x_1
+\]
+together with the three remaining edges
+$x_1y_2,x_2y_3,x_3y_1$. The six-cycle is a polygonal Jordan curve, and
+each remaining edge lies wholly on one side. Two of the three lie on
+the same side. Their endpoints alternate on the six-cycle, contrary to
+Corollary~\ref{cor:alternating-crosscuts}.
+\end{proof}
+
+\begin{corollary}[Subdivisions of $K_{3,3}$]\label{cor:k33-subdivision}
+No subdivision of $K_{3,3}$ has a plane drawing.
+\end{corollary}
+\begin{proof}
+In a plane drawing of a subdivision, each branch path joining two
+branch vertices is realized by a concatenation of edge arcs meeting
+consecutively at shared endpoints, hence by a simple arc; distinct
+branch paths meet at most in common branch vertices, so these arcs
+have pairwise disjoint interiors. Treating each branch path as a
+single edge therefore yields a plane drawing of $K_{3,3}$ itself,
+contrary to Lemma~\ref{lem:k33}.
+\end{proof}
+
+\begin{lemma}[Union of 2-connected graphs]\label{lem:union-two-connected}
+If two finite 2-connected graphs have at least two vertices in common,
+their union is 2-connected.
+\end{lemma}
+\begin{proof}
+After deleting one vertex, each graph remains connected and at least
+one common vertex remains.
+\end{proof}
+
+\begin{longlemma}[Subdivisions and ears preserve 2-connectivity]\label{lem:subdivision-ear-preserve}
+Let $G$ be a finite 2-connected graph.
+\begin{enumerate}\alphlabels
+\item Every subdivision of $G$ is 2-connected.
+\item If $P$ is a path whose distinct endpoints lie in $G$ and whose
+      internal vertices are new, then $G\cup P$ is 2-connected.
+\end{enumerate}
+\end{longlemma}
+\begin{proof}
+It is enough in (a) to subdivide one edge $uv$ by one new vertex $w$.
+Delete a vertex $x$. If $x\ne w$, the graph $G-x$ is connected; the
+remaining part of the subdivided edge attaches $w$ to $u$ or $v$, and
+hence to $G-x$. If $x=w$, the result is $G$ with the edge $uv$
+removed. A 2-connected graph has no bridge. Indeed, if $uv$ were a
+bridge, the two components of $G-uv$ contain $u$ and $v$, respectively.
+Because $G$ has at least three vertices, one of those components contains
+a vertex other than its indicated endpoint; deleting that endpoint would
+then disconnect $G$, contrary to 2-connectivity. Thus $G-uv$ is
+connected. Iteration proves (a).
+
+For (b), delete a vertex $x$. If $x$ is an old vertex, $G-x$ is
+connected. When $x$ is not an endpoint of $P$, every component of
+$P-x$ is attached to $G-x$ at one of the two endpoints of $P$; when
+$x$ is an endpoint, the remainder of $P$ is attached at the other
+endpoint. If $x$ is a new internal vertex, $G$ remains connected and
+the two pieces of $P-x$ attach to its two endpoints in $G$. Thus
+removing any vertex leaves $G\cup P$ connected.
+\end{proof}
+
+\begin{lemma}[Relative ear decomposition]\label{lem:relative-ear}
+If $H$ is a 2-connected subgraph of a finite 2-connected graph $G$,
+then $G$ is obtained from $H$ by repeatedly adding paths whose distinct
+endpoints are already present and whose internal vertices are new.
+Such a path is called an \emph{ear}.
+\end{lemma}
+\begin{proof}
+Let $K$ be the graph constructed so far. If a component $L$ of
+$G-V(K)$ contains a vertex, it has at least two distinct neighbors in
+$K$; otherwise its unique neighbor would be a cut vertex of $G$. A
+shortest path through $L$ between two such neighbors is an ear. If all
+vertices are already present, add a missing edge as an ear of length
+one. Finiteness terminates the process.
+\end{proof}
+
+\begin{lemma}[Polygonal overlay]\label{lem:polygonal-overlay}
+The geometric union of finitely many finite polygonal plane graphs can
+be made into a finite plane graph by subdivision.
+\end{lemma}
+\begin{proof}
+Split every polygonal edge into line segments. Two segments intersect
+in the empty set, one point, or one closed interval. Subdivide at all
+old endpoints, isolated intersections, and endpoints of overlapping
+intervals, and represent every duplicate geometric subsegment only
+once.
+\end{proof}
+
+\begin{lemma}[Face cycles]\label{lem:face-cycles}
+Every face of a finite 2-connected polygonal plane graph has a cycle
+as its boundary and is one of the two complementary regions of that
+cycle. In particular, every bounded face is the interior of its
+boundary cycle.
+\end{lemma}
+\begin{proof}
+First choose a cycle of length at least three. Such a cycle exists:
+under our convention the graph has at least three vertices, and every
+vertex has at least two distinct neighbors. Indeed, if a vertex $v$ had
+only one distinct neighbor $w$, then deleting $w$ would isolate $v$
+from some third vertex, contrary to 2-connectivity. Now take a maximal
+simple path. An endpoint has a neighbor on the path other than its
+predecessor, and the resulting closed subpath is a cycle of length at
+least three. Call it $C$.
+
+The cycle $C$ is 2-connected, so Lemma~\ref{lem:relative-ear} builds the
+graph from $C$. We prove by induction that every face is exactly one
+of the two regions bounded by its boundary cycle. This is true for the initial
+cycle by Theorem~\ref{thm:polygonal-jordan}. Suppose it holds for the current
+graph and add the next geometric ear. Its interior is connected and
+disjoint from the current graph, so it lies in one current face $F$.
+By the inductive assertion, $F$ is one side of its boundary cycle. The
+ear's two endpoints are limits of its interior, which lies in $F$, so
+they lie on $\partial F$, the realization of that boundary cycle; the
+ear is therefore a crosscut of that side, and
+Theorem~\ref{thm:polygonal-crosscut} replaces $F$ by exactly two regions,
+both bounded by cycles; all other faces are unchanged.
+\end{proof}
+
+\begin{lemma}[Outer face of a chain]\label{lem:outer-chain}
+Let $\Gamma_1,\ldots,\Gamma_k$ be finite 2-connected polygonal plane
+graphs, where $k\ge3$. After subdividing common points into vertices,
+suppose every $\Gamma_i$ has at least two vertices in common with
+$\Gamma_{i+1}$ and nonconsecutive graphs are disjoint. If a point $x$
+is in the outer
+face of every $\Gamma_i\cup\Gamma_{i+1}$, then $x$ is in the outer
+face of $\Gamma_1\cup\cdots\cup\Gamma_k$.
+\end{lemma}
+\begin{proof}
+Let $G=\Gamma_1\cup\cdots\cup\Gamma_k$. Repeated use of
+Lemma~\ref{lem:union-two-connected} shows that $G$ is 2-connected. Suppose
+$x$ lies in a bounded face of $G$. By Lemma~\ref{lem:face-cycles}, that
+face is the interior of its boundary cycle, which therefore encloses
+$x$.
+
+Choose indices $i\le j$ with $j-i$ minimum such that some cycle $C$
+in \(\Gamma_i\cup\cdots\cup\Gamma_j\) encloses $x$. If $j-i\le1$,
+choose a consecutive pair $H$ containing that union: take
+$H=\Gamma_i\cup\Gamma_{i+1}$ when $i=j<k$,
+$H=\Gamma_{i-1}\cup\Gamma_i$ when $i=j=k$, and
+$H=\Gamma_i\cup\Gamma_{i+1}$ when $j=i+1$. The face of $H$ containing
+$x$ is connected and disjoint from $C$. Since it contains the point
+$x\in\operatorname{int}(C)$, it lies in the bounded set
+$\operatorname{int}(C)$ and therefore is not the outer face of $H$.
+This contradicts the hypothesis on consecutive pairs.
+
+Assume $j-i\ge2$. Among all cycles in this fixed union
+\(\Gamma_i\cup\cdots\cup\Gamma_j\) which enclose $x$, choose $C$ so
+that the number of its edges outside $\Gamma_{j-1}$ is minimum.
+
+Minimality of the interval implies that $C$ contains an edge of
+$\Gamma_j$ outside $\Gamma_{j-1}$ and an edge of the earlier chain
+outside $\Gamma_{j-1}$; otherwise one endpoint of the index interval
+could be removed. Choose points $a,b$ in the relative interiors of
+these two edges. The two arcs of the cycle $C$ from $a$ to $b$ are
+internally disjoint. Since $\Gamma_j$ meets the earlier chain only
+through $\Gamma_{j-1}$, each of those two arcs must meet
+$\Gamma_{j-1}$. Their intersections occur on different arcs of $C$,
+so they contain two distinct maximal subpaths of
+$C\cap\Gamma_{j-1}$. Choose one, $P$. Since $\Gamma_{j-1}$ is connected,
+there is a path in $\Gamma_{j-1}$ from $P$ to
+$C\setminus V(P)$. Choose such a path $R$ of minimum length. Its
+endpoints $u,v$ lie on two different maximal subpaths of
+$C\cap\Gamma_{j-1}$, and its internal vertices do not lie on $C$.
+Moreover no edge of $R$ is an edge of $C$: an edge of $R$ incident
+with an internal vertex has that endpoint off $C$, while if $R$ were
+the single edge $uv$, that edge would lie in $C\cap\Gamma_{j-1}$ and
+would extend the maximal subpath containing $u$ past $v$, contrary to
+maximality. Since distinct edges of a plane graph meet only at shared
+vertices, the interior of $R$ misses $C$ altogether.
+
+The vertices $u,v$ divide $C$ into two arcs $C_1,C_2$. Each arc
+contains an edge outside $\Gamma_{j-1}$, because its endpoints belong
+to different maximal subpaths of the intersection. The path $R$ lies
+on one side of $C$ and is a crosscut there. By
+Theorem~\ref{thm:polygonal-crosscut}, exactly one of the two cycles
+$R\cup C_1$, $R\cup C_2$ encloses $x$. That cycle remains in the fixed
+union $\Gamma_i\cup\cdots\cup\Gamma_j$, but it has fewer edges outside
+$\Gamma_{j-1}$ than $C$, since one nonempty outside portion of $C$ has
+been replaced by $R\subseteq\Gamma_{j-1}$. This contradicts the choice
+of $C$.
+
+This contradiction rules out the assumed bounded face of $G$.
+Therefore $x$ lies in the outer face of $G$.
+\end{proof}
+
+\section{A simple arc does not separate the plane}
+
+\begin{theorem}[Arc-complement theorem]\label{thm:arc-complement}
+If $A$ is a simple arc in the plane, then
+$\mathbb R^2\setminus A$ is connected and hence polygonally connected.
+\end{theorem}
+\begin{proof}
+Let $p,q\notin A$. Choose $d>0$ so that both points have
+$\ell^\infty$-distance greater than $4d$ from $A$. Write
+$A=\alpha([0,1])$ with $\alpha$ injective. By uniform continuity,
+choose a partition
+\[
+0=t_0<t_1<\cdots<t_k=1,\qquad k\geq3,
+\]
+such that every point of
+$A_i=\alpha([t_{i-1},t_i])$ is at $\ell^\infty$-distance less than
+$d$ from $a_i=\alpha(t_{i-1})$.
+
+Nonadjacent compact subarcs are disjoint, hence at positive distance
+by Lemma~\ref{lem:compact-separation}\textup{(b)}. Put
+\[
+ d'=
+ \min\{\operatorname{dist}_\infty(A_i,A_j):|i-j|\geq2\}>0,
+ \qquad
+ \delta=\min(d,d').
+\]
+For every $i$, choose subdivision points
+\[
+ a_{i,0},a_{i,1},\ldots,a_{i,m_i}
+\]
+in their order along $A_i$, with $a_{i,0}=\alpha(t_{i-1})$ and
+$a_{i,m_i}=\alpha(t_i)$, such that every point of the subarc from
+$a_{i,r}$ to $a_{i,r+1}$ is at distance less than $\delta/4$ from its
+initial point $a_{i,r}$. Thus
+$\|a_{i,r+1}-a_{i,r}\|_\infty<\delta/4$. Use the common endpoint
+$a_{i,m_i}=a_{i+1,0}$ as a sample for both adjacent subarcs.
+
+Around every sample draw the boundary of the axis-parallel square of
+$\ell^\infty$-radius $\delta/4$, and let $\Gamma_i$ be the polygonal
+overlay (Lemma~\ref{lem:polygonal-overlay}) of the square boundaries
+associated with $A_i$. Consecutive
+squares in a fixed $\Gamma_i$ have centers at distance less than
+$\delta/4$; their boundary cycles therefore meet in at least two
+points (or coincide). Indeed, suppose the squares $S_1,S_2$ are
+distinct. Being congruent, neither contains the other, so the
+connected open set $S_1^\circ$ contains the point $c_2\in S_2^\circ$
+as well as a point outside the closed square $S_2$, and hence meets
+$\partial S_2$; and $\partial S_2\not\subseteq S_1$, since the convex
+set $S_1$ would then contain the convex hull of $\partial S_2$, which
+is $S_2$. Thus the closed curve $\partial S_2$ has nonempty relatively
+open parts inside $S_1^\circ$ and outside $S_1$; were
+$\partial S_1\cap\partial S_2$ a single point, removing it would leave
+$\partial S_2$ connected yet covered by those two disjoint sets. It follows inductively from
+Lemma~\ref{lem:union-two-connected} that $\Gamma_i$ is 2-connected.
+Consecutive graphs $\Gamma_i,\Gamma_{i+1}$ share the square at their
+common sample. If $|i-j|\geq2$, then $\Gamma_i$ and $\Gamma_j$ are
+disjoint, since their centers are at distance at least $d'\geq\delta$
+while the sum of the square radii is $\delta/2$.
+
+The graph $\Gamma_i\cup\Gamma_{i+1}$ is contained in the
+$\ell^\infty$-square of radius $3d$ centered at $a_i$: the centers from
+$A_i$ are within $d$ of $a_i$, those from $A_{i+1}$ are within $2d$,
+and the square radius is at most $d/4$. Both $p$ and $q$ lie outside
+this containing square and hence in the outer face of the pair. By
+Lemma~\ref{lem:outer-chain}, they lie in the outer face of
+\[
+ G=\Gamma_1\cup\cdots\cup\Gamma_k.
+\]
+
+Every point of $A$ lies in or on one of the small squares. If it lies
+inside, the boundary cycle of that square separates it from the outer
+face of $G$; if it lies on the boundary, it belongs to $G$. Thus the
+outer face of $G$ is disjoint from $A$. It is an open connected set, so
+Lemma~\ref{lem:polygonal-connected} joins $p$ to $q$ there by a simple
+polygonal arc.
+\end{proof}
+
+\section{The Jordan curve theorem}
+
+Let $C$ be a Jordan curve. Since $C$ is compact, the complement of a
+sufficiently large disk is connected and disjoint from $C$; it lies in
+a unique unbounded component of $\mathbb R^2\setminus C$.
+
+We first record the standard parametrization facts that give meaning
+to phrases such as ``the two arcs of $C$ between two of its points''.
+
+\begin{lemma}[Circular parametrization]\label{lem:jordan-circle}
+Let $C$ be a Jordan curve with parametrization $\gamma$. Then $\gamma$
+induces a homeomorphism from the unit circle onto $C$. Consequently,
+any two distinct points of $C$ divide it into two simple arcs having
+exactly those points in common, and the relatively open subarcs of $C$
+form a basis of its subspace topology.
+\end{lemma}
+\begin{proof}
+Let $e(t)=(\cos2\pi t,\sin2\pi t)$, a continuous surjection of $[0,1]$
+onto the unit circle which identifies $0$ with $1$ and is injective
+otherwise. Since $\gamma(0)=\gamma(1)$, setting $h(e(t))=\gamma(t)$
+gives a well-defined bijection $h$ from the circle onto $C$. It is
+continuous: if $z_n\to z$ on the circle, choose $t_n$ with
+$e(t_n)=z_n$; every subsequence of $(t_n)$ has, by compactness of
+$[0,1]$, a further subsequence converging to some $t$ with $e(t)=z$,
+along which $h(z_n)=\gamma(t_n)\to\gamma(t)=h(z)$; hence
+$h(z_n)\to h(z)$. A continuous bijection from a compact space onto a
+Hausdorff space is a homeomorphism, so $h$ is one. The remaining
+assertions are transported by $h$ from the corresponding assertions
+about the circle, where they are immediate. The same argument applies
+with the boundary of a square in place of the unit circle, and radial
+projection is a homeomorphism between the two.
+\end{proof}
+
+\begin{proposition}[A Jordan curve separates]\label{prop:jordan-disconnected}
+The complement $\mathbb R^2\setminus C$ is disconnected.
+\end{proposition}
+\begin{proof}
+A Jordan curve is not contained in a line: otherwise its image,
+being a nondegenerate compact connected subset of that line, would be
+a closed interval. Removing an interior point of the interval
+disconnects it, whereas removing one point from a circle, and hence
+from $C$ by Lemma~\ref{lem:jordan-circle}, does not.
+Choose a coordinate direction in
+which the projection of $C$ has nonzero width, and rotate coordinates
+so that this is the horizontal direction. Let $L_1,L_2$ be the
+distinct vertical supporting lines at the minimum and maximum
+$x$-coordinates of $C$. On each $L_i$, let $p_i$ be the highest point
+of $C\cap L_i$. Let $P_1,P_2$ be the two arcs of $C$ from
+$p_1$ to $p_2$. Choose a vertical line $L_3$ strictly between
+$L_1,L_2$. Both arcs meet $L_3$, and the compact disjoint sets
+$P_1\cap L_3$ and $P_2\cap L_3$ have positive distance along the
+line. Choose closest points $a\in P_1\cap L_3$ and
+$b\in P_2\cap L_3$. The open segment between them misses $C$; denote
+the closed segment by $L_4$.
+
+Join $p_1$ to $p_2$ by the polygonal arc $L_5$ which runs upward on the
+two supporting lines and across a horizontal line above $C$. Its
+interior belongs to the unbounded component: from a point of $L_5$ on
+$L_i$ above $p_i$, the horizontal ray moving away from the vertical
+strip between $L_1$ and $L_2$ meets $C$ nowhere, because $C$ lies in
+that closed strip and the points of $C$ on $L_i$ lie at height at most
+that of $p_i$; from a point on the top segment, the upward vertical
+ray misses $C$, which lies strictly below the top line. Each such ray
+joins its starting point to points arbitrarily far away without
+meeting $C$. Note also that $L_4$ and $L_5$ are disjoint: $L_4$ lies
+on $L_3$, which is strictly between $L_1$ and $L_2$, and its points
+lie at heights between those of $a$ and $b$, strictly below the top
+line.
+
+Suppose that
+$L_4\setminus\{a,b\}$ belonged to that same component. Choose interior
+points $c\in L_4$, $d\in L_5$, and, using
+Lemma~\ref{lem:polygonal-connected}, a simple polygonal arc $R$ in the
+unbounded component from $c$ to $d$. Traverse $R$. Let $c'$ be its
+last point on $L_4$, and let $d'$ be its first subsequent point on
+$L_5$. The subarc $L_6$ from $c'$ to $d'$ has no other point on
+$L_4\cup L_5$.
+
+The union $C\cup L_4\cup L_5\cup L_6$ is a subdivision of $K_{3,3}$.
+Indeed, take one bipartition to be $\{p_1,p_2,c'\}$ and the other to be
+$\{a,b,d'\}$. The four subarcs of $P_1,P_2$, the two subsegments of
+each of $L_4,L_5$, and $L_6$ give the nine internally disjoint branch
+paths. This contradicts Corollary~\ref{cor:k33-subdivision}. Hence
+$L_4$ contains a point
+outside the unbounded component, and the complement is disconnected.
+\end{proof}
+
+\begin{lemma}[Density of accessible points]\label{lem:accessible-dense}
+Let $\Omega$ be a component of $\mathbb R^2\setminus C$, and fix
+$x\in\Omega$. The points of $C$ which can be reached from $x$ by a
+polygonal arc meeting $C$ only at its endpoint are dense in $C$.
+\end{lemma}
+\begin{proof}
+Choose $y$ in another component, and let $J$ be a relative open arc of
+$C$. Choose a smaller relative open arc $J_0$ with
+closure in $J$. The set $C\setminus J_0$ is a simple arc by
+Lemma~\ref{lem:jordan-circle}, so its
+complement is connected by Theorem~\ref{thm:arc-complement}. Join $x$ to $y$
+there by a simple polygonal arc. The arc must meet $C$, and every such
+meeting lies in $J_0$. Its first meeting, starting from $x$, is
+accessible from $\Omega$ and belongs to $J$.
+\end{proof}
+
+\begin{theorem}[Jordan curve theorem]\label{thm:jordan}
+If $C$ is a Jordan curve, then $\mathbb R^2\setminus C$ has exactly two
+regions, one bounded and one unbounded, and both have boundary $C$.
+\end{theorem}
+\begin{proof}
+There are at least two components by
+Proposition~\ref{prop:jordan-disconnected}. Suppose there are three distinct
+components $\Omega_1,\Omega_2,\Omega_3$. Using
+Lemma~\ref{lem:jordan-circle}, divide $C$ into three closed
+arcs $Q_1,Q_2,Q_3$ with pairwise disjoint relative interiors. Choose a point $q_i\in\Omega_i$ for each $i$. For each $i,j$, choose,
+using Lemma~\ref{lem:accessible-dense}, a distinct point $p_{ij}$ in the
+relative interior of $Q_j$ and a polygonal access arc from $q_i$ to
+$p_{ij}$. The nine points can indeed be chosen distinct: a dense
+subset of $C$ meets every nonempty relative open subarc in infinitely
+many points, since deleting finitely many points of such a subarc
+would otherwise leave a nonempty open subarc missing the dense set.
+
+For a fixed $i$, form their finite polygonal overlay using Lemma~\ref{lem:polygonal-overlay}, and take a minimal
+connected subgraph $T_i$ spanning the three terminals
+$p_{i1},p_{i2},p_{i3}$. It is a tree: an edge of a cycle could be
+deleted. Each terminal $p_{ij}$ has degree one in the overlay. Indeed,
+it is the endpoint of its own access arc, and no other access arc can
+meet it, since every other access arc meets $C$ only at its own,
+distinct endpoint. Hence it also has degree one in the minimal spanning
+subgraph. Minimality leaves no additional leaf. By
+Lemma~\ref{lem:three-leaf-tree}, $T_i$ has a unique vertex $x_i$ of
+degree three, and every other vertex is one of the three leaves or has
+degree two.
+Thus $T_i$ contains three internally disjoint branches from $x_i$ to
+the three terminals. The three trees $T_i$ are pairwise disjoint,
+because their interiors lie in distinct components and all nine
+terminals were chosen distinct.
+
+For each $j$, order $p_{1j},p_{2j},p_{3j}$ along $Q_j$ and call the
+middle point $y_j$. For every $i,j$, join $x_i$ to $y_j$ by the branch
+of $T_i$ ending at $p_{ij}$ followed, when necessary, by the subarc of
+$Q_j$ from $p_{ij}$ to $y_j$. These nine paths are internally
+disjoint: the three branches in each $T_i$ are disjoint, and on each
+$Q_j$ the two subarcs to the middle terminal meet only at $y_j$. They
+form a plane subdivision of $K_{3,3}$ with bipartition
+$\{x_1,x_2,x_3\}$ and $\{y_1,y_2,y_3\}$, contrary to
+Corollary~\ref{cor:k33-subdivision}.
+
+Hence there are exactly two components. By
+Lemma~\ref{lem:accessible-dense}, every neighborhood of every point of $C$
+meets both components, so $C$ is contained in both boundaries. The
+reverse inclusion holds because the boundary of a component of the
+open set $\mathbb R^2\setminus C$ is contained in $C$. Finally, the
+complement of a sufficiently large disk is connected and lies in one
+component. That component is the unique unbounded one; the other is
+bounded.
+\end{proof}
+
+We now write $\operatorname{Int}(C)$ and $\operatorname{Ext}(C)$ for
+the bounded and unbounded regions.
+
+\section{Crosscuts of a Jordan domain}
+
+\begin{lemma}[At most two sides]\label{lem:crosscut-at-most-two}
+Let $D$ be a region and let $P$ be a simple polygonal arc whose
+endpoints lie outside $D$ and whose remaining points lie in $D$. Then
+$D\setminus P$ has at most two components.
+\end{lemma}
+\begin{proof}
+Choose $z_0$ in the relative interior of a straight edge of $P$.
+Since $D$ is open and the remaining pieces of the finite polygonal arc
+are compact and disjoint from $z_0$,
+Lemma~\ref{lem:compact-separation}\textup{(c)} provides a closed disk
+$B\subseteq D$, centered at $z_0$, such that $B\cap P$ is a straight
+diameter of $B$. Let $B_L,B_R$ be the two open half-disks of
+$B\setminus P$, and fix reference points $z_L\in B_L$ and
+$z_R\in B_R$.
+
+Let $x\in D\setminus P$. By Lemma~\ref{lem:polygonal-connected}, choose a
+simple polygonal arc $\gamma\subseteq D$ from $x$ to $z_0$. Let $z$ be
+the first point of $\gamma$ on $P$. Since the endpoints of $P$ do not
+lie in $D$, the point $z$ is in the interior of $P$.
+
+If $z=z_0$, the final part of $\gamma$ lies in one of the connected
+half-disks $B_L,B_R$, and hence joins $x$ in $D\setminus P$ to the
+corresponding fixed reference point. Otherwise, the subarc $K$ of $P$
+from $z$ to $z_0$ is a nondegenerate compact subarc contained in $D$.
+Choose a two-sided polygonal strip $N$ around $K$, contained in $D$,
+using Lemma~\ref{lem:polygonal-collar}. By the local two-sidedness
+assertion of that lemma, a sufficiently small disk $B'\subseteq B$
+centered at $z_0$ satisfies: $B'\setminus P$ has exactly two
+components, one contained in the track $N_L$ and the other in $N_R$.
+Since $B\cap P$ is a straight diameter of $B$, the two components of
+$B'\setminus P$ are its two half-disks, and they lie in the two
+different half-disks $B_L,B_R$ of $B$. Hence one track meets $B_L$
+and the other meets $B_R$. A point of $\gamma$ immediately before $z$
+lies in
+one of the two tracks. The initial part of $\gamma$ connects $x$ to
+that track; the track meets one of the half-disks, which is connected
+to $z_L$ or $z_R$. Thus every component of $D\setminus P$ contains one
+of the two fixed reference points.
+\end{proof}
+
+\begin{theorem}[Crosscut theorem]\label{thm:general-crosscut}
+Let $C$ be a Jordan curve and let $P$ be a simple polygonal arc with
+distinct endpoints $p,q\in C$ and all other points in
+$D=\operatorname{Int}(C)$. Let $A_1,A_2$ be the two arcs of $C$ from
+$p$ to $q$, as in Lemma~\ref{lem:jordan-circle}. Then $D\setminus P$ has exactly two components, namely
+$\operatorname{Int}(A_1\cup P)$ and
+$\operatorname{Int}(A_2\cup P)$. Consequently
+$\mathbb R^2\setminus(C\cup P)$ has precisely three regions, whose
+boundaries are $C,A_1\cup P,A_2\cup P$.
+\end{theorem}
+\begin{proof}
+By Theorem~\ref{thm:jordan}, $D$ is the bounded complementary region of
+$C$ and has boundary $C$. By Lemma~\ref{lem:crosscut-at-most-two},
+$D\setminus P$ has at most two components. We first show that it is
+disconnected.
+
+Choose a point $z$ in the interior of a straight edge of $P$. Let
+$L_1$ be a short subsegment of that edge centered at $z$, and choose a
+short transverse segment $L_2\subseteq D$ meeting $C\cup P$ only at
+$z$. Let $x_-,x_+$ be its endpoints. Suppose they lie in the same
+component of $D\setminus P$. Join them there by a simple polygonal arc
+$R$, using Lemma~\ref{lem:polygonal-connected}.
+
+Form the finite polygonal graph $R\cup L_2$. The edge of its
+subdivision which contains $z$ is not a bridge: after deleting it, its
+endpoints are still connected by following the remaining parts of
+$L_2$ to $x_-,x_+$ and then $R$. By Lemma~\ref{lem:cycle-criterion},
+that edge lies on a cycle, whose realization is a simple closed
+polygonal curve $J$. Shrinking around $z$ by
+Lemma~\ref{lem:compact-separation}\textup{(c)}, we may assume that in a
+small disk centered at $z$ the cycle $J$ agrees with $L_2$, so that
+the disk meets $J$ in a straight diameter. The two endpoints of a
+sufficiently short $L_1$ lie in the two half-disks, and therefore lie
+in different components of $\mathbb R^2\setminus J$ by the final
+assertion of Theorem~\ref{thm:polygonal-jordan}.
+
+On the other hand, they can be joined without meeting $J$: follow $P$
+from one endpoint of $L_1$ to $p$, follow either boundary arc of $C$
+from $p$ to $q$, and follow $P$ back to the other endpoint. This route
+avoids $R$, because $R\subseteq D\setminus P$, and avoids $L_2$
+because $L_2\cap(C\cup P)=\{z\}$ while the route omits the segment of
+$P$ containing $z$. This contradiction proves that $D\setminus P$ has
+two components.
+
+Put $J_i=A_i\cup P$. Each $J_i$ is a Jordan curve. The connected
+unbounded set $\operatorname{Ext}(C)$ is disjoint from $J_i$, hence is
+contained in $\operatorname{Ext}(J_i)$. As in the polygonal crosscut
+proof, $\operatorname{Int}(J_i)$ contains no point of
+$C\setminus J_i$; otherwise an interior neighborhood would meet
+$\operatorname{Ext}(C)\subseteq\operatorname{Ext}(J_i)$. Therefore
+$\operatorname{Int}(J_i)\subseteq D\setminus P$.
+
+The set $\operatorname{Int}(J_i)$ is open and connected. It is also
+closed relative to $D\setminus P$, because its boundary $J_i$ is
+contained in $C\cup P$, which is disjoint from $D\setminus P$. Hence
+it is one whole component. The two sets are distinct: if they were
+equal, their plane boundaries would be equal, giving $J_1=J_2$. Since
+there are exactly two components, these are both of them.
+
+Finally, $P$ is disjoint from $\operatorname{Ext}(C)$, since its
+endpoints lie on $C$ and its remaining points in $D$; hence
+\[
+ \mathbb R^2\setminus(C\cup P)
+ =\operatorname{Ext}(C)\ \sqcup\ (D\setminus P)
+ =\operatorname{Ext}(C)\sqcup\operatorname{Int}(J_1)
+ \sqcup\operatorname{Int}(J_2).
+\]
+Each of the three sets is open and connected with boundary $C$, $J_1$,
+or $J_2$ by Theorem~\ref{thm:jordan}; those boundaries lie in $C\cup P$
+and hence miss $\mathbb R^2\setminus(C\cup P)$, so each set is a whole
+component. This proves the three-region statement together with the
+asserted boundaries.
+\end{proof}
+
+\begin{lemma}[Accessible endpoints can be joined]\label{lem:accessible-endpoints}
+Let $\Omega$ be a region and let $a,b\in\partial\Omega$ be distinct
+points, each admitting a polygonal access arc from $\Omega$. Then there
+is a simple polygonal arc from $a$ to $b$ whose remaining points lie in
+$\Omega$.
+\end{lemma}
+\begin{proof}
+Take access arcs from $a,b$ to interior points, join those points by
+Lemma~\ref{lem:polygonal-connected}, and extract a simple arc from the
+resulting finite polygonal union using
+Lemma~\ref{lem:finite-polygonal-union}.
+\end{proof}
+
+\part{The Schönflies extension}
+\section{Reduction to a square}\label{reduction-to-a-square}
+
+Let
+\[
+Q=[-1,1]^2,\qquad S=\partial Q,\qquad Q^\circ=Q\setminus S.
+\]
+
+\begin{theorem}[Square extension]\label{thm:square-extension}
+For every Jordan curve $C$ and every homeomorphism $u:C\to S$, there
+is a homeomorphism
+\[
+\overline F:C\cup\operatorname{Int}(C)\longrightarrow Q
+\]
+extending $u$.
+\end{theorem}
+
+The proof of Theorem~\ref{thm:square-extension} occupies
+Sections~\ref{strongly-accessible-boundary-points}--\ref{continuity-at-the-jordan-curve}.
+The following reduction shows that the general closed-interior
+extension follows from this special case.
+
+\begin{proposition}[Reduction to the square]\label{prop:square-reduction}
+If every boundary homeomorphism from a Jordan curve to $S$ has a
+closed-interior extension as in Theorem~\ref{thm:square-extension}, then every
+homeomorphism $f:C\to C'$ between Jordan curves extends to a
+homeomorphism
+\[
+ C\cup\operatorname{Int}(C)
+ \longrightarrow
+ C'\cup\operatorname{Int}(C').
+\]
+\end{proposition}
+\begin{proof}
+Choose any homeomorphism $h:C'\to S$; one exists by
+Lemma~\ref{lem:jordan-circle}. Extend $h\circ f$ and $h$ to
+homeomorphisms
+\[
+H:C\cup\operatorname{Int}(C)\longrightarrow Q,
+\qquad
+K:C'\cup\operatorname{Int}(C')\longrightarrow Q.
+\]
+Then $K^{-1}\circ H$ is the required extension of $f$.
+\end{proof}
+
+\section{Strongly accessible boundary points}\label{strongly-accessible-boundary-points}
+
+The iterative construction must occasionally attach an interior arc at
+a point of $C$. Ordinary accessibility is slightly too weak for this:
+one wants a definite wedge of the interior available at the point.
+
+\begin{definition}[Strong accessibility]\label{def:strong-accessibility}
+A point $p\in C$ is \emph{strongly accessible from}
+$D=\operatorname{Int}(C)$ if there are $q\in D$ and $r>0$ such that
+\[
+\|q-p\|=r
+\quad\text{and}\quad
+B(q,r)\subseteq D.
+\]
+Thus an open disk lying in $D$ is tangent to $C$ at $p$.
+\end{definition}
+
+\begin{lemma}[Nearest points are strongly accessible]\label{lem:nearest-strong}
+Let $q\in D$ and let $a\in C$ minimize the distance from $q$ to $C$.
+Then $a$ is strongly accessible from $D$.
+\end{lemma}
+\begin{proof}
+Put $r=\|q-a\|=\operatorname{dist}(q,C)>0$. The ball $B(q,r)$ misses
+$C$. It is connected and contains $q$, so it lies in the component $D$
+of $\mathbb R^2\setminus C$. Thus the disk $B(q,r)$ witnesses the
+strong accessibility of $a$.
+\end{proof}
+
+\begin{lemma}[Density of strongly accessible points]\label{lem:tangent-dense}
+Strongly accessible points are dense in $C$.
+\end{lemma}
+\begin{proof}
+Fix $p\in C$ and $\varepsilon>0$. By Theorem~\ref{thm:jordan},
+$C=\partial D$; choose $q\in D$ with $\|q-p\|<\varepsilon/2$.
+Compactness of $C$ gives a point $a\in C$ minimizing the distance from
+$q$ to $C$, and $a$ is strongly accessible by
+Lemma~\ref{lem:nearest-strong}. Moreover,
+\[
+\|a-p\|
+ \le \|a-q\|+\|q-p\|
+ \le 2\|q-p\|
+ <\varepsilon.
+\]
+\end{proof}
+
+\begin{lemma}[Tangent-disk cone]\label{lem:tangent-cone}
+Suppose $B(q,r)\subseteq D$, $\|q-p\|=r>0$, and put
+$v=(q-p)/r$. If $w$ is a unit vector satisfying
+$\langle v,w\rangle>1/2$, then
+\[
+ p+tw\in B(q,r)
+ \qquad(0<t<r).
+\]
+In particular, a strongly accessible point
+(Definition~\ref{def:strong-accessibility}) has a nonempty open cone of
+straight access segments into $D$.
+\end{lemma}
+\begin{proof}
+For $0<t<r$,
+\[
+\|p+tw-q\|^2
+ =t^2+r^2-2tr\langle v,w\rangle
+ <r^2+t(t-r)
+ <r^2.
+\]
+\end{proof}
+
+\begin{proposition}[Countable dense strong-access set]\label{prop:countable-strong-access}
+There is a countable dense set $A\subseteq C$ every point of which is
+strongly accessible from $D$.
+\end{proposition}
+\begin{proof}
+For every rational point $q\in D$, choose a nearest point
+$a(q)\in C$, and let $A$ be the set of all chosen points. It is
+countable, and each of its points is strongly accessible by
+Lemma~\ref{lem:nearest-strong}. Given $p\in C$ and $\varepsilon>0$, choose a rational
+$q\in D$ with $\|q-p\|<\varepsilon/2$. Then
+\[
+ \|a(q)-p\|\le 2\|q-p\|<\varepsilon,
+\]
+so $A$ is dense.
+\end{proof}
+
+Fix such a set $A$ for the rest of the construction.
+
+\section{Matched finite decompositions}\label{matched-finite-decompositions}
+
+We now describe the finite objects used in the construction.
+
+\begin{definition}[Admissible graph]\label{def:admissible-graph}
+An \emph{admissible graph} $\Gamma$ in the closed Jordan domain
+\[
+\overline D=C\cup D
+\]
+is a finite 2-connected plane graph whose outer cycle is \(C\), whose edges not contained in \(C\) are polygonal arcs with interiors in \(D\) (their endpoints may lie on \(C\), as for a crosscut), a \emph{weakly admissible graph} being one satisfying these conditions alone, and for which, in addition,
+\[
+ |\Gamma|\setminus C
+\]
+is connected. We call this set the \emph{open nonboundary part} of
+\(\Gamma\). The phrase ``nonboundary part'' below always means this
+set, rather than the union of the closed nonboundary edges. The
+distinction is real: two closed inward edges may meet only at a boundary
+vertex even though deleting the boundary disconnects their interiors.
+The boundary cycle is allowed to have finitely many vertices; its edges
+are the intervening arcs of \(C\).
+
+An admissible graph in \(Q\) is defined similarly, with outer cycle
+\(S\), and with \(|\Gamma'|\setminus S\) connected. All its edges are
+polygonal.
+\end{definition}
+
+
+\begin{remark}[Polygonal overlay convention]\label{rem:polygonal-overlay-convention}
+Every overlay used below is an overlay of finite polygonal objects.
+On the source side the wild outer curve $C$ is retained unchanged:
+local grids and connecting arcs lie in $D$, while a crosscut meets $C$
+only at its prescribed endpoints. Thus we overlay new arcs with the
+polygonal nonboundary skeleton and insert any prescribed boundary
+subdivisions separately. No theory of overlaying arbitrary wild arcs
+is used.
+\end{remark}
+
+\begin{definition}[Matched pair]\label{def:matched-pair}
+A \emph{matched pair} consists of one finite abstract multigraph with an admissible realization \(\Gamma\) in \(\overline D\) and an admissible realization \(\Gamma'\) in \(Q\), together with a homeomorphism
+\[
+g:|\Gamma|\longrightarrow|\Gamma'|
+\]
+of their one-dimensional skeleta such that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  corresponding vertices and edges have the same incidence
+  relations, and the two distinguished outer cycles correspond; face
+  data are not part of a matched pair and enter only with the matched
+  cellulation of Definition~\ref{def:matched-cellulation};
+\item
+  \(g=u\) on \(C\);
+\item
+  on each corresponding pair of edges, \(g\) restricts to a fixed
+  chosen homeomorphism between them, matching endpoints; this choice
+  is part of the data.
+\end{enumerate}
+
+When an edge is subdivided at a point, its corresponding edge is subdivided at the image point, and the two subedges inherit the restrictions of the chosen homeomorphism. Thus the skeleton map survives every refinement.
+\end{definition}
+
+\subsection{The initial matched pair}\label{the-initial-matched-pair}
+
+\begin{proposition}[Initial matched pair]\label{prop:initial-pair}
+There is a matched pair whose source realization consists of $C$,
+subdivided at the inverse images under $u$ of the four corners of $Q$
+and at two further points $a,b\in A$ lying in two nonadjacent corner
+arcs, together with one polygonal crosscut of $D$ from $a$ to $b$, and
+whose target realization consists of $S$, correspondingly subdivided,
+together with the straight chord $[u(a),u(b)]$.
+\end{proposition}
+\begin{proof}
+Insert into \(C\) the inverse images under \(u\) of the four corners of \(Q\). These vertices divide \(C\) into four open arcs corresponding to the open sides of \(S\). Choose two further points \(a,b\in A\) in two nonadjacent such arcs. Thus \(u(a)\) and \(u(b)\) lie in the relative interiors of opposite sides of the square, and the straight segment
+\[
+ P'=[u(a),u(b)]
+\]
+has all its other points in \(Q^\circ\). The nonadjacency condition is
+used precisely here; it also ensures that both boundary paths between
+\(a\) and \(b\) contain corner vertices. The points $a,b$ are strongly
+accessible and therefore admit straight access segments by
+Lemma~\ref{lem:tangent-cone}; hence, by
+Lemma~\ref{lem:accessible-endpoints}, there is a polygonal crosscut \(P\) of
+\(D\) from \(a\) to \(b\).
+
+The boundary cycle together with this one chord is 2-connected, and
+its open nonboundary part is connected. Theorem~\ref{thm:general-crosscut} says that the chord divides each domain into two faces. The two realizations have the same abstract cycle-with-chord structure. Choose any homeomorphism \(P\to P'\) matching endpoints, and use \(u\) on the outer cycle. This gives the initial matched pair.
+\end{proof}
+
+\subsection{Refinement operations}\label{refinement-operations}
+
+The initial pair will be refined by edge subdivisions and by inserting crosscuts in corresponding faces. The complete finite-transfer theorem, including the accessibility issue at the wild source boundary, is proved in the finite-transfer subsection below. We postpone it until the common cell structure and its parent maps have been defined.
+
+\section{Quantitative refinement}\label{quantitative-refinement}
+
+We now construct nested matched decompositions
+
+\[
+(\Gamma_0,\Gamma'_0)
+ \prec
+(\Gamma_1,\Gamma'_1)
+ \prec\cdots
+\]
+
+with the following two properties:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  every target face at stage \(n\) has diameter tending uniformly to zero;
+\item
+  for every source point \(x\in D\), the closed star of \(x\) in the source decomposition also has diameter tending to zero.
+\end{enumerate}
+
+The proof has four parts. We first make the finite cell structure and the meaning of refinement explicit. We then prove a precise transfer theorem for finite ear refinements, attach a fine local grid on the source side, and construct a fine target mesh whose new boundary contacts occur only at strongly accessible source points.
+
+\subsection{Matched cellulations and their refinements}\label{matched-cellulations-and-their-refinements}
+
+A matched pair will henceforth carry more than an isomorphism of its one-dimensional skeleta. It carries one common finite cell structure.
+
+\begin{definition}[Matched cellulation]\label{def:matched-cellulation}
+A \emph{matched cellulation} is a matched pair together with a finite
+set of abstract vertices, edges, and 2-cells, comprising:
+
+\begin{itemize}
+\tightlist
+\item
+  the endpoints of every edge;
+\item
+  a distinguished outer cycle;
+\item
+  a cyclic boundary walk for every 2-cell;
+\item
+  the subcell relation among all cells.
+\end{itemize}
+
+This common structure has two realizations, one in \(\overline D=C\cup D\) and one in \(Q\). Corresponding vertices and edges are related by the skeleton homeomorphism, corresponding abstract 2-cells are realized by corresponding Jordan regions, and the correspondence preserves the distinguished outer cycle and incidence with it. On every outer edge, the two edge parametrizations are related by \(u\).
+
+The listed data --- cells, outer cycle, boundary walks, and the
+subcell relation --- are part of the abstract structure and are
+updated explicitly by the two elementary operations below; they are
+not recovered from the realizations after each refinement. The record
+of a matched cellulation thus consists of the finite cell sets in each
+dimension, the endpoint and boundary-walk maps, the outer subcomplex,
+the subcell relation, the two realization maps, and the edge
+parametrizations, related by \(u\) on outer edges. The definition
+imposes no compatibility between the abstract subcell relation and the
+two realizations: the relation enters as a raw datum. For generated
+structures --- the only ones used in this manuscript --- assertion
+\textup{(ix)} of Lemma~\ref{lem:cellulation-invariants} below proves
+the adequacy: the abstract relation coincides with geometric
+containment in each realization.
+\end{definition}
+
+The frontier and refinement properties used later are consequences of the two elementary operations and are proved next.
+
+All refinements used below are finite compositions of two elementary operations.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Edge subdivision.}\\
+  A point is inserted into an edge, and the corresponding point is inserted into the corresponding edge using the edge parametrization. Abstract data update: the edge \(e\) is replaced by a new vertex \(v\) and two new edges \(e_1,e_2\), whose endpoints are \(v\) together with one old endpoint of \(e\) each; the relation \(\preceq_{\mathrm{abs}}\) is extended by declaring \(v\preceq e_1\) and \(v\preceq e_2\), each old endpoint of \(e\) a subcell of its adjacent new edge, and \(v,e_1,e_2\) subcells of exactly the old strict supercells of \(e\); all pairs not involving \(e\) are unchanged.
+\item
+  \textbf{2-cell splitting by an ear.}\\
+  A simple arc is inserted in the geometric face realizing a 2-cell, between two distinct points of its boundary. The two boundary paths between its endpoints, together with the new ear, are declared to be the boundaries of the two new 2-cells. Abstract data update: the 2-cell \(R\) is replaced by \(R_1,R_2\); the new interior vertices and edges of the ear \(P\) are added with their incidences along \(P\) (each interior vertex a subcell of its two adjacent ear edges, each ear endpoint a subcell of its adjacent ear edge); the relation \(\preceq_{\mathrm{abs}}\) is extended by declaring every cell of the boundary walk of \(R_i\), together with every cell of \(P\), a subcell of \(R_i\), for \(i=1,2\); no 2-cell is declared a subcell of another, and all pairs not involving \(R\) or the new cells are unchanged.
+\end{enumerate}
+
+The base value of \(\preceq_{\mathrm{abs}}\) is fixed on the initial
+structure of Proposition~\ref{prop:initial-pair}. Its cells are: the
+six boundary vertices (the four corner preimages together with
+\(a,b\)); the six open outer edges into which they divide \(C\),
+together with the crosscut edge \(P\); and the 2-cells \(R_1,R_2\).
+Here \(B_1,B_2\) denote the two boundary edge-paths from \(a\) to
+\(b\), with geometric unions \(A_i=|B_i|\), the two arcs of \(C\) from
+\(a\) to \(b\); the 2-cell \(R_i\) is realized in the source as the
+crosscut side whose closure meets \(C\) in \(A_i\) and in the target
+as the side whose closure meets \(S\) in \(u(A_i)\). The base relation
+consists of the reflexive pairs, the incidence of each vertex with the
+edges it bounds, and, for \(i=1,2\), the incidence of every vertex and
+edge of \(B_i\cup P\) with \(R_i\).
+
+\begin{definition}[Generated matched cell structure]\label{def:generated-structure}
+A \emph{generated matched cell structure} is any structure obtained
+from the initial matched cellulation of
+Proposition~\ref{prop:initial-pair} (with its two-face cell structure)
+by a finite sequence of the two elementary operations, performed
+simultaneously in the two realizations. All requirements of
+Definitions~\ref{def:matched-pair} and \ref{def:matched-cellulation}
+are retained, with the two realizations required only to be
+\emph{weakly admissible}; that is, exactly the connectedness of the
+open nonboundary parts is waived, and nothing else. A generated matched cell
+structure whose open nonboundary parts are connected is called a
+\emph{generated matched cellulation}. Every generated matched
+cellulation is a matched cellulation; the converse is not asserted.
+The initial matched cellulation itself is generated, via the empty
+sequence of operations.
+\end{definition}
+
+\begin{remark}[Intermediate disconnection]\label{rem:intermediate-disconnection}
+The exception is not vacuous: splitting a 2-cell by an ear whose two
+endpoints both lie on the outer cycle disconnects the open nonboundary
+part, even when later ears reconnect it. Such intermediate stages
+may occur in the proof of the finite-transfer theorem below, depending
+on the chosen ear order. Accordingly,
+the lemmas of this subsection are stated for generated matched cell
+structures, and none of their statements or proofs uses connectedness
+of the open nonboundary part. Admissibility of the final object of
+each construction is verified separately.
+\end{remark}
+
+Three subcell relations are in play and must first be distinguished.
+For cells of the common structure, write
+\(\sigma\preceq_{\mathrm{src}}\tau\) when the realization of the open
+cell \(\sigma\) in \(\overline D\) is contained in the closure of the
+realization of \(\tau\), and define \(\sigma\preceq_{\mathrm{tgt}}\tau\)
+in the same way for the realizations in \(Q\). The common finite cell
+structure also carries an abstract relation
+\(\preceq_{\mathrm{abs}}\) as a raw datum; its value on the initial
+structure and its update under each constructor are specified
+explicitly below. Each geometric relation is reflexive and transitive:
+if \(\sigma\subseteq\overline\tau\) and
+\(\tau\subseteq\overline\rho\), then the closed set \(\overline\rho\)
+contains \(\overline\tau\), and hence contains \(\sigma\).
+Antisymmetry is not assumed; the instances used later are assertion
+\textup{(viii)} of Lemma~\ref{lem:cellulation-invariants} and the case
+analysis closing the verification of \textup{(iv)}. We call
+\(\sigma\) a \emph{subcell} of \(\tau\), and \(\tau\) a
+\emph{supercell} of \(\sigma\); the word \emph{face} will henceforth
+mean a 2-cell, not a lower cell in these relations. Assertion
+\textup{(ix)} of Lemma~\ref{lem:cellulation-invariants} proves that on
+every \emph{generated} matched cell structure the three relations
+coincide; from that point on the manuscript writes \(\preceq\) for the
+common relation, which is legitimate because every structure used
+below is generated. Until then, a statement made about a single
+realization uses the geometric relation of that realization.
+
+\begin{longlemma}[Cellulation invariants]\label{lem:cellulation-invariants}
+Starting from the initial cycle-with-chord decomposition and applying edge subdivisions and 2-cell splittings --- that is, in every generated matched cell structure --- the following assertions hold at every stage. Connectedness of the open nonboundary part is nowhere assumed.
+\begin{enumerate}\romanlabels
+\item The open cells partition the closed domain, and every closed cell is the union of its open subcells.
+\item The frontier property holds: for any open cells
+\(\sigma,\tau\), either \(\sigma\subseteq\overline\tau\) or
+\(\sigma\cap\overline\tau=\varnothing\).
+\item Every 2-cell boundary contains a nonboundary edge.
+\item Each elementary refinement has a parent map from new cells to old cells. The parent is the unique least old closed cell containing the new cell, and
+\[
+ \sigma\preceq\tau\quad\Longrightarrow\quad
+ \operatorname{par}(\sigma)\preceq\operatorname{par}(\tau).
+\]
+\item Every cell is a subcell of at least one 2-cell.
+\item Every outer edge is a subcell of exactly one 2-cell.
+\item In each of the two realizations, every 2-cell boundary walk is
+      realized by a Jordan curve, and the open 2-cell is the bounded
+      complementary region of that curve.
+\item In each realization, distinct open 2-cells are never comparable:
+      if \(R\subseteq\overline T\) for open 2-cells \(R,T\), then
+      \(R=T\).
+\item The abstract subcell relation coincides with geometric
+      containment in each realization: for cells \(\sigma,\tau\) of
+      the common structure, the realization of \(\sigma\) in
+      \(\overline D\) lies in the closure of the realization of
+      \(\tau\) if and only if the same holds for the realizations in
+      \(Q\), and both hold exactly when \(\sigma\preceq\tau\) as
+      abstract data; that is,
+      \(\preceq_{\mathrm{src}}=\preceq_{\mathrm{tgt}}
+       =\preceq_{\mathrm{abs}}\).
+\end{enumerate}
+\end{longlemma}
+\begin{proof}
+For the initial chord, Theorem~\ref{thm:general-crosscut} gives two Jordan faces whose common nonboundary edge is the chord. The open vertices, open edges, and two open 2-cells are disjoint and cover the closed domain. The closure of an edge is the union of that open edge and its endpoints, while the closure of either 2-cell is the union of the open 2-cell and the cells on its boundary cycle. Thus (i) and the frontier assertion in (ii) hold. Both 2-cell boundaries contain the chord, proving (iii), and the identity map is the parent map. Every vertex and edge lies on one of the two boundary cycles, so (v) holds. Each outer edge lies on exactly one of the two complementary outer boundary paths between the chord endpoints, and therefore on exactly one 2-cell boundary; this proves (vi). Theorem~\ref{thm:general-crosscut} realizes the two initial 2-cells, in both realizations, as the bounded regions of the Jordan curves formed by the chord and the two outer paths; this proves (vii).
+
+Suppose first that an open edge \(e\) is subdivided at a new vertex \(v\). The old open edge is replaced by the disjoint union of two open edges \(e_1,e_2\) and \(v\); all other open cells are unchanged. The closure of each \(e_i\) is that open edge together with its two endpoints, so the new open cells still partition the domain and every closed cell is the union of its open subcells. The only new subcell relations are the endpoint incidences of \(e_1,e_2\), together with the inherited incidences between these cells and every old 2-cell incident with \(e\). Hence the frontier property follows from the old one. Define
+\[
+ \operatorname{par}(v)=\operatorname{par}(e_1)
+ =\operatorname{par}(e_2)=e,
+\]
+and let every unchanged cell be its own parent. For an incidence between an old endpoint $p$ and a new subedge
+$e_i$, one has
+\(
+ \operatorname{par}(p)=p\preceq e=\operatorname{par}(e_i).
+\)
+For the new vertex $v\preceq e_i$, both parents equal $e$; and for an
+incidence $e_i\preceq R$ with an old 2-cell, the parent relation is the
+old incidence $e\preceq R$. Thus parents preserve $\preceq$. No
+2-cell boundary loses an edge, so (iii) is preserved, and every new
+cell is incident with an old 2-cell, proving (v). If the subdivided
+edge is outer, both new subedges lie on the boundary of the same unique
+incident 2-cell as the old edge; all other outer edges are unchanged.
+Thus (vi) is preserved.
+
+Now split a 2-cell \(R\) by an ear \(P\), after first subdividing its endpoint cells if necessary. Let \(B_1,B_2\) be the two boundary paths of \(R\) between the endpoints of \(P\). Theorem~\ref{thm:general-crosscut} decomposes the old open 2-cell into the disjoint union of the two new open 2-cells and the open cells of the ear, and gives
+\[
+ \overline{R_1}=R_1\cup P\cup B_1,
+ \qquad
+ \overline{R_2}=R_2\cup P\cup B_2.
+\]
+All cells outside \(\overline R\) are unchanged. These formulas prove the partition and closure assertion in (i). They also prove the frontier property: a new cell either lies on one of the displayed boundary cycles, lies in exactly one of the two new open 2-cells, or is disjoint from \(\overline R\). Give every newly created interior vertex and open edge of the ear, and both new 2-cells, the old 2-cell \(R\) as parent. The two endpoint cells of the ear are unchanged by the split and are therefore, like all remaining cells, their own parents for this elementary refinement; when an endpoint was created by one of the immediately preceding edge subdivisions, the composite parent map of the full ear insertion sends it, by composition, to the pre-subdivision edge. Every new subcell relation is either inherited from an old boundary incidence or is one of the incidences created by the ear. In the first case the old relation proves parent compatibility. For an endpoint--ear incidence, the endpoint parent is a subcell of \(R\) and the ear parent is \(R\); for an ear--2-cell incidence both parents are \(R\); and for a boundary-cell--new-2-cell incidence the lower parent is an old boundary subcell of \(R\), while the upper parent is \(R\). Finally, both new 2-cell boundaries contain the ear, so (iii) is preserved. Every new ear cell lies on both new boundary cycles, and every other cell retains an incident 2-cell; hence (v) is preserved. Every outer edge on the boundary of $R$ lies in exactly one of the two paths $B_1,B_2$, and hence in exactly one of the new 2-cell boundaries; outer edges not on $R$ are unchanged. Thus (vi) is preserved. For (vii), an edge subdivision changes no 2-cell, while a 2-cell split applies Theorem~\ref{thm:general-crosscut} to the Jordan region $R$ furnished by the old instance of (vii): the two new open 2-cells are exactly the bounded regions of the Jordan curves $P\cup B_1$ and $P\cup B_2$, in both realizations.
+
+For (viii), suppose \(R\subseteq\overline T\) for distinct open
+2-cells \(R,T\) of one realization. Distinct open cells are disjoint
+by (i), so \(R\subseteq\overline T\setminus T=\partial T\). By (vii),
+\(T\) is the bounded complementary region of the Jordan curve
+\(\partial T\), and by Theorem~\ref{thm:jordan} (in the polygonal
+realization, Theorem~\ref{thm:polygonal-jordan}) every point of
+\(\partial T\) lies in the closure of \(T\). Any point of the
+nonempty open set \(R\) is then a limit of points of \(T\), so \(R\)
+meets \(T\), contradicting disjointness. This proves (viii) at every stage at which (i) and (vii) hold,
+including the initial two-face stage, where the argument applies
+verbatim.
+
+It remains to verify the characterization of the parent asserted in
+(iv); the parent maps themselves were defined above, and the
+characterization is checked for each constructor using the invariants
+of the previous stage. Under a subdivision of the edge \(e\): a closed
+old vertex is a single point and contains none of the three new cells;
+a closed old edge \(\overline\tau\) with \(\tau\ne e\) meets \(e\) in
+at most the two endpoints of \(\tau\), because distinct edge interiors
+are disjoint and avoid all vertices, so \(\overline\tau\) contains
+neither new subedge nor the new vertex; and if an old 2-cell
+\(\overline\tau\) contains one of the new cells, then
+\(\overline\tau\) meets \(e\), so \(e\preceq\tau\) by the old frontier
+property (ii). Hence the old closed cells containing a given new cell
+are exactly \(\overline e\) and the \(\overline\tau\) with
+\(e\preceq\tau\), so \(e\) is a least one; and it is the unique least
+one, since any other least cell \(\tau_0\) satisfies both
+\(\tau_0\subseteq\overline e\), forcing \(\tau_0\) to be \(e\) or an
+endpoint of \(e\), and \(e\subseteq\overline{\tau_0}\), ruling out the
+endpoints. Under a split of the 2-cell \(R\): every new cell lies in
+the open set \(R\). A closed old vertex or old edge is, by (i), the
+union of open cells distinct from \(R\) and is therefore disjoint from
+\(R\); and if an old 2-cell \(\overline T\) contains a new cell, then
+\(\overline T\) meets \(R\), so \(R\subseteq\overline T\) by (ii), and
+\(T=R\) by (viii) at the previous stage. Hence \(\overline R\) is the
+only old closed cell containing any new cell of the split, and in
+particular the unique least one. Cells created by the preceding
+endpoint subdivisions are covered by the edge-subdivision case.
+Finally, consider a cell \(\sigma\) unchanged by the refinement, whose
+parent is \(\sigma\) itself. Leastness is immediate: any old closed
+cell containing the open cell \(\sigma\) is, by the definition of the
+geometric relation, a supercell of \(\sigma\). Uniqueness of the least
+element reduces to antisymmetry among the old cells: suppose
+\(\sigma\preceq\tau\) and \(\tau\preceq\sigma\) for distinct cells.
+Since distinct open cells are disjoint,
+\(\tau\subseteq\overline\sigma\setminus\sigma\) and
+\(\sigma\subseteq\overline\tau\setminus\tau\). If either cell is a
+vertex, the other lies in an empty set. Otherwise, if either cell is
+an edge, the other lies in its set of at most two endpoints, yet edges
+and 2-cells are infinite. The remaining case of two 2-cells is
+excluded by (viii). Hence the least old closed cell containing any
+cell of the refined stage is unique.
+
+For (ix), the base case is the enumeration following the two
+constructor descriptions. Theorem~\ref{thm:general-crosscut} gives
+\(\overline{R_i}=R_i\cup P\cup A_i\) in the source, with
+\(A_i=|B_i|\) the union of the closed edges of the boundary path
+\(B_i\), and the corresponding identities in the target; each closed
+outer edge is the open edge together with its two endpoint vertices,
+and \(\overline P=P\cup\{a,b\}\). Hence, in either realization, the
+cells geometrically below \(R_i\) are exactly \(R_i\) itself and the
+vertices and edges of \(B_i\cup P\); the cells below an edge are its
+endpoint vertices; no cell of \(B_{3-i}\) other than \(a,b\) lies
+below \(R_i\), since the two arcs meet only in \(\{a,b\}\); and no two
+distinct edges, and no two 2-cells, are comparable, an open edge being
+infinite while a closed edge adds only two points, and
+\(R_1\cap\overline{R_2}=\varnothing\). This is exactly the declared
+base relation. For the inductive
+step, fix a constructor and check each pair type against the declared
+update; below, \(\preceq\) denotes the geometric relation of one fixed
+realization, and every step holds verbatim in both realizations
+because the cited invariants do.
+
+\emph{Edge subdivision of \(e\) into \(e_1,v,e_2\).} New cell below
+old cell: by the case analysis in the verification of (iv), the old
+closed cells containing a given new cell are exactly \(\overline e\)
+and the \(\overline\tau\) with \(e\preceq\tau\); by the inductive
+hypothesis this is the same collection in both realizations, and it
+matches the declaration that the new cells inherit the strict
+supercells of \(e\). Old cell below new cell: an old cell contained in
+\(\overline{e_i}\), which consists of \(e_i\), \(v\), and one old
+endpoint of \(e\), is that endpoint, matching the declaration; and no
+old cell lies in the singleton \(\overline v\). Among the new cells:
+\(v\preceq e_1,e_2\) geometrically and by declaration, while
+\(e_1\not\preceq e_2\) in every sense, because \(e_1\) is infinite and
+\(e_1\cap\overline{e_2}\subseteq\{v\}\). Pairs of surviving old cells
+are unchanged in all three relations.
+
+\emph{Split of \(R\) by the ear \(P\).} The displayed identities
+\(\overline{R_i}=R_i\cup P\cup B_i\) hold in both realizations by
+Theorem~\ref{thm:general-crosscut}, so the cells geometrically below
+\(R_i\) are exactly \(R_i\) itself and the cells of \(P\) and of the
+boundary path \(B_i\), matching the declaration. New ear cell below
+surviving old cell: an ear cell lies in the open set \(R\); a
+surviving old vertex or edge closure is, by (i), a finite union of
+open cells other than \(R\) and is therefore disjoint from \(R\),
+while an old 2-cell \(\overline T\) containing an ear cell would meet
+\(R\), forcing \(R\subseteq\overline T\) by (ii) and \(T=R\) by
+(viii), excluded since \(R\) does not survive; so there are none,
+matching the declaration. Old cell below new ear cell: the closure of
+an ear edge consists of the edge and its two endpoint cells, so the
+only old cells below it are those endpoints, as declared, and the
+closure of an ear vertex is a singleton containing no old cell. Among
+the ear cells: each interior vertex lies in the closures of exactly
+its two adjacent ear edges, and two ear edges are incomparable because
+each is infinite and meets the closure of the other in at most a
+shared endpoint. New 2-cell below anything:
+\(R_i\subseteq\overline\tau\) for a surviving old 2-cell \(\tau\)
+would force \(R\cap\overline\tau\ne\varnothing\), hence
+\(R\subseteq\overline\tau\) by (ii) and \(\tau=R\) by (viii),
+excluded; a lower-dimensional \(\overline\tau\) is, by (i), a finite
+union of open cells other than \(R_i\) and hence disjoint from the
+nonempty open set \(R_i\); and \(R_1\not\preceq R_2\) because
+\(R_1\cap\overline{R_2}=R_1\cap(R_2\cup P\cup B_2)=\varnothing\).
+Pairs of surviving old cells are unchanged. In every case the declared
+abstract relation coincides with the geometric relation of each
+realization, completing the induction for (ix).
+
+Induction over the finite sequence of elementary refinements proves all nine assertions.
+\end{proof}
+
+\begin{longlemma}[Combinatorial invariance]\label{lem:combinatorial-invariance}
+Let two geometric realizations carry the finite cell structure of one
+generated matched cell structure. Then the following data and properties correspond under the
+cell bijection:
+\begin{enumerate}\alphlabels
+\item the abstract skeleton, its 2-connectivity, and its distinguished
+      outer cycle;
+\item incidence with the outer cycle and connectedness of the open
+      nonboundary part;
+\item the subcell relation, parent maps, the collections of supercells of
+      a cell, the unique 2-cell incident with each outer edge, and all star-containment statements induced by refinement.
+\end{enumerate}
+\end{longlemma}
+\begin{proof}
+The two skeleta are realizations of the same abstract graph, proving
+(a). The skeleton homeomorphism carries the outer cycle onto the outer
+cycle and therefore restricts to a homeomorphism between the two open
+nonboundary parts, proving (b). All the data in (c) belong to the common
+abstract cell structure; the geometric closed stars are unions indexed
+by the same corresponding collections of cells.
+\end{proof}
+
+\begin{lemma}[Outer incidence is combinatorial]\label{lem:outer-incidence}
+Let \(\tau\) and \(\tau'\) be corresponding cells of a generated
+matched cell structure, realized in \(\overline D\) and in \(Q\)
+respectively. Then
+\[
+ \overline\tau\cap C\ne\varnothing
+ \iff
+ \kappa\preceq\tau\ \text{for some outer cell}\ \kappa
+ \iff
+ \overline{\tau'}\cap S\ne\varnothing .
+\]
+The same equivalence holds for the corresponding closed stars:
+\(\operatorname{St}(\tau)\) meets \(C\) if and only if
+\(\operatorname{St}(\tau')\) meets \(S\).
+\end{lemma}
+\begin{proof}
+By Lemma~\ref{lem:cellulation-invariants}\textup{(i)}, the open cells
+partition \(\overline D\), and \(C\) is exactly the union of the outer
+vertices and the open outer edges, since the interiors of nonboundary
+edges lie in \(D\), edge interiors avoid all vertices, and open
+2-cells are disjoint from the outer cells. Hence the carrier of any
+point of \(C\) is an outer cell. If \(p\in\overline\tau\cap C\) and
+\(\kappa\) is its carrier, then \(\kappa\cap\overline\tau\ne\varnothing\),
+so the frontier property,
+Lemma~\ref{lem:cellulation-invariants}\textup{(ii)}, gives
+\(\kappa\preceq\tau\). Conversely, if an outer cell \(\kappa\)
+satisfies \(\kappa\preceq\tau\), then
+\(\varnothing\ne\kappa\subseteq\overline\tau\cap C\). The middle
+condition refers only to the abstract cell structure and its
+distinguished outer cycle, so it transfers between the realizations by
+Lemma~\ref{lem:cellulation-invariants}\textup{(ix)} together with
+Lemma~\ref{lem:combinatorial-invariance}; the same argument in the
+target realization, with \(S\) in place of \(C\), proves the second
+equivalence. A closed star is the finite union of the closures of the
+supercells of a fixed cell, and corresponding stars are unions over
+corresponding collections; applying the equivalence to each supercell
+proves the star statement.
+\end{proof}
+
+\begin{lemma}[Intersection of corresponding stars]\label{lem:star-intersection}
+Let \(\sigma,\tau\) be cells of a generated matched cell structure and
+\(\sigma',\tau'\) the corresponding cells of the other realization.
+Then
+\[
+ \operatorname{St}(\sigma)\cap\operatorname{St}(\tau)\ne\varnothing
+ \iff
+ \operatorname{St}(\sigma')\cap\operatorname{St}(\tau')\ne\varnothing .
+\]
+\end{lemma}
+\begin{proof}
+Let \(p\in\operatorname{St}(\sigma)\cap\operatorname{St}(\tau)\), so
+that \(p\in\overline\alpha\cap\overline\beta\) for supercells
+\(\alpha\succeq\sigma\) and \(\beta\succeq\tau\), and let \(\rho\) be
+the carrier of \(p\). The frontier property,
+Lemma~\ref{lem:cellulation-invariants}\textup{(ii)}, gives
+\(\rho\preceq\alpha\) and \(\rho\preceq\beta\). By
+Lemma~\ref{lem:cellulation-invariants}\textup{(ix)}, these are
+relations of the common abstract cell structure and hold for the
+corresponding cells in the other realization; the nonempty open cell \(\rho'\) then lies in
+\(\overline{\alpha'}\cap\overline{\beta'}
+\subseteq\operatorname{St}(\sigma')\cap\operatorname{St}(\tau')\).
+The converse is symmetric.
+\end{proof}
+
+\begin{remark}[Inductive form of the invariants]\label{rem:inductive-invariants}
+The proof of Lemma~\ref{lem:cellulation-invariants} is a finite case
+check because the cellulations are
+not arbitrary: they are generated by exactly two constructors. In a
+formal development, the partition, frontier, incidence, and parent-map
+properties should be stored as inductive invariants of those constructors,
+rather than recovered later from components of a complement. The
+construction also makes countably many arbitrary choices --- nearest
+points, access arcs, crosscuts, grids --- so it is a recursive
+definition whose steps depend on those choices; a formal development
+will either carry explicit choice data through the recursion or invoke
+choice at each step.
+\end{remark}
+
+By Lemma~\ref{lem:cellulation-invariants}\textup{(i)}, every point
+lies in exactly one open cell, and the parent maps of
+\textup{(iv)} are used throughout the sequel.
+
+For a cell \(\sigma\), define its \textbf{closed star} by
+
+\[
+\operatorname{St}_{\Gamma}(\sigma)
+ =
+ \bigcup_{\sigma\preceq\tau}\overline\tau.
+\]
+
+For a point \(x\), its \textbf{carrier} is the unique relatively open
+cell containing it, and we put
+
+\[
+\operatorname{St}_{\Gamma}(x)
+ =
+\operatorname{St}_{\Gamma}
+  \bigl(\operatorname{car}_{\Gamma}(x)\bigr).
+\]
+
+The parent maps give the monotonicity that the limit argument will need.
+
+\begin{longlemma}[Refinement compatibility]\label{lem:refinement-compatibility}
+Let $\widetilde\Gamma$ refine $\Gamma$ by a finite sequence of elementary
+refinements, and let $\operatorname{par}$ denote the composite parent
+map.
+\begin{enumerate}\alphlabels
+\item For every point $x$,
+\[
+ \operatorname{par}\bigl(\operatorname{car}_{\widetilde\Gamma}(x)\bigr)
+ =\operatorname{car}_{\Gamma}(x).
+\]
+\item If $\widetilde\sigma$ is a cell with
+$\operatorname{par}(\widetilde\sigma)=\sigma$, then
+\[
+ \operatorname{St}_{\widetilde\Gamma}(\widetilde\sigma)
+ \subseteq \operatorname{St}_{\Gamma}(\sigma).
+\]
+In particular, closed stars of a fixed point are monotone under
+refinement.
+\item In a compatible matched refinement, corresponding cells have
+corresponding parents. Consequently, if $x$ and $y$ are corresponding
+skeleton points at a later stage, their carriers at every earlier stage
+also correspond.
+\end{enumerate}
+\end{longlemma}
+\begin{proof}
+It is enough first to check one elementary refinement. Under an edge
+subdivision, a point in either new subedge or at the new vertex had the
+old open edge as its old carrier, and each of those new cells has that
+edge as parent; all other carriers are unchanged. Under a 2-cell split,
+a point in a new open 2-cell or in the interior of the new ear had the
+old open 2-cell as its old carrier, and the corresponding new cell has
+that 2-cell as parent. Endpoint cells were created, if necessary, by
+preceding edge subdivisions, already covered by the first case. This
+proves (a) for one refinement and hence, by iteration, for a finite
+sequence.
+
+For (b), let $\widetilde\tau$ be a supercell of
+$\widetilde\sigma$. Parent compatibility from
+Lemma~\ref{lem:cellulation-invariants} gives
+\[
+ \sigma=\operatorname{par}(\widetilde\sigma)
+ \preceq \operatorname{par}(\widetilde\tau),
+\]
+and the construction of the parent map gives
+$\overline{\widetilde\tau}\subseteq
+\overline{\operatorname{par}(\widetilde\tau)}$. Taking the union over
+all $\widetilde\tau$ proves the cell-star inclusion. Applying (a) to
+the carrier of a point gives the pointwise assertion.
+
+For (c), the two realizations carry the same abstract parent maps by
+Lemma~\ref{lem:combinatorial-invariance}. At a later matched stage, the
+skeleton homeomorphism maps the open carrier of $x$ onto the
+corresponding open carrier of $y$. Iterating corresponding parent maps
+and applying (a) identifies these iterated parents with the carriers of
+$x$ and $y$ at every earlier stage.
+\end{proof}
+
+\begin{longlemma}[Stars and face mesh]\label{lem:star-face-mesh}
+For every cell $\sigma$,
+\[
+ \operatorname{St}_{\Gamma}(\sigma)
+ =
+ \bigcup_{\substack{R\text{ a 2-cell}\\\sigma\preceq R}}\overline R.
+\]
+Consequently:
+\begin{enumerate}\alphlabels
+\item if every closed 2-cell incident with the carrier of a point $x$
+      has diameter $<\eta$, then
+      $\operatorname{diam}\operatorname{St}_{\Gamma}(x)<2\eta$;
+\item refinement cannot increase the maximum diameter of the 2-cells.
+\end{enumerate}
+\end{longlemma}
+\begin{proof}
+Every supercell $\tau$ of $\sigma$ is, by
+Lemma~\ref{lem:cellulation-invariants}\textup{(v)}, a subcell of some
+2-cell $R$. Transitivity gives $\sigma\preceq R$, and
+$\overline\tau\subseteq\overline R$, proving the displayed equality.
+For (a), all the indicated closed 2-cells contain $x$, so every point
+of their union is within $\eta$ of $x$. For (b), every new 2-cell is
+contained in its parent 2-cell.
+\end{proof}
+
+\subsection{The precise finite-transfer theorem}\label{the-precise-finite-transfer-theorem}
+
+We first isolate a local fact used at every ear endpoint.
+
+\begin{lemma}[Local structure of a polygonal skeleton]\label{lem:local-skeleton-structure}
+Let \(G\) be a finite plane graph all of whose edges are polygonal,
+and let \(x\in|G|\). Then there is \(r_0>0\) such that for every
+\(0<r\le r_0\) the closed disk \(\overline B(x,r)\) meets \(|G|\)
+exactly in finitely many straight segments from \(x\) with pairwise
+distinct directions: the initial segments at \(x\) of the local edge
+branches through \(x\). Consequently
+\(B(x,r)\setminus|G|\) is a finite union of open circular
+sectors.
+\end{lemma}
+\begin{proof}
+Write every edge as a finite union of straight segments. The segments
+not containing \(x\), together with the vertices other than \(x\),
+form a compact set missing \(x\); by
+Lemma~\ref{lem:compact-separation}\textup{(c)}, choose \(r_1>0\) with
+\(\overline B(x,r_1)\) disjoint from that set. Shrink \(r_1\) further
+below the distance from \(x\) to every endpoint, other than \(x\)
+itself, of every segment containing \(x\). For \(r\le r_1\), each
+segment through \(x\) then meets \(\overline B(x,r)\) in one or two
+straight radial segments from \(x\), according as \(x\) is an endpoint
+or an interior point of it; this covers the cases in which \(x\) is a
+vertex, a bend point of an edge, or an interior point of a straight
+piece. Two of these radial segments with a common direction would have
+overlapping relative interiors, which is impossible: edge interiors
+are pairwise disjoint and avoid all vertices, and each edge is a
+simple arc, so its two local branches at an interior point have
+distinct directions. Removing finitely many radial segments from the
+open disk leaves a finite union of open circular sectors.
+\end{proof}
+
+\begin{lemma}[Polygonal-side accessibility]\label{lem:polygonal-side-accessibility}
+Let \(F\) be a face in one of the finite cellulations and let
+\(x\in\partial F\) lie off the wild outer curve \(C\). Then \(x\) is
+polygonally accessible from \(F\). The analogous assertion holds at
+every boundary point of a target face.
+\end{lemma}
+\begin{proof}
+On the source side, apply
+Lemma~\ref{lem:local-skeleton-structure} to the finite polygonal plane
+graph formed by the nonboundary edges and their endpoints, and use
+Lemma~\ref{lem:compact-separation}\textup{(c)} to shrink the disk at
+\(x\) until it also misses the compact set \(C\); this is possible
+because \(x\) lies off \(C\). The disk then meets the whole skeleton
+in the finitely many radial segments of
+Lemma~\ref{lem:local-skeleton-structure}, whether \(x\) is a vertex, a
+bend point of a polygonal edge, or an interior point of a straight
+piece. The open disk minus those radial segments is a finite union of open
+sectors. Each sector is connected and disjoint from the skeleton, so
+by Lemma~\ref{lem:cellulation-invariants}\textup{(i)} it lies in a
+single open 2-cell; and at least one sector lies in \(F\), because
+\(F\) accumulates at \(x\in\partial F\) and meets the disk only inside
+sectors. A short straight segment from \(x\) into that sector is a
+polygonal access arc. On the target side every edge, including every
+outer edge, is polygonal, so
+Lemma~\ref{lem:local-skeleton-structure} applies to the whole target
+graph at every boundary point \(x\) of a target face \(F\), including
+points of \(S\). Here some sectors may lie outside \(Q\) and belong to
+no cell, so argue only about a sector meeting \(F\): such a sector
+\(\Sigma\) exists because \(F\) accumulates at \(x\) and meets the
+open disk only inside sectors. Being connected and disjoint from the skeleton, which contains
+\(S\), the set \(\Sigma\) lies in one of the two components
+\(Q^\circ\) and \(\mathbb R^2\setminus Q\) of
+\(\mathbb R^2\setminus S\)
+(Theorem~\ref{thm:polygonal-jordan} applied to the square boundary);
+meeting \(F\subseteq Q^\circ\), it lies in \(Q^\circ\). Hence it lies
+in a single open 2-cell by
+Lemma~\ref{lem:cellulation-invariants}\textup{(i)}, and that cell is
+\(F\). A short straight segment from \(x\) into \(\Sigma\) is the
+access arc.
+\end{proof}
+
+\begin{longtheorem}[Finite transfer]\label{thm:finite-transfer}
+Let $(\Gamma,\Gamma')$ be a generated matched cellulation.
+\begin{enumerate}\alphlabels
+\item \textbf{Transfer toward the square.}
+Suppose $H$ is a finite 2-connected plane graph containing a
+subdivision of $\Gamma$, with outer cycle $C$, with every nonboundary
+edge polygonal, and with $|H|\setminus C$ connected. Then the common
+subdivision can be made on $\Gamma'$, and $H$ can be transferred to an
+admissible target realization $H'$.
+
+\item \textbf{Transfer back from an admissible target refinement.}
+Suppose $H'$ is a finite 2-connected polygonal plane graph containing
+a subdivision of $\Gamma'$, with outer cycle $S$, and with
+$|H'|\setminus S$ connected. Assume that every new nonboundary edge of
+$H'\setminus\Gamma'$ meeting $S$ has exactly one endpoint on $S$, that
+this endpoint is a fresh point
+$u(a)$ with $a\in A$, and that exactly one new nonboundary edge is
+incident with each such fresh boundary point. Then the common
+subdivision can be made on $\Gamma$, and $H'$ can be transferred to an
+admissible source realization $H$.
+\end{enumerate}
+In either direction, the resulting generated matched cellulation refines the old
+one by explicit parent maps.
+\end{longtheorem}
+\begin{proof}
+By Lemma~\ref{lem:polygonal-overlay}, using the convention of
+Remark~\ref{rem:polygonal-overlay-convention}, first overlay the proposed
+polygonal nonboundary edges with the old polygonal nonboundary skeleton
+and subdivide at all intersections. A new point on an old edge is transferred to the other realization using the chosen edge parametrization. We may therefore assume that the old skeleton is literally a subgraph of the new one on both sides. The common subdivision also inserts every new boundary vertex --- in part (b), each fresh point \(u(a)\) --- into the outer cycle, so all vertices of the new graph lying on the outer cycle are present before any ear is added.
+
+By Lemma~\ref{lem:relative-ear}, the new finite 2-connected graph is obtained from the old subdivided graph by a finite sequence of ears. The interior of each ear lies in one current face, because it is connected and disjoint from the current skeleton.
+
+Each ear insertion consists of at most two edge subdivisions at its
+endpoints followed by one 2-cell split; hence every intermediate stage
+of the induction below is a generated matched cell structure in the
+sense of Definition~\ref{def:generated-structure}. Its open
+nonboundary part may be temporarily disconnected --- for instance,
+after an ear whose two endpoints both lie on the outer cycle --- and,
+by Remark~\ref{rem:intermediate-disconnection}, none of the lemmas
+invoked during the induction assumes that connectedness. Admissibility
+is recovered for the final object in the last paragraph of this proof.
+
+Proceed by induction through this ear sequence. Suppose the next ear \(P\) lies in a current face \(F\), with distinct endpoints \(v,w\) on the boundary cycle of \(F\). Let \(F^\ast,v^\ast,w^\ast\) be the corresponding face and endpoints in the other realization.
+
+In part (a), \(F^\ast\) is a polygonal Jordan region in the square, by
+Lemma~\ref{lem:cellulation-invariants}\textup{(vii)}. Every point of its boundary is polygonally accessible from its interior. Lemma~\ref{lem:accessible-endpoints} therefore gives a polygonal crosscut \(P^\ast\subseteq\overline{F^\ast}\) from \(v^\ast\) to \(w^\ast\).
+
+For part (b), an endpoint not on \(C\) is accessible from the corresponding source face by Lemma~\ref{lem:polygonal-side-accessibility}.
+
+Now suppose the target endpoint is on \(S\). By hypothesis it is a
+fresh point \(u(a)\), and the only new target edge incident with it is
+the one occurring in the present ear. At the common subdivision stage,
+$a$ is inserted in the interior of one outer edge. By
+Lemma~\ref{lem:cellulation-invariants}\textup{(vi)}, each of the resulting
+outer subedges is incident with exactly one source 2-cell. The two
+subedges have the same incident 2-cell, because they subdivide one old
+outer edge. By Lemma~\ref{lem:combinatorial-invariance}\textup{(c)}, this
+cell corresponds to the unique target 2-cell incident with the matching
+outer subedges. Earlier ears do not
+end at $a$. Whenever such an ear splits the unique 2-cell incident with
+$a$, exactly one of the two new boundary paths contains $a$; hence
+exactly one descendant 2-cell remains incident with $a$. The same
+combinatorial assertion holds on the target side. Since the present
+target ear starts at $u(a)$ in $F^\ast$, the unique current source
+2-cell incident with $a$ is precisely the cell corresponding to
+$F^\ast$.
+
+The union $K$ of all old closed nonboundary edges and the finitely many
+source ears already inserted is compact and does not contain $a$.
+By Lemma~\ref{lem:tangent-cone}, a tangent disk at $a$ contains an open
+cone of access segments. By
+Lemma~\ref{lem:compact-separation}\textup{(c)}, shrink that cone until it
+misses $K$. Its punctured part is connected, lies
+in the complement of the current skeleton, and accumulates at $a$;
+therefore it lies in the unique current source 2-cell just identified.
+It supplies the required access arc. Thus both source endpoints are
+accessible from the corresponding source face, and
+Lemma~\ref{lem:accessible-endpoints} again supplies a polygonal crosscut.
+
+Subdivide the new crosscut into the same number of abstract edges as the given ear and extend the skeleton homeomorphism edge by edge. Since the current face boundary is a cycle, it has exactly two boundary paths between the endpoints. Theorem~\ref{thm:general-crosscut} says that the crosscut splits the face into exactly the two Jordan regions bounded by the crosscut together with those two paths. We therefore make the same abstract face split on both sides.
+
+This completes the induction. By Lemma~\ref{lem:combinatorial-invariance}, the reproduced realization has the same 2-connectivity and outer-cycle incidences as the given extension; and since the open nonboundary part of the given final graph is connected by hypothesis, the corresponding open nonboundary part of the reproduced realization is connected as well. Both final realizations are therefore admissible, and the final pair is a generated matched cellulation. Every step is an edge subdivision or a face split, so the parent maps of Lemma~\ref{lem:cellulation-invariants} are available. \end{proof}
+
+\subsection{Attaching a local source grid}\label{attaching-a-local-source-grid}
+
+Let
+
+\[
+B=\mathbb Q^2\cap D.
+\]
+
+Choose a sequence \(b_1,b_2,\ldots\) in which every point of \(B\) occurs infinitely often, and put
+
+\[
+\varepsilon_n=2^{-n}.
+\]
+
+The recursion producing the nested pairs is the following. Let
+\((\Gamma_0,\Gamma'_0)\) be the initial matched cellulation of
+Proposition~\ref{prop:initial-pair}. For each \(n\ge1\), stage \(n\)
+starts from \((\Gamma_{n-1},\Gamma'_{n-1})\) and performs four steps:
+extend the source skeleton by a local grid of mesh
+\(<\varepsilon_n\) in the window \(W_n(b_n)\) defined below
+(Proposition~\ref{prop:local-grid-attachment}); transfer this
+extension to the target by
+Theorem~\ref{thm:finite-transfer}\textup{(a)}; refine the whole target
+by the anchored mesh of Proposition~\ref{prop:anchored-square-mesh}
+with \(\delta=\varepsilon_n\); and transfer the result back by
+Theorem~\ref{thm:finite-transfer}\textup{(b)}. The output is the
+stage-\(n\) pair \((\Gamma_n,\Gamma'_n)\), which refines
+\((\Gamma_{n-1},\Gamma'_{n-1})\). Throughout, ``stage \(n-1\)''
+refers to the input of this step and ``stage \(n\)'' to its output.
+
+For \(p\in D\), define
+
+\[
+r(p)=\operatorname{dist}_\infty(p,C).
+\]
+
+The distance-to-\(C\) function is 1-Lipschitz in the \(\ell^\infty\) metric. Since \(C=\partial D\), the open axis-parallel square of radius \(r(p)\) centered at \(p\) lies in \(D\).
+
+Set
+
+\[
+s_n(p)
+ =
+r(p)-\min\bigl(r(p)/2,\varepsilon_n\bigr)
+\]
+
+and
+
+\[
+W_n(p)
+ =
+\{x:\|x-p\|_\infty\le s_n(p)\}.
+\]
+
+Then
+
+\[
+0<s_n(p)<r(p),
+\qquad
+r(p)-s_n(p)\le\varepsilon_n,
+\]
+
+and the closed square \(W_n(p)\) is contained in \(D\).
+
+\begin{longproposition}[Local-grid attachment]\label{prop:local-grid-attachment}
+Let \(\Gamma=\Gamma_{n-1}\) be the current source skeleton at stage \(n\ge1\), and let \(W=W_n(b_n)\). There is a finite 2-connected extension \(H_n\) of \(\Gamma\), polygonal off \(C\), such that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \(|H_n|\setminus C\) is connected;
+\item
+  \(H_n\) contains a rectangular grid on \(W\);
+\item
+  every closed grid rectangle has diameter \(<\varepsilon_n\).
+\end{enumerate}
+\end{longproposition}
+\begin{proof}
+Choose sufficiently fine finite horizontal and vertical coordinate sets in \(W\), with at least two intervals in each direction. Begin with the outer rectangle of the resulting grid \(K\), add each interior horizontal row as an ear, and then, after subdividing the rows at the crossing points, add each vertical segment between consecutive horizontal rows as an ear of length one. By Lemma~\ref{lem:subdivision-ear-preserve}, \(K\) is 2-connected.
+
+By Lemma~\ref{lem:polygonal-overlay}, using the convention of
+Remark~\ref{rem:polygonal-overlay-convention}, overlay $K$ only with the
+polygonal nonboundary skeleton of $\Gamma$, retain $C$ unchanged, and
+regard every intersection as a vertex. By Lemma~\ref{lem:subdivision-ear-preserve}, subdivision preserves 2-connectivity. There are three cases.
+
+\textbf{At least two common vertices.}\\
+Lemma~\ref{lem:union-two-connected} says that the union is 2-connected. Since \(K\subseteq D\), the common vertices lie in the nonboundary part; the connected set \(|\Gamma|\setminus C\) and the connected grid \(K\) have nonempty intersection, so their union is connected.
+
+\textbf{No common vertex.}\\
+The connected grid \(K\) lies in one face \(F\) of \(\Gamma\); by
+Lemma~\ref{lem:cellulation-invariants}\textup{(vii)}, \(F\) is a
+bounded Jordan region. Choose a nondegenerate straight grid edge \(J\), and let \(\ell\) be its supporting line. The component of \(\ell\cap F\) containing the relative interior of \(J\) is a bounded open interval in \(\ell\). Its closure \(E\) is a line segment with two distinct endpoints on \(\partial F\) and interior in \(F\). Hence \(E\) is an ear for \(\Gamma\), and \(\Gamma\cup E\) is 2-connected by Lemma~\ref{lem:subdivision-ear-preserve}. Since \(E\) contains \(J\), after subdivision \(\Gamma\cup E\) and \(K\) have at least two common vertices. Lemma~\ref{lem:union-two-connected} now applies.
+
+\textbf{Exactly one common vertex \(x\).}\\
+Make \(x\) a vertex of both graphs. Since \(K\) is 2-connected, \(K\setminus\{x\}\) is connected. It is disjoint from \(\Gamma\), so it lies in one face \(F\) of \(\Gamma\). Choose a point \(y\in K\setminus\{x\}\) in the relative interior of a grid edge and a line \(\ell\) through \(y\) not passing through \(x\). As above, the closure \(E\) of the component of \(\ell\cap F\) containing \(y\) is a crosscut of \(F\). Then \(\Gamma\cup E\) is 2-connected by Lemma~\ref{lem:subdivision-ear-preserve}, and it meets \(K\) in the two distinct points \(x,y\). Lemma~\ref{lem:union-two-connected} applies again.
+
+Let \(L\) be the finite overlay of the resulting union. It contains the whole grid and is 2-connected. Its open nonboundary part need not yet be connected: for example, the auxiliary crosscut could have both endpoints on \(C\).
+
+If \(|L|\setminus C\) has more than one component, choose points in two of its components and join them by a simple polygonal arc in \(D\), using Lemma~\ref{lem:polygonal-connected}. Overlay this polygonal arc with the polygonal nonboundary skeleton. Each component of the arc outside the old graph is an open subarc whose closure has two distinct endpoints on the old graph; after subdivision it is an ear. By Lemma~\ref{lem:subdivision-ear-preserve}, adding these ears successively preserves 2-connectivity. Because the joining arc lies in \(D\), every ear endpoint lies in the open nonboundary part; hence no ear increases the number of components of the open nonboundary part, and once all ears of one joining arc are present, the whole arc lies in the open nonboundary part and joins the two chosen components. Each round therefore strictly decreases the number of components. Since there are only finitely many components, finitely many repetitions produce a 2-connected graph \(H_n\) for which \(|H_n|\setminus C\) is connected.
+
+The graph \(H_n\) contains the entire local grid and has all the stated properties. \end{proof}
+
+Apply Theorem~\ref{thm:finite-transfer}\textup{(a)} to the extension
+$H_n$ of Proposition~\ref{prop:local-grid-attachment}. We obtain a matched target realization \(H'_n\).
+
+\subsection{A fine anchored mesh of the square}\label{a-fine-anchored-mesh-of-the-square}
+
+We now refine the whole target square. The mesh must be small everywhere, but a new inward edge may meet \(S\) only where it can later be pulled back to an accessible source point.
+
+Let \(V_\partial\subseteq S\) be the finite set of boundary vertices already present. At stage \(n\), only finitely many points of \(A\) have previously been used. The set \(A\) is dense in \(C\) by Proposition~\ref{prop:countable-strong-access}, so \(u(A)\) is dense in \(S\); removing the images of previously used points and the finite set \(V_\partial\) leaves a dense subset of \(S\): if a nonempty relatively open arc of \(S\) met the dense set in only finitely many points, deleting those points would leave a nonempty open subarc disjoint from the dense set, contradicting density; hence every nonempty open arc meets the dense set in infinitely many points, and finitely many deletions cannot remove them all.
+
+\begin{longproposition}[Anchored square mesh]\label{prop:anchored-square-mesh}
+For every \(\delta>0\), there is a finite polygonal cellulation \(T\) of \(Q\) such that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  every 2-cell of \(T\) --- that is, every face contained in \(Q\),
+  excluding the unbounded complementary face --- has diameter
+  \(<\delta\);
+\item
+  every point of \(V_\partial\) is a boundary vertex of \(T\);
+\item
+  every new internal edge of \(T\) meeting \(S\) ends at a fresh point of \(u(A)\);
+\item
+  exactly one new internal edge is incident with each fresh boundary point;
+\item
+  the skeleton of \(T\) is 2-connected;
+\item
+  \(|T|\setminus S\) is connected.
+\end{enumerate}
+\end{longproposition}
+\begin{proof}
+Choose \(\lambda\in(0,1)\) so close to \(1\) that
+
+\[
+\sqrt2(1-\lambda)<\delta/4.
+\]
+
+Every nonzero point \(x\in Q\) has unique radial coordinates
+
+\[
+x=t z,
+\qquad
+t=\|x\|_\infty,
+\qquad
+z=\frac{x}{\|x\|_\infty}\in S.
+\]
+
+Hence
+
+\[
+S\times[\lambda,1]\longrightarrow
+Q\setminus(\lambda Q)^\circ,
+\qquad
+(z,t)\longmapsto tz
+\]
+
+is a homeomorphism.
+
+Choose finitely many fresh points
+
+\[
+z_0,z_1,\ldots,z_{m-1}\in u(A)\setminus V_\partial
+\]
+
+in cyclic order so that every closed boundary arc \(A_i\) from \(z_i\) to \(z_{i+1}\) has diameter \(<\delta/4\). This is possible by parametrizing \(S\) by a circle (Lemma~\ref{lem:jordan-circle}), using uniform continuity to partition the circle into arcs whose images in \(S\) have diameter \(<\delta/8\), and choosing one fresh dense-set point in the relative interior of each --- density supplies such a point after the finitely many exclusions --- so that the chosen points are distinct and in cyclic order: two consecutive chosen points then bound an arc of \(S\) contained in the union of two consecutive image arcs, hence of diameter \(<\delta/4\). Insert the old points of \(V_\partial\) merely as subdivisions of the outer arcs \(A_i\).
+
+For each \(z_i\), draw the radial spoke
+
+\[
+[z_i,\lambda z_i].
+\]
+
+Distinct spokes are disjoint: two radial segments in the annulus \(\lambda\le\|x\|_\infty\le1\) can meet only if they lie on the same ray, and then their endpoints on \(S\) are equal.
+
+The spokes cut the collar into the sets
+
+\[
+R_i
+ =
+\{t z:z\in A_i,\ \lambda\le t\le1\}.
+\]
+
+The radial-coordinate homeomorphism shows that these are closed topological rectangles with disjoint interiors and that they cover the collar. If \(x=t z\) and \(y=s w\) lie in one \(R_i\), then
+
+\[
+\begin{aligned}
+\|x-y\|
+ &\le
+ \|tz-z\|+\|z-w\|+\|w-sw\|\\
+ &<
+ \delta/4+\delta/4+\delta/4
+ <\delta.
+\end{aligned}
+\]
+
+Thus every collar cell has diameter \(<\delta\).
+
+Fill the inner square \(\lambda Q\) with a rectangular grid. Include the four corners of \(\lambda Q\), all points \(\lambda z_i\), and enough additional horizontal and vertical coordinates that every inner rectangle has diameter \(<\delta\). Subdivide the inner boundary where necessary.
+
+The inner grid is 2-connected by the same ear construction used for \(K\), together with Lemma~\ref{lem:subdivision-ear-preserve}. The boundary of every collar rectangle is a cycle sharing with the inner grid at least the two endpoints of its inner boundary arc. Adding these finitely many cycles one at a time and applying Lemma~\ref{lem:union-two-connected} proves that the full mesh is 2-connected. After deleting \(S\), the inner grid together with all open spokes is still connected. The only inward edge incident with \(S\) at a new point is the single spoke at that point. \end{proof}
+
+Apply Proposition~\ref{prop:anchored-square-mesh} with \(\delta=\varepsilon_n\), obtaining \(T_n\). By Lemma~\ref{lem:polygonal-overlay}, overlay \(T_n\) with \(H'_n\). The two 2-connected graphs contain the whole outer cycle \(S\), so their overlay is 2-connected by Lemma~\ref{lem:union-two-connected}.
+
+Their open nonboundary parts are separately connected. If they do not meet, choose one point on each and join them by a simple polygonal arc in \(Q^\circ\), using Lemma~\ref{lem:polygonal-connected}. Form the polygonal overlay with this arc, again using Lemma~\ref{lem:polygonal-overlay}. Every component of the arc outside the old graph has two distinct endpoints on that graph and is therefore an ear; Lemma~\ref{lem:subdivision-ear-preserve} shows that adding the components successively preserves 2-connectivity. Every ear endpoint lies in \(Q^\circ\), hence in the open nonboundary part, so no ear disconnects that part; and after all ears are added, the arc joins the two parts within it. The resulting graph, call it \(\Gamma'_n\), has connected open nonboundary part.
+
+Since \(T_n\subseteq\Gamma'_n\), every open target 2-cell \(F\) of
+\(\Gamma'_n\) lies in an open 2-cell of \(T_n\). Hence
+\(\operatorname{diam}F<\varepsilon_n\), and
+Lemma~\ref{lem:diameter-closure} gives
+\[
+ \operatorname{diam}\overline F<\varepsilon_n.
+\]
+Thus every closed target 2-cell has diameter
+\(<\varepsilon_n\).
+
+The extension from \(H'_n\) to \(\Gamma'_n\) satisfies the hypotheses of Theorem~\ref{thm:finite-transfer}\textup{(b)}: the only new edges meeting \(S\) are the single spokes at fresh images of points of \(A\). Transfer the refinement back to the source and call the result \(\Gamma_n\). Together \((\Gamma_n,\Gamma'_n)\) form the stage-\(n\) generated matched cellulation, completing the recursion step.
+
+\subsection{Quantitative consequences}\label{quantitative-consequences}
+
+Every target 2-cell has diameter $<\varepsilon_n$. Therefore
+Lemma~\ref{lem:star-face-mesh}\textup{(a)} gives
+\[
+ \operatorname{diam}\operatorname{St}_{\Gamma'_n}(y)
+ <2\varepsilon_n
+\]
+for every target point $y$.
+
+The local source grid gives the corresponding local estimate even after the target refinement has been pulled back.
+
+\begin{lemma}[Grid-star estimate]\label{lem:grid-star-estimate}
+If \(x\) lies in the interior of \(W_n(b_n)\), then
+
+\[
+\operatorname{diam}
+ \operatorname{St}_{\Gamma_n}(x)
+ <2\varepsilon_n.
+\]
+\end{lemma}
+\begin{proof}
+All grid lines belong to the source skeleton before the final pullback,
+and the pullback only refines that cellulation. By
+Lemma~\ref{lem:refinement-compatibility}\textup{(a)}, the parent of the
+final carrier of \(x\) is its carrier before the pullback. If a final
+2-cell is incident with that carrier, parent compatibility makes its
+parent a 2-cell \(T\) incident with the earlier carrier, so that
+\(x\in\overline T\). The open 2-cell \(T\) is connected and disjoint
+from the pre-pullback skeleton, which contains \(\partial W\) and all
+grid lines of \(W\); hence \(T\) lies in a single component of the
+complement of that finite union of segments, and these components are
+the open grid rectangles of \(W\) together with the complement of
+\(W\). The latter is excluded: its closure misses the interior of
+\(W\), while \(x\in\overline T\) lies there. So \(T\) lies in one open
+grid rectangle \(\rho\), giving \(\overline T\subseteq\overline\rho\).
+The final 2-cell is contained in the closure of its parent \(T\) and
+therefore has diameter at most
+\(\operatorname{diam}\overline\rho<\varepsilon_n\). The conclusion follows from
+Lemma~\ref{lem:star-face-mesh}\textup{(a)}.
+\end{proof}
+
+We now prove the precise quantitative statement needed in the limit
+argument: every source point is caught by arbitrarily late local
+windows.
+
+\begin{proposition}[Shrinking matched stars]\label{prop:shrinking-stars}
+For every \(x\in D\),
+
+\[
+\operatorname{diam}
+ \operatorname{St}_{\Gamma_n}(x)
+ \longrightarrow0.
+\]
+
+If \(\sigma_n(x)\) is the source carrier of \(x\) and \(\sigma'_n(x)\) its corresponding target cell, then
+
+\[
+\operatorname{diam}
+ \operatorname{St}_{\Gamma'_n}(\sigma'_n(x))
+ \longrightarrow0,
+\]
+
+and this second convergence is uniform in \(x\).
+\end{proposition}
+\begin{proof}
+The second convergence is uniform because every target star at stage
+\(n\) has diameter \(<2\varepsilon_n\), as noted at the start of this
+subsection. For the first, fix \(x\in D\), and put
+
+\[
+d=\operatorname{dist}_\infty(x,C)>0.
+\]
+
+Choose \(b\in B\) with
+
+\[
+\|b-x\|_\infty<d/8.
+\]
+
+The point \(b\) occurs at arbitrarily large indices. Choose such an index \(n\) with
+
+\[
+\varepsilon_n<d/8.
+\]
+
+Since \(r(\cdot)=\operatorname{dist}_\infty(\cdot,C)\) is 1-Lipschitz,
+
+\[
+r(b)
+ \ge r(x)-\|b-x\|_\infty
+ >7d/8.
+\]
+
+Consequently,
+
+\[
+s_n(b)
+ \ge r(b)-\varepsilon_n
+ >3d/4.
+\]
+
+Because \(\|b-x\|_\infty<d/8\), the point \(x\) lies in the interior of \(W_n(b)\). Lemma~\ref{lem:grid-star-estimate} gives
+
+\[
+\operatorname{diam}
+ \operatorname{St}_{\Gamma_n}(x)
+ <2\varepsilon_n.
+\]
+
+Such indices \(n\) can be chosen arbitrarily large. By Lemma~\ref{lem:refinement-compatibility}\textup{(b)}, once a star becomes small it remains at least as small at all later stages. Hence
+
+\[
+\operatorname{diam}
+ \operatorname{St}_{\Gamma_n}(x)
+ \longrightarrow0. \qedhere
+\]
+\end{proof}
+
+Finally, we record the density of the anchor points, which will be
+used when continuity at the boundary is proved.
+
+\begin{lemma}[Density of anchors]\label{lem:anchor-density}
+Let \(A_\infty\subseteq A\) be the set of preimages under $u$ of all
+fresh target anchors used over all stages. Then \(u(A_\infty)\) is
+dense in \(S\) and \(A_\infty\) is dense in \(C\). Moreover, at every
+stage containing a given point of \(A_\infty\), that point is incident
+with a nonboundary edge.
+\end{lemma}
+\begin{proof}
+At stage \(n\), consecutive fresh anchors of the mesh of
+Proposition~\ref{prop:anchored-square-mesh} bound arcs of \(S\) of
+diameter \(<\varepsilon_n/4\); hence \(u(A_\infty)\) is dense in
+\(S\). Since \(u^{-1}\) is a continuous surjection onto \(C\), and a
+continuous surjection carries dense subsets of its domain to dense
+subsets of its codomain, \(A_\infty\) is dense in \(C\).
+When an anchor is introduced, its spoke is a nonboundary edge incident
+with it, and at all later stages an initial subedge of that spoke
+remains incident with it.
+\end{proof}
+
+\section{The limit homeomorphism of the interiors}\label{the-limit-homeomorphism-of-the-interiors}
+
+We now forget how the decompositions were constructed and use only their nesting, matching, and shrinking properties.
+
+For \(x\in D\), let \(\sigma_n(x)\) be its carrier in the stage-\(n\) source decomposition. Let
+
+\[
+T_n(x)
+\]
+
+be the closed star in the target decomposition of the cell corresponding to \(\sigma_n(x)\).
+
+The sets \(T_n(x)\) are nonempty and compact. By
+Lemma~\ref{lem:refinement-compatibility}\textup{(a)}, the parent of
+$\sigma_{n+1}(x)$ is $\sigma_n(x)$. Parent maps correspond in the two
+realizations, so the parent of the corresponding target cell
+$\sigma'_{n+1}(x)$ is $\sigma'_n(x)$. The cell-star inclusion in
+Lemma~\ref{lem:refinement-compatibility}\textup{(b)} therefore gives
+\[
+ T_{n+1}(x)\subseteq T_n(x).
+\]
+Their diameters tend to zero by Proposition~\ref{prop:shrinking-stars}. By
+Lemma~\ref{lem:nested-compact}, their intersection consists of exactly
+one point. Define
+
+\[
+F(x)
+ =
+ \text{the unique point of }\bigcap_{n=0}^\infty T_n(x).
+\]
+
+\subsection{A finite cell-neighborhood lemma}\label{a-finite-cell-neighborhood-lemma}
+
+\begin{lemma}[Finite cell neighborhoods]\label{lem:cell-neighborhood}
+In either realization of a generated matched cell structure, and for any point \(x\) of its closed domain, there is a relative neighborhood \(U\) of \(x\) in the closed domain such that, for every \(z\in U\), the
+carrier of $x$ is a subcell of the carrier of $z$; consequently
+\[
+\operatorname{St}(z)\subseteq\operatorname{St}(x).
+\]
+\end{lemma}
+\begin{proof}
+Let \(\sigma\) be the carrier of \(x\)
+(Lemma~\ref{lem:cellulation-invariants}\textup{(i)}). Take the union of all closed cells not containing \(x\). It is a finite union of closed sets and does not contain \(x\). Its complement, intersected with the closed domain, is a relative neighborhood \(U\).
+
+If \(z\in U\) and \(\rho\) is its carrier, then \(x\in\overline\rho\); otherwise \(\overline\rho\) would be one of the excluded closed cells containing \(z\). Hence \(\sigma\cap\overline\rho\ne\varnothing\), and the frontier property, Lemma~\ref{lem:cellulation-invariants}\textup{(ii)}, gives \(\sigma\subseteq\overline\rho\), that is, \(\sigma\preceq\rho\). By transitivity, every supercell of \(\rho\) is a supercell of \(\sigma\). Hence \(\operatorname{St}(z)\subseteq\operatorname{St}(x)\). \end{proof}
+
+\subsection{Agreement with the finite skeleton maps}\label{agreement-with-the-finite-skeleton-maps}
+
+Let \(G_n=|\Gamma_n|\) and \(G'_n=|\Gamma'_n|\). The skeleton
+homeomorphisms are nested: an edge subdivision leaves the skeleton map
+unchanged as a point map, and a 2-cell split extends it by the chosen
+homeomorphism on the new ear. Hence \(g_n=g_N\) on \(G_N\) whenever
+\(n\ge N\), and the maps combine to a bijection
+
+\[
+g_\infty:\bigcup_nG_n\longrightarrow\bigcup_nG'_n.
+\]
+
+\begin{proposition}[Skeleton agreement]\label{prop:skeleton-agreement}
+If \(x\in G_N\cap D\), then \(F(x)=g_N(x)=g_\infty(x)\).
+\end{proposition}
+\begin{proof}
+For every \(n\ge N\), the point \(x\) lies on the stage-\(n\) source
+skeleton, and the skeleton map carries its carrier \(\sigma_n(x)\)
+onto the corresponding target cell; hence
+\(g_N(x)=g_n(x)\in\overline{\sigma'_n(x)}\subseteq T_n(x)\). The
+intersection of the sets \(T_n(x)\) is the single point \(F(x)\), so
+\(F(x)=g_N(x)\).
+\end{proof}
+
+The limit map thus agrees with every finite skeleton map on the part
+of its domain lying in \(D\); on \(C\) the map \(F\) is not yet
+defined.
+
+\subsection{Continuity}\label{continuity}
+
+\begin{proposition}[Continuity]\label{prop:F-continuous}
+The map \(F:D\to\mathbb R^2\) is continuous.
+\end{proposition}
+\begin{proof}
+Fix \(x\in D\) and \(\eta>0\). Choose \(n\) so that
+
+\[
+\operatorname{diam}T_n(x)<\eta.
+\]
+
+Apply Lemma~\ref{lem:cell-neighborhood} to the stage-\(n\) source decomposition, and shrink the resulting relative neighborhood of \(x\) so that it lies inside the open set \(D\). For \(z\in D\) in that neighborhood, let \(\sigma\) and \(\rho\) be the source carriers of \(x\) and \(z\), respectively. The lemma gives \(\sigma\preceq\rho\). By Lemma~\ref{lem:cellulation-invariants}\textup{(ix)}, the corresponding target carriers satisfy the same subcell relation, and therefore
+\[
+ T_n(z)\subseteq T_n(x).
+\]
+Thus
+
+\[
+F(z),F(x)\in T_n(x),
+\]
+
+and
+
+\[
+\|F(z)-F(x)\|<\eta. \qedhere
+\]
+\end{proof}
+
+\subsection{\texorpdfstring{The image lies in \(Q^\circ\)}{The image lies in the interior of Q}}\label{the-image-lies-in-qcirc}
+
+\begin{proposition}[The image lies in the interior]\label{prop:image-interior}
+\(F(D)\subseteq Q^\circ\).
+\end{proposition}
+\begin{proof}
+For \(x\in D\), choose \(n\) so that the source star of \(x\) has diameter less than \(\operatorname{dist}(x,C)\). This star is disjoint from the outer boundary \(C\). By Lemma~\ref{lem:outer-incidence}, the corresponding target star is disjoint from \(S\). Hence \(F(x)\in T_n(x)\subseteq Q\setminus S=Q^\circ\).
+\end{proof}
+
+\subsection{Injectivity}\label{injectivity}
+
+\begin{proposition}[Injectivity]\label{prop:F-injective}
+The map \(F\) is injective on \(D\).
+\end{proposition}
+\begin{proof}
+Suppose \(F(x)=F(y)\) for \(x,y\in D\). Then for every \(n\), the target stars \(T_n(x)\) and \(T_n(y)\) intersect.
+
+By Lemma~\ref{lem:star-intersection}, applied at stage \(n\) to the carriers of \(x\) and \(y\), the corresponding source stars intersect as well. Choose
+
+\[
+z_n\in
+ \operatorname{St}_{\Gamma_n}(x)
+ \cap
+ \operatorname{St}_{\Gamma_n}(y).
+\]
+
+Then
+
+\[
+\|x-y\|
+ \le
+ \operatorname{diam}\operatorname{St}_{\Gamma_n}(x)
+ +
+ \operatorname{diam}\operatorname{St}_{\Gamma_n}(y),
+\]
+
+which tends to zero. Hence \(x=y\).
+\end{proof}
+
+\subsection{Density of the target skeleton}\label{density-of-the-target-skeleton}
+
+\begin{proposition}[Density of the target skeleton]\label{prop:target-skeleton-dense}
+The set \(\bigl(\bigcup_nG'_n\bigr)\cap Q^\circ\) is dense in
+\(Q^\circ\).
+\end{proposition}
+\begin{proof}
+At stage \(n\), every target face has diameter \(<\varepsilon_n\). If a point \(y\in Q^\circ\) is not on the skeleton,
+Lemma~\ref{lem:cellulation-invariants}\textup{(iii)} says that its 2-cell
+boundary contains a nonboundary edge. Hence it contains a point of the skeleton lying in \(Q^\circ\), at distance \(<\varepsilon_n\) from \(y\). Letting \(n\to\infty\) proves the density.
+\end{proof}
+
+\subsection{Surjectivity}\label{surjectivity}
+
+\begin{proposition}[Surjectivity]\label{prop:F-surjective}
+\(F(D)=Q^\circ\).
+\end{proposition}
+\begin{proof}
+The inclusion \(F(D)\subseteq Q^\circ\) is
+Proposition~\ref{prop:image-interior}. Fix \(y\in Q^\circ\). Using
+Proposition~\ref{prop:target-skeleton-dense}, choose
+
+\[
+y_k\in\left(\bigcup_nG'_n\right)\cap Q^\circ
+\quad\text{with}\quad
+y_k\to y,
+\]
+
+and let
+
+\[
+x_k=g_\infty^{-1}(y_k).
+\]
+
+The set \(C\cup D\) is compact: \(D\) is bounded and \(\partial D=C\) by Theorem~\ref{thm:jordan}, so \(C\cup D=\overline D\) is closed and bounded. It contains a convergent subsequence \(x_k\to x\). We must show \(x\in D\).
+
+Choose a stage \(n\) at which the closed target star of \(y\) is disjoint from \(S\). Lemma~\ref{lem:cell-neighborhood}, applied on the target side, gives a relative neighborhood \(V\) of \(y\) in \(Q\) such that the carrier of every point of \(V\) is one of the finitely many supercells of the stage-\(n\) carrier of \(y\). Let \(K\) be the union of the source closed cells corresponding to those supercells. Since the target star misses \(S\), Lemma~\ref{lem:outer-incidence} shows that none of these source closed cells meets \(C\). Thus \(K\) is a compact subset of \(D\). For large $k$, $y_k\in V$. View $x_k,y_k$ in a common matched
+stage $m_k\ge n$ containing them. They are corresponding skeleton
+points there, so
+Lemma~\ref{lem:refinement-compatibility}\textup{(c)} says that their
+stage-$n$ carriers correspond. The stage-$n$ carrier of $y_k$ is one
+of those supercells, and therefore the stage-$n$ carrier
+of $x_k$ is one of the corresponding source cells forming $K$.
+Hence $x_k\in K$, and consequently $x\in K\subseteq D$.
+
+By Propositions~\ref{prop:F-continuous} and
+\ref{prop:skeleton-agreement}, since every \(x_k\) lies in
+\(G_{m_k}\cap D\),
+
+\[
+F(x)
+ =
+\lim_kF(x_k)
+ =
+\lim_ky_k
+ =
+y. \qedhere
+\]
+\end{proof}
+
+\subsection{Continuity of the inverse}\label{continuity-of-the-inverse}
+
+\begin{lemma}[Exact open-cell correspondence]\label{lem:exact-cell-correspondence}
+For every stage \(n\) and every corresponding pair \((\sigma,\sigma')\)
+of nonboundary open cells of \((\Gamma_n,\Gamma'_n)\), so that
+\(\sigma\subseteq D\) and \(\sigma'\subseteq Q^\circ\),
+\(F(\sigma)=\sigma'\).
+\end{lemma}
+\begin{proof}
+On nonboundary vertices and nonboundary open edges, which lie in
+\(G_n\cap D\), \(F\) agrees with the skeleton map \(g_n\)
+(Proposition~\ref{prop:skeleton-agreement}), which carries each such
+cell onto its corresponding cell. Now
+let \(R\) be an open source 2-cell and \(x\in R\), so that the
+stage-\(n\) carrier of \(x\) is \(R\). By
+Lemma~\ref{lem:star-face-mesh}, the closed star of \(R\) is the union
+of the closures of its 2-cell supercells, and by
+Lemma~\ref{lem:cellulation-invariants}\textup{(viii)} the only 2-cell
+supercell of \(R\) is \(R\) itself; hence that closed star is exactly
+\(\overline R\), and likewise the corresponding target star is
+\(\overline{R'}\). Therefore \(F(x)\in T_n(x)=\overline{R'}\), and
+\(F(x)\in Q^\circ\) by Proposition~\ref{prop:image-interior}. If
+\(F(x)\) lay on \(\partial R'\cap Q^\circ\), which is contained in the
+stage-\(n\) target skeleton, then \(w=g_n^{-1}(F(x))\) would be a
+stage-\(n\) source skeleton point lying in \(D\), with
+\(F(w)=g_n(w)=F(x)\) by Proposition~\ref{prop:skeleton-agreement} and
+\(w\ne x\), contradicting Proposition~\ref{prop:F-injective}. Hence \(F(x)\in R'\), proving
+\(F(R)\subseteq R'\). Conversely, let \(y\in R'\); by
+Proposition~\ref{prop:F-surjective}, \(y=F(x)\) for some \(x\in D\).
+If the stage-\(n\) carrier of \(x\) were a vertex or an open edge,
+then, that carrier being nonboundary because \(x\in D\), the point
+\(F(x)=g_n(x)\) would lie on the stage-\(n\) target skeleton, which is
+disjoint from the open face \(R'\); so that carrier is some open 2-cell \(R_0\), and the inclusion
+just proved gives \(F(x)\in R_0'\). Distinct open target faces are
+disjoint, so \(R_0'=R'\), hence \(R_0=R\) and \(x\in R\). Thus
+\(F(R)=R'\).
+\end{proof}
+
+\begin{proposition}[Continuity of the inverse]\label{prop:inverse-continuous}
+The inverse map \(F^{-1}:Q^\circ\to D\) is continuous.
+\end{proposition}
+\begin{proof}
+Fix \(y=F(x)\in Q^\circ\) and \(\eta>0\). Choose \(n\) so that the source star of \(x\) has diameter \(<\eta\). Lemma~\ref{lem:cell-neighborhood} on the target side gives a relative neighborhood \(V\) of \(y\) in \(Q\) such that, for \(z\in V\cap Q^\circ\), the target carrier of \(y\) is a subcell of the target carrier of \(z\). Transfer this combinatorial relation by Lemma~\ref{lem:cellulation-invariants}\textup{(ix)}. Lemma~\ref{lem:exact-cell-correspondence} then says that the source carrier of \(x\) is a subcell of the source carrier of \(F^{-1}(z)\). Hence the source star of \(F^{-1}(z)\) is contained in the source star of \(x\), and in particular every \(F^{-1}(z)\), \(z\in V\cap Q^\circ\), lies in the source star of \(x\). Thus
+
+\[
+\|F^{-1}(z)-x\|<\eta. \qedhere
+\]
+\end{proof}
+
+\begin{proposition}[Interior homeomorphism]\label{prop:interior-homeomorphism}
+The map
+\[
+F:\operatorname{Int}(C)\longrightarrow Q^\circ
+\]
+is a homeomorphism and agrees with the skeleton map \(g_N\) on
+\(G_N\cap D\) for every \(N\).
+\end{proposition}
+\begin{proof}
+Combine the results of this section: \(F\) is well defined on
+\(D=\operatorname{Int}(C)\) by the nested-star argument at the start
+of the section, agrees with the finite skeleton maps on \(G_N\cap D\)
+(Proposition~\ref{prop:skeleton-agreement}), is continuous
+(Proposition~\ref{prop:F-continuous}), maps \(D\) onto \(Q^\circ\)
+(Propositions~\ref{prop:image-interior} and \ref{prop:F-surjective}),
+is injective (Proposition~\ref{prop:F-injective}), and has a
+continuous inverse (Proposition~\ref{prop:inverse-continuous}).
+\end{proof}
+
+\section{Continuity at the Jordan curve}\label{continuity-at-the-jordan-curve}
+
+Define $\overline F:C\cup D\longrightarrow Q$ by
+\[
+\overline F(x)=
+\begin{cases}
+F(x),&x\in D,\\
+u(x),&x\in C.
+\end{cases}
+\]
+
+It remains to prove continuity at points of \(C\).
+
+Let \(A_\infty\subseteq A\) be the set of anchor preimages of
+Lemma~\ref{lem:anchor-density}; it is dense in \(C\), every
+\(a\in A_\infty\) is incident with a nonboundary edge at every stage
+containing it, and the open nonboundary part at every stage is
+connected. The following lemma extracts the required crosscuts without allowing a graph path to pass through an unintended boundary vertex.
+
+\begin{lemma}[Skeleton crosscuts between anchors]\label{lem:skeleton-crosscuts}
+Let \(a,b\in A_\infty\) be distinct anchors occurring in a common finite stage. Then that stage contains a polygonal crosscut \(P\) of \(D\) from \(a\) to \(b\), and its image under the finite skeleton homeomorphism is a polygonal crosscut \(P'\) of \(Q^\circ\) from \(u(a)\) to \(u(b)\).
+\end{lemma}
+\begin{proof}
+Write \(X=|\Gamma_n|\setminus C\), which is connected by admissibility. Suppose first that a nonboundary edge \(e\) has both endpoints on \(C\). Its open interior \(e^\circ\) is a connected component of \(X\), because an edge interior meets the rest of the graph only at its endpoints, and those endpoints have been removed. Hence \(X=e^\circ\). There is then only one nonboundary edge. Since both \(a\) and \(b\) are incident with nonboundary edges, they are the endpoints of \(e\), and \(e\) itself is the required crosscut.
+
+Otherwise every nonboundary edge incident with \(C\) has its other endpoint in \(D\). Let \(\Lambda\) be the finite subgraph consisting of all vertices in \(D\) and all edges whose two endpoints lie in \(D\), allowing isolated interior vertices. The set \(X\) is obtained from \(|\Lambda|\) by attaching, at vertices of \(\Lambda\), the half-open interiors of edges with one endpoint on \(C\). For each component \(L\) of \(|\Lambda|\), the union of \(L\) with all such half-open edges attached to vertices of \(L\) is both open and closed in \(X\); these sets partition \(X\). Connectedness of \(X\) therefore implies that \(|\Lambda|\) is connected; and \(\Lambda\) is nonempty, because in the present case the nonboundary edge incident with \(a\) has its other endpoint in \(D\).
+
+Choose nonboundary edges \(e_a,e_b\) incident with \(a,b\). Their other endpoints lie in \(\Lambda\). Thus
+\[
+ Y=e_a\cup|\Lambda|\cup e_b
+\]
+is a connected finite union of closed polygonal arcs and \(Y\cap C=\{a,b\}\). Subdivide \(Y\) at its finitely many vertices. The resulting finite graph is connected, so it contains a simple graph path \(P\) from \(a\) to \(b\), as in the proof of Lemma~\ref{lem:finite-polygonal-union}. This path meets \(C\) only at its endpoints and is therefore a polygonal crosscut.
+
+The finite skeleton homeomorphism sends \(P\) to a simple path \(P'\). It agrees with \(u\) on the boundary, so \(P'\cap S=\{u(a),u(b)\}\). The path uses finitely many subarcs of target edges, all of which are polygonal. Hence \(P'\) is the required target crosscut.
+\end{proof}
+
+We need to know which side maps to which side.
+
+\begin{lemma}[Correspondence of crosscut sides]\label{lem:crosscut-side-correspondence}
+Let \(P\) be a crosscut contained in a finite source skeleton, with endpoints \(a,b\in A_\infty\), and let \(P'\) be its target image. Let \(A_1,A_2\) be the two boundary arcs of \(C\) from \(a\) to \(b\), and label the components \(U_1,U_2\) of \(D\setminus P\) by
+
+\[
+\overline{U_i}\cap C=A_i.
+\]
+
+Label the components \(U'_1,U'_2\) of \(Q^\circ\setminus P'\) by
+
+\[
+\overline{U'_i}\cap S=u(A_i).
+\]
+
+Then
+\[
+F(U_i)=U'_i
+\qquad(i=1,2).
+\]
+\end{lemma}
+\begin{proof}
+Because \(F\) is a homeomorphism \(D\to Q^\circ\) by
+Proposition~\ref{prop:interior-homeomorphism}, and agrees with the finite skeleton map on \(P\cap D=P\setminus\{a,b\}\) by Proposition~\ref{prop:skeleton-agreement}, it maps the two components of \(D\setminus P\) bijectively onto the two components of \(Q^\circ\setminus P'\). It remains only to identify the labels.
+
+Choose \(c\in A_\infty\) in the relative interior of \(A_i\), and take
+a stage containing \(P\), \(c\), and a nonboundary edge \(e\) incident
+with \(c\). Theorem~\ref{thm:general-crosscut} gives
+\[
+ \overline{U_{3-i}}\cap C=A_{3-i}.
+\]
+Since \(c\notin A_{3-i}\), the closed set \(\overline{U_{3-i}}\) misses
+\(c\). Choose a neighborhood \(V\) of \(c\) disjoint from that closed
+set. Because \(c\notin P\) and distinct graph edges have disjoint
+interiors, a sufficiently short initial subarc \(J\) of \(e\), with its endpoint
+\(c\) removed, lies in \(V\cap(D\setminus P)\). It cannot lie in \(U_{3-i}\), and hence lies
+in \(U_i\).
+
+Similarly,
+\[
+ \overline{U'_{3-i}}\cap S=u(A_{3-i})
+\]
+misses \(u(c)\); choose a neighborhood \(V'\) of \(u(c)\) disjoint from
+\(\overline{U'_{3-i}}\). The edge correspondence is a homeomorphism and
+sends \(c\) to \(u(c)\), so \(J\) may be chosen still shorter so that
+its image lies in \(V'\cap(Q^\circ\setminus P')\). That image lies in
+\(U'_i\). Since \(F(J)=g(J)\), the component \(U_i\) maps to \(U'_i\).
+\end{proof}
+
+\begin{proposition}[Boundary continuity]\label{prop:boundary-continuity}
+The map \(\overline F\) is continuous on \(C\).
+\end{proposition}
+\begin{proof}
+Fix \(p\in C\) and a sequence \(x_k\to p\) in \(C\cup D\). Boundary terms cause no problem because \(u\) is continuous, so consider a subsequence with \(x_k\in D\).
+
+Suppose \(F(x_k)\) does not converge to \(u(p)\). Compactness of \(Q\) gives a subsequence converging to some \(q\ne u(p)\). The point \(q\) must lie on \(S\): if \(q\in Q^\circ\),
+Proposition~\ref{prop:interior-homeomorphism} gives continuity of the inverse and
+would imply
+
+\[
+x_k=F^{-1}(F(x_k))\longrightarrow F^{-1}(q)\in D,
+\]
+
+contrary to \(x_k\to p\in C\).
+
+Put \(r=u^{-1}(q)\), so \(r\ne p\). Since \(A_\infty\) is dense, choose \(a,b\in A_\infty\), distinct from \(p,r\), such that \(p\) and \(r\) lie in opposite components of \(C\setminus\{a,b\}\). The stages are nested, so \(a\) and \(b\) occur in a common finite stage; let \(P\) and \(P'\) be the crosscuts supplied by Lemma~\ref{lem:skeleton-crosscuts}.
+
+Since \(p\notin P\) and \(P\) is compact, points sufficiently close to \(p\) avoid \(P\); and by Theorem~\ref{thm:general-crosscut} the closure of the opposite side meets \(C\) only in the boundary arc not containing \(p\). Hence points of \(D\) sufficiently close to \(p\) lie on the \(p\)-side of \(P\). Thus all large \(x_k\) lie on that side. Lemma~\ref{lem:crosscut-side-correspondence} puts their images on the corresponding \(u(p)\)-side of \(P'\). The closure of that target side meets \(S\) only in the boundary arc containing \(u(p)\), whereas \(q=u(r)\) lies in the relative interior of the other arc. Hence a sequence on the first side cannot converge to \(q\), a contradiction. \end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:square-extension}]
+The map $\overline F$ is continuous by
+Propositions~\ref{prop:interior-homeomorphism} and \ref{prop:boundary-continuity}. It is
+bijective because $F$ maps $D$ bijectively onto $Q^\circ$ and $u$ maps
+$C$ bijectively onto $S$. Its domain is compact and $Q$ is Hausdorff,
+so $\overline F$ is a homeomorphism extending $u$.
+\end{proof}
+
+\begin{theorem}[Closed-interior extension]\label{thm:closed-interior-extension}
+Every homeomorphism $f:C\to C'$ between Jordan curves extends to a
+homeomorphism
+\[
+C\cup\operatorname{Int}(C)
+ \longrightarrow
+C'\cup\operatorname{Int}(C').
+\]
+\end{theorem}
+\begin{proof}
+Apply Proposition~\ref{prop:square-reduction} and Theorem~\ref{thm:square-extension}.
+\end{proof}
+
+\section{A pointed version of the bounded theorem}\label{a-pointed-version-of-the-bounded-theorem}
+
+To handle the exterior without repeating the entire construction, we need to prescribe the image of one interior point.
+
+\begin{lemma}[Moving an interior point of the square]\label{lem:square-point-mover}
+For any \(x,y\in Q^\circ\), there is a homeomorphism
+
+\[
+M:Q\longrightarrow Q
+\]
+
+such that \(M(x)=y\) and \(M\) is the identity on \(S\).
+\end{lemma}
+\begin{proof}
+Let \(v_0,v_1,v_2,v_3\) be the corners of \(Q\) in cyclic order. The four triangles
+
+\[
+\operatorname{conv}\{x,v_i,v_{i+1}\}
+\]
+
+triangulate \(Q\), as do the four analogous triangles with \(y\). On the \(i\)-th triangle, take the affine map sending \(x\mapsto y\) and fixing \(v_i,v_{i+1}\). Adjacent affine maps agree on their shared radial edge, so they paste to a homeomorphism of \(Q\). It fixes each boundary side pointwise. Reversing the roles of \(x,y\) constructs its inverse. \end{proof}
+
+\begin{proposition}[Pointed closed-interior extension]\label{prop:pointed-extension}
+Given a boundary homeomorphism \(f:C\to C'\) and points
+
+\[
+a\in\operatorname{Int}(C),
+\qquad
+b\in\operatorname{Int}(C'),
+\]
+
+there is a closed-interior extension \(H\) with \(H(a)=b\).
+\end{proposition}
+\begin{proof}
+By Theorem~\ref{thm:closed-interior-extension}, take a closed-interior extension
+
+\[
+H_0:C\cup\operatorname{Int}(C)
+ \longrightarrow
+C'\cup\operatorname{Int}(C').
+\]
+
+Using Lemma~\ref{lem:jordan-circle}, choose a homeomorphism
+\(C'\to S\); by Theorem~\ref{thm:square-extension} it extends to a
+homeomorphism
+
+\[
+J:C'\cup\operatorname{Int}(C')\longrightarrow Q.
+\]
+
+By Lemma~\ref{lem:square-point-mover}, choose a boundary-fixing homeomorphism of \(Q\) sending \(J(H_0(a))\) to \(J(b)\). Conjugating it by \(J\) and composing with \(H_0\) changes the image of \(a\) to \(b\) without changing the map on \(C\). \end{proof}
+
+\section{The closed exteriors}\label{the-closed-exteriors}
+
+For \(a\in\mathbb R^2\), define inversion about the unit circle centered at \(a\) by
+
+\[
+I_a(x)
+ =
+a+\frac{x-a}{\|x-a\|^2},
+\qquad x\ne a.
+\]
+
+It is an involutive homeomorphism of \(\mathbb R^2\setminus\{a\}\), and
+
+\[
+\|I_a(x)-a\|=\frac1{\|x-a\|}.
+\]
+
+\begin{lemma}[Inversion exchanges the two sides]\label{lem:inversion-sides}
+Let \(a\in\operatorname{Int}(C)\), and put
+
+\[
+C^a=I_a(C).
+\]
+
+Then \(C^a\) is a Jordan curve and
+
+\[
+I_a(\operatorname{Ext}(C))
+ =
+\operatorname{Int}(C^a)\setminus\{a\}.
+\]
+
+Consequently inversion restricts to a homeomorphism
+
+\[
+C\cup\operatorname{Ext}(C)
+ \longrightarrow
+\bigl(C^a\cup\operatorname{Int}(C^a)\bigr)\setminus\{a\}.
+\]
+\end{lemma}
+\begin{proof}
+The image \(C^a\) is a Jordan curve because inversion is a homeomorphism on a neighborhood of \(C\).
+
+Set
+
+\[
+U=I_a(\operatorname{Ext}(C))\cup\{a\}.
+\]
+
+Away from \(a\), this is open. Since \(C\cup\operatorname{Int}(C)\) is compact, it lies in some disk \(B(a,R)\), and therefore the complement of that disk lies in \(\operatorname{Ext}(C)\). Inversion sends it onto the punctured disk \(B(a,1/R)\setminus\{a\}\), so \(U\) is open at \(a\).
+
+The set \(U\) is connected: the image of \(\operatorname{Ext}(C)\) is connected, and \(a\) lies in its closure because points tending to infinity invert to \(a\). It is bounded because the disk \(B(a,\operatorname{dist}(a,C))\) lies in \(\operatorname{Int}(C)\); hence exterior points remain at a positive distance from \(a\), and their inverses remain bounded.
+
+Finally, the boundary of \(U\) is \(C^a\). Away from \(a\), this follows from the fact that inversion is a homeomorphism and \(\partial\operatorname{Ext}(C)=C\), by Theorem~\ref{thm:jordan}; the point \(a\) is interior to \(U\).
+
+Since \(U\) is connected and disjoint from \(C^a\), it lies in one component \(V\) of \(\mathbb R^2\setminus C^a\). The set \(U\) is both open and closed relative to \(V\): relative closedness follows from \(\partial U=C^a\), which is disjoint from \(V\). As \(V\) is connected and \(U\ne\varnothing\), we have \(U=V\). Since \(U\) is bounded, \(V\) is the bounded component. Therefore
+
+\[
+U=\operatorname{Int}(C^a).
+\] \end{proof}
+
+\begin{proposition}[Closed-exterior extension]\label{prop:exterior-extension}
+Every homeomorphism \(f:C\to C'\) extends to a homeomorphism
+
+\[
+C\cup\operatorname{Ext}(C)
+ \longrightarrow
+C'\cup\operatorname{Ext}(C').
+\]
+\end{proposition}
+\begin{proof}
+Using Theorem~\ref{thm:jordan}, choose
+
+\[
+a\in\operatorname{Int}(C),
+\qquad
+b\in\operatorname{Int}(C').
+\]
+
+Let
+
+\[
+C^a=I_a(C),
+\qquad
+(C')^b=I_b(C'),
+\]
+
+and define
+
+\[
+f^*
+ =
+I_b\circ f\circ I_a
+:
+C^a\longrightarrow(C')^b.
+\]
+
+By Proposition~\ref{prop:pointed-extension}, \(f^*\) extends to a homeomorphism
+
+\[
+H^*:
+C^a\cup\operatorname{Int}(C^a)
+ \longrightarrow
+(C')^b\cup\operatorname{Int}((C')^b)
+\]
+
+such that \(H^*(a)=b\). It therefore restricts to a homeomorphism after the two points \(a,b\) are removed. Conjugating that restriction by \(I_a\) and \(I_b\), using Lemma~\ref{lem:inversion-sides}, gives the required exterior extension. On \(C\) the conjugated map is exactly \(f\). \end{proof}
+
+\section{Pasting the two sides}\label{pasting-the-two-sides}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Let
+
+\[
+F_{\mathrm{int}}:
+C\cup\operatorname{Int}(C)
+\longrightarrow
+C'\cup\operatorname{Int}(C')
+\]
+
+be the extension from Theorem~\ref{thm:closed-interior-extension}, and let
+
+\[
+F_{\mathrm{ext}}:
+C\cup\operatorname{Ext}(C)
+\longrightarrow
+C'\cup\operatorname{Ext}(C')
+\]
+
+be the extension from Proposition~\ref{prop:exterior-extension}. Both restrict to \(f\) on \(C\).
+
+The two source sets are closed, cover \(\mathbb R^2\), and meet in \(C\). The closed pasting lemma therefore gives a continuous map
+
+\[
+F:\mathbb R^2\longrightarrow\mathbb R^2
+\]
+
+defined by \(F_{\mathrm{int}}\) on the closed interior and by \(F_{\mathrm{ext}}\) on the closed exterior.
+
+The inverse maps agree on \(C'\), where both equal \(f^{-1}\), and therefore paste in the same way to a continuous inverse of \(F\). Hence \(F\) is a homeomorphism, and \(F|_C=f\).
+\end{proof}
+
+\appendix
+\section{Statement-level citation index}\label{app:dependency-graph}
+
+This appendix records, for every labeled numbered statement, the
+labeled statements cited in its statement and proof. The table is
+generated mechanically from the citation commands in the source, so it
+is a syntactic citation list rather than a semantic closure: a fact
+used without a citation command does not appear here. Facts imported
+from outside the manuscript are collected instead in the intended
+imported-background package of
+\hyperref[app:background]{Appendix~C}.
+Four rows cite forward: the two theorems stated before their
+deferred proofs, Theorems~\ref{thm:main} and
+\ref{thm:square-extension}; Definition~\ref{def:matched-pair}, whose
+statement points ahead to Definition~\ref{def:matched-cellulation};
+and Definition~\ref{def:matched-cellulation} itself, whose statement
+points ahead to Lemma~\ref{lem:cellulation-invariants}.
+
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.36\textwidth}>{\raggedright\arraybackslash}p{0.58\textwidth}@{}}
+\hline
+Statement & Direct internal prerequisites \\
+\hline
+\endfirsthead
+\hline
+Statement & Direct internal prerequisites \\
+\hline
+\endhead
+\hline
+\multicolumn{2}{r}{\small Continued on next page} \\
+\endfoot
+\hline
+\endlastfoot
+Theorem~\ref{thm:main}\newline\emph{Relative Jordan--Schönflies} & Theorem~\ref{thm:closed-interior-extension} and Proposition~\ref{prop:exterior-extension} \\
+Lemma~\ref{lem:polygonal-connected}\newline\emph{Polygonal connectedness} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:finite-polygonal-union}\newline\emph{Finite polygonal unions} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:nearest-segment}\newline\emph{Nearest-point segment} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:compact-separation}\newline\emph{Compact separation} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:diameter-closure}\newline\emph{Closure and diameter} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:nested-compact}\newline\emph{Nested compact singleton} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:polygonal-collar}\newline\emph{Two-sided polygonal strips} & Lemma~\ref{lem:compact-separation} \\
+Lemma~\ref{lem:polygon-parity}\newline\emph{Crossing parity} & Lemma~\ref{lem:compact-separation} \\
+Theorem~\ref{thm:polygonal-jordan}\newline\emph{Polygonal Jordan curve theorem} & Lemma~\ref{lem:polygonal-collar}, Lemma~\ref{lem:nearest-segment} and Lemma~\ref{lem:polygon-parity} \\
+Theorem~\ref{thm:polygonal-crosscut}\newline\emph{Two-sided polygonal crosscuts} & Theorem~\ref{thm:polygonal-jordan} and Lemma~\ref{lem:polygon-parity} \\
+Corollary~\ref{cor:alternating-crosscuts}\newline\emph{Alternating crosscuts intersect} & Theorem~\ref{thm:polygonal-crosscut} \\
+Lemma~\ref{lem:cycle-criterion}\newline\emph{Cycle criterion} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:three-leaf-tree}\newline\emph{Trees with three leaves} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:polygonal-redrawing}\newline\emph{Polygonal redrawing} & Lemma~\ref{lem:compact-separation} and Lemma~\ref{lem:polygonal-connected} \\
+Lemma~\ref{lem:k33}\newline\emph{Nonplanarity of $K_{3,3}$} & Lemma~\ref{lem:polygonal-redrawing} and Corollary~\ref{cor:alternating-crosscuts} \\
+Corollary~\ref{cor:k33-subdivision}\newline\emph{Subdivisions of $K_{3,3}$} & Lemma~\ref{lem:k33} \\
+Lemma~\ref{lem:union-two-connected}\newline\emph{Union of 2-connected graphs} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:subdivision-ear-preserve}\newline\emph{Subdivisions and ears preserve 2-connectivity} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:relative-ear}\newline\emph{Relative ear decomposition} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:polygonal-overlay}\newline\emph{Polygonal overlay} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:face-cycles}\newline\emph{Face cycles} & Lemma~\ref{lem:relative-ear}, Theorem~\ref{thm:polygonal-jordan} and Theorem~\ref{thm:polygonal-crosscut} \\
+Lemma~\ref{lem:outer-chain}\newline\emph{Outer face of a chain} & Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:face-cycles} and Theorem~\ref{thm:polygonal-crosscut} \\
+Theorem~\ref{thm:arc-complement}\newline\emph{Arc-complement theorem} & Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:outer-chain} and Lemma~\ref{lem:polygonal-connected} \\
+Lemma~\ref{lem:jordan-circle}\newline\emph{Circular parametrization} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Proposition~\ref{prop:jordan-disconnected}\newline\emph{A Jordan curve separates} & Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:polygonal-connected} and Corollary~\ref{cor:k33-subdivision} \\
+Lemma~\ref{lem:accessible-dense}\newline\emph{Density of accessible points} & Lemma~\ref{lem:jordan-circle} and Theorem~\ref{thm:arc-complement} \\
+Theorem~\ref{thm:jordan}\newline\emph{Jordan curve theorem} & Proposition~\ref{prop:jordan-disconnected}, Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:accessible-dense}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:three-leaf-tree} and Corollary~\ref{cor:k33-subdivision} \\
+Lemma~\ref{lem:crosscut-at-most-two}\newline\emph{At most two sides} & Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:polygonal-connected} and Lemma~\ref{lem:polygonal-collar} \\
+Theorem~\ref{thm:general-crosscut}\newline\emph{Crosscut theorem} & Lemma~\ref{lem:jordan-circle}, Theorem~\ref{thm:jordan}, Lemma~\ref{lem:crosscut-at-most-two}, Lemma~\ref{lem:polygonal-connected}, Lemma~\ref{lem:cycle-criterion}, Lemma~\ref{lem:compact-separation} and Theorem~\ref{thm:polygonal-jordan} \\
+Lemma~\ref{lem:accessible-endpoints}\newline\emph{Accessible endpoints can be joined} & Lemma~\ref{lem:polygonal-connected} and Lemma~\ref{lem:finite-polygonal-union} \\
+Theorem~\ref{thm:square-extension}\newline\emph{Square extension} & Proposition~\ref{prop:interior-homeomorphism} and Proposition~\ref{prop:boundary-continuity} \\
+Proposition~\ref{prop:square-reduction}\newline\emph{Reduction to the square} & Theorem~\ref{thm:square-extension} and Lemma~\ref{lem:jordan-circle} \\
+Definition~\ref{def:strong-accessibility}\newline\emph{Strong accessibility} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:nearest-strong}\newline\emph{Nearest points are strongly accessible} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:tangent-dense}\newline\emph{Density of strongly accessible points} & Theorem~\ref{thm:jordan} and Lemma~\ref{lem:nearest-strong} \\
+Lemma~\ref{lem:tangent-cone}\newline\emph{Tangent-disk cone} & Definition~\ref{def:strong-accessibility} \\
+Proposition~\ref{prop:countable-strong-access}\newline\emph{Countable dense strong-access set} & Lemma~\ref{lem:nearest-strong} \\
+Definition~\ref{def:admissible-graph}\newline\emph{Admissible graph} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Remark~\ref{rem:polygonal-overlay-convention}\newline\emph{Polygonal overlay convention} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Definition~\ref{def:matched-pair}\newline\emph{Matched pair} & Definition~\ref{def:matched-cellulation} \\
+Proposition~\ref{prop:initial-pair}\newline\emph{Initial matched pair} & Lemma~\ref{lem:tangent-cone}, Lemma~\ref{lem:accessible-endpoints} and Theorem~\ref{thm:general-crosscut} \\
+Definition~\ref{def:matched-cellulation}\newline\emph{Matched cellulation} & Lemma~\ref{lem:cellulation-invariants} \\
+Definition~\ref{def:generated-structure}\newline\emph{Generated matched cell structure} & Proposition~\ref{prop:initial-pair}, Definition~\ref{def:matched-pair} and Definition~\ref{def:matched-cellulation} \\
+Remark~\ref{rem:intermediate-disconnection}\newline\emph{Intermediate disconnection} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:cellulation-invariants}\newline\emph{Cellulation invariants} & Theorem~\ref{thm:general-crosscut}, Theorem~\ref{thm:jordan} and Theorem~\ref{thm:polygonal-jordan} \\
+Lemma~\ref{lem:combinatorial-invariance}\newline\emph{Combinatorial invariance} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Lemma~\ref{lem:outer-incidence}\newline\emph{Outer incidence is combinatorial} & Lemma~\ref{lem:cellulation-invariants} and Lemma~\ref{lem:combinatorial-invariance} \\
+Lemma~\ref{lem:star-intersection}\newline\emph{Intersection of corresponding stars} & Lemma~\ref{lem:cellulation-invariants} \\
+Remark~\ref{rem:inductive-invariants}\newline\emph{Inductive form of the invariants} & Lemma~\ref{lem:cellulation-invariants} \\
+Lemma~\ref{lem:refinement-compatibility}\newline\emph{Refinement compatibility} & Lemma~\ref{lem:cellulation-invariants} and Lemma~\ref{lem:combinatorial-invariance} \\
+Lemma~\ref{lem:star-face-mesh}\newline\emph{Stars and face mesh} & Lemma~\ref{lem:cellulation-invariants} \\
+Lemma~\ref{lem:local-skeleton-structure}\newline\emph{Local structure of a polygonal skeleton} & Lemma~\ref{lem:compact-separation} \\
+Lemma~\ref{lem:polygonal-side-accessibility}\newline\emph{Polygonal-side accessibility} & Lemma~\ref{lem:local-skeleton-structure}, Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:cellulation-invariants} and Theorem~\ref{thm:polygonal-jordan} \\
+Theorem~\ref{thm:finite-transfer}\newline\emph{Finite transfer} & Lemma~\ref{lem:polygonal-overlay}, Remark~\ref{rem:polygonal-overlay-convention}, Lemma~\ref{lem:relative-ear}, Definition~\ref{def:generated-structure}, Remark~\ref{rem:intermediate-disconnection}, Lemma~\ref{lem:cellulation-invariants}, Lemma~\ref{lem:accessible-endpoints}, Lemma~\ref{lem:polygonal-side-accessibility}, Lemma~\ref{lem:combinatorial-invariance}, Lemma~\ref{lem:tangent-cone}, Lemma~\ref{lem:compact-separation} and Theorem~\ref{thm:general-crosscut} \\
+Proposition~\ref{prop:local-grid-attachment}\newline\emph{Local-grid attachment} & Lemma~\ref{lem:subdivision-ear-preserve}, Lemma~\ref{lem:polygonal-overlay}, Remark~\ref{rem:polygonal-overlay-convention}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:cellulation-invariants} and Lemma~\ref{lem:polygonal-connected} \\
+Proposition~\ref{prop:anchored-square-mesh}\newline\emph{Anchored square mesh} & Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:subdivision-ear-preserve} and Lemma~\ref{lem:union-two-connected} \\
+Lemma~\ref{lem:grid-star-estimate}\newline\emph{Grid-star estimate} & Lemma~\ref{lem:refinement-compatibility} and Lemma~\ref{lem:star-face-mesh} \\
+Proposition~\ref{prop:shrinking-stars}\newline\emph{Shrinking matched stars} & Lemma~\ref{lem:grid-star-estimate} and Lemma~\ref{lem:refinement-compatibility} \\
+Lemma~\ref{lem:anchor-density}\newline\emph{Density of anchors} & Proposition~\ref{prop:anchored-square-mesh} \\
+Lemma~\ref{lem:cell-neighborhood}\newline\emph{Finite cell neighborhoods} & Lemma~\ref{lem:cellulation-invariants} \\
+Proposition~\ref{prop:skeleton-agreement}\newline\emph{Skeleton agreement} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Proposition~\ref{prop:F-continuous}\newline\emph{Continuity} & Lemma~\ref{lem:cell-neighborhood} and Lemma~\ref{lem:cellulation-invariants} \\
+Proposition~\ref{prop:image-interior}\newline\emph{The image lies in the interior} & Lemma~\ref{lem:outer-incidence} \\
+Proposition~\ref{prop:F-injective}\newline\emph{Injectivity} & Lemma~\ref{lem:star-intersection} \\
+Proposition~\ref{prop:target-skeleton-dense}\newline\emph{Density of the target skeleton} & Lemma~\ref{lem:cellulation-invariants} \\
+Proposition~\ref{prop:F-surjective}\newline\emph{Surjectivity} & Proposition~\ref{prop:image-interior}, Proposition~\ref{prop:target-skeleton-dense}, Theorem~\ref{thm:jordan}, Lemma~\ref{lem:cell-neighborhood}, Lemma~\ref{lem:outer-incidence}, Lemma~\ref{lem:refinement-compatibility}, Proposition~\ref{prop:F-continuous} and Proposition~\ref{prop:skeleton-agreement} \\
+Lemma~\ref{lem:exact-cell-correspondence}\newline\emph{Exact open-cell correspondence} & Proposition~\ref{prop:skeleton-agreement}, Lemma~\ref{lem:star-face-mesh}, Lemma~\ref{lem:cellulation-invariants}, Proposition~\ref{prop:image-interior}, Proposition~\ref{prop:F-injective} and Proposition~\ref{prop:F-surjective} \\
+Proposition~\ref{prop:inverse-continuous}\newline\emph{Continuity of the inverse} & Lemma~\ref{lem:cell-neighborhood}, Lemma~\ref{lem:cellulation-invariants} and Lemma~\ref{lem:exact-cell-correspondence} \\
+Proposition~\ref{prop:interior-homeomorphism}\newline\emph{Interior homeomorphism} & Proposition~\ref{prop:skeleton-agreement}, Proposition~\ref{prop:F-continuous}, Proposition~\ref{prop:image-interior}, Proposition~\ref{prop:F-surjective}, Proposition~\ref{prop:F-injective} and Proposition~\ref{prop:inverse-continuous} \\
+Lemma~\ref{lem:skeleton-crosscuts}\newline\emph{Skeleton crosscuts between anchors} & Lemma~\ref{lem:finite-polygonal-union} \\
+Lemma~\ref{lem:crosscut-side-correspondence}\newline\emph{Correspondence of crosscut sides} & Proposition~\ref{prop:interior-homeomorphism}, Proposition~\ref{prop:skeleton-agreement} and Theorem~\ref{thm:general-crosscut} \\
+Proposition~\ref{prop:boundary-continuity}\newline\emph{Boundary continuity} & Proposition~\ref{prop:interior-homeomorphism}, Lemma~\ref{lem:skeleton-crosscuts}, Theorem~\ref{thm:general-crosscut} and Lemma~\ref{lem:crosscut-side-correspondence} \\
+Theorem~\ref{thm:closed-interior-extension}\newline\emph{Closed-interior extension} & Proposition~\ref{prop:square-reduction} and Theorem~\ref{thm:square-extension} \\
+Lemma~\ref{lem:square-point-mover}\newline\emph{Moving an interior point of the square} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Proposition~\ref{prop:pointed-extension}\newline\emph{Pointed closed-interior extension} & Theorem~\ref{thm:closed-interior-extension}, Lemma~\ref{lem:jordan-circle}, Theorem~\ref{thm:square-extension} and Lemma~\ref{lem:square-point-mover} \\
+Lemma~\ref{lem:inversion-sides}\newline\emph{Inversion exchanges the two sides} & Theorem~\ref{thm:jordan} \\
+Proposition~\ref{prop:exterior-extension}\newline\emph{Closed-exterior extension} & Theorem~\ref{thm:jordan}, Proposition~\ref{prop:pointed-extension} and Lemma~\ref{lem:inversion-sides} \\
+\emph{Narrative outside labeled statements}\newline(construction prose of Parts~I--II) & Theorem~\ref{thm:square-extension}, Proposition~\ref{prop:initial-pair}, Lemma~\ref{lem:cellulation-invariants}, Proposition~\ref{prop:local-grid-attachment}, Theorem~\ref{thm:finite-transfer}, Proposition~\ref{prop:anchored-square-mesh}, Proposition~\ref{prop:countable-strong-access}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:polygonal-connected}, Lemma~\ref{lem:subdivision-ear-preserve}, Lemma~\ref{lem:diameter-closure}, Lemma~\ref{lem:star-face-mesh}, Lemma~\ref{lem:refinement-compatibility}, Proposition~\ref{prop:shrinking-stars}, Lemma~\ref{lem:nested-compact} and Lemma~\ref{lem:anchor-density} \\
+\end{longtable}
+
+\section{Suggested module order}\label{app:module-order}
+
+The adjacency list above is a citation index; together with the
+imported background of \hyperref[app:background]{Appendix~C}, it
+approximates, but does not by itself determine, the import obligations
+of each module. A coarser
+topological order, useful for organizing source files, is:
+\begin{enumerate}
+\item metric compactness, segments, polygonal paths, and finite
+      polygonal arrangements;
+\item polygonal strips, parity, polygonal Jordan separation, and
+      polygonal crosscuts;
+\item finite graph infrastructure, polygonal redrawing,
+      nonplanarity of $K_{3,3}$, face cycles, and the outer-chain lemma;
+\item complements of arcs, accessible boundary points, the general
+      Jordan curve theorem, and the general crosscut theorem;
+\item generated cellulations, carrier and parent compatibility, stars, and
+      combinatorial invariance;
+\item finite transfer, local source grids, anchored target meshes,
+      and shrinking matched stars;
+\item the shrinking-star limit, boundary continuity, pointed bounded
+      extensions, inversion, and ambient pasting.
+\end{enumerate}
+
+The convention in Remark~\ref{rem:polygonal-overlay-convention} is important
+for implementation: only finite polygonal objects are overlaid. The
+wild outer curve is handled by a separate boundary-attachment
+interface.
+
+\section{Imported background}\label{app:background}
+
+The following background package collects, in the form used, the
+facts imported but not proved in this manuscript. A formal development
+should obtain these from its ambient libraries.
+
+\begin{enumerate}
+\item \textbf{Plane and metric.} The plane with the Euclidean metric;
+      the sup metric and the comparison
+      \(\|x\|_\infty\le\|x\|\le\sqrt2\,\|x\|_\infty\); elementary
+      properties of line segments, of convexity of disks, rectangles,
+      and triangles, and of affine maps of the plane, including that
+      an affine map of the plane is determined by its values at three
+      affinely independent points and that an affine map fixing two
+      points of a line fixes that line pointwise; polar coordinates
+      about a point, and the decomposition of a circle by finitely
+      many directions into arcs; a nondegenerate compact connected
+      subset of a line is a closed segment; and a component of the
+      intersection of a line with a bounded open subset of the plane
+      is a bounded open segment of the line, whose closure is a closed
+      segment with endpoints in the boundary of the open set.
+\item \textbf{Compactness.} A subset of the plane is compact if and
+      only if it is closed and bounded; every sequence in a compact
+      set has a convergent subsequence; continuous images of compact
+      sets are compact; a continuous real function on a nonempty
+      compact set attains its minimum; finite products of compact sets
+      are compact; a continuous map on a compact set is uniformly
+      continuous; and the distance function to a nonempty set is
+      1-Lipschitz, in the Euclidean and sup metrics alike.
+\item \textbf{Compact--Hausdorff.} A continuous bijection from a
+      compact space onto a Hausdorff space is a homeomorphism.
+\item \textbf{Connectedness.} Continuous images of connected sets are
+      connected; a union of connected sets with a common point is
+      connected; a connected set contained in a disjoint union of open
+      sets lies in one of them; a nonempty subset of a connected space
+      that is both open and closed is the whole space; adjoining to a
+      connected set any set of points of its closure preserves
+      connectedness; connected components, and the fact that
+      components of open subsets of the plane are open; more
+      generally, in a locally path-connected space, components of
+      relatively open subsets are relatively open.
+\item \textbf{Boundaries.} For open \(U\),
+      \(\partial U=\overline U\setminus U\); the boundary of a
+      component of the complement of a closed set is contained in that
+      closed set; a homeomorphism between open subsets of the plane
+      carries relative boundaries to relative boundaries.
+\item \textbf{Pasting.} If a space is the union of finitely many
+      closed subsets and continuous maps defined on them agree on all
+      intersections, then the combined map is continuous.
+\item \textbf{Sequences.} Completeness of the real numbers and
+      elementary limit arithmetic; a sequence in a metric space
+      converges to \(x\) if every subsequence has a further
+      subsequence converging to \(x\); continuity of maps between
+      metric spaces may be verified sequentially.
+\item \textbf{Density.} \(\mathbb Q^2\) is countable and dense in the
+      plane; a continuous surjection carries dense subsets of its
+      domain to dense subsets of its codomain.
+\item \textbf{Finite graphs.} In a finite connected graph, any two
+      vertices are joined by a simple path, obtained by shortening an
+      arbitrary walk at repeated vertices; by finiteness, a minimal
+      connected subgraph containing prescribed vertices exists; and
+      elementary counting of vertex degrees (the degree sum is twice
+      the number of edges).
+\end{enumerate}
+
+The list is intended to cover the imported inferences, without a
+claim of demonstrated exhaustiveness; reviewers are invited to report
+any use of background not covered by an item above.
+
+\section*{Concluding remarks}
+The proof is organized so that every nontrivial planar-separation result used in the Schönflies construction has been established in Part I. The global two-sidedness of a polygonal curve is proved by an oriented strip construction. The route then follows the graph-theoretic strategy of Thomassen~\cite{Thomassen}, with tangent-disk accessibility, a common cell structure for matched refinements, a shrinking-star limit, and inversion for the exterior. Hales used Thomassen's Jordan-curve argument as the conventional guide for his HOL Light formalization~\cite{Hales}; the present document expands the same dependency chain in a form intended to serve as a guide for a new formal development.
+
+\begin{thebibliography}{9}
+\bibitem{GuilloudGambhirChassot}
+S. Guilloud, S. Gambhir, and S. Chassot, \emph{Reformalization of the Jordan Curve Theorem}, arXiv:2607.01734, 2026.
+\bibitem{Hales}
+T. C. Hales, \emph{The Jordan Curve Theorem, Formally and Informally}, Amer. Math. Monthly 114 (2007), 882--894.
+\bibitem{Moise}
+E. E. Moise, \emph{Geometric Topology in Dimensions 2 and 3}, Graduate Texts in Mathematics 47, Springer, New York, 1977.
+\bibitem{Newman}
+M. H. A. Newman, \emph{Elements of the Topology of Plane Sets of Points}, second edition, Cambridge University Press, Cambridge, 1951.
+\bibitem{Siebenmann}
+L. C. Siebenmann, \emph{The Osgood--Schoenflies theorem revisited}, Russian Math. Surveys 60 (2005), no.~4, 645--672.
+\bibitem{SiebenmannErrata}
+L. C. Siebenmann, \emph{Errata to the paper ``The Osgood--Schoenflies theorem revisited''}, Russian Math. Surveys 60 (2005), no.~5, 1001.
+\bibitem{Thomassen}
+C. Thomassen, \emph{The Jordan--Schönflies Theorem and the Classification of Surfaces}, Amer. Math. Monthly 99 (1992), 116--130.
+\end{thebibliography}
+\end{document}
