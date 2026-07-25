@@ -7,6 +7,7 @@
 \usepackage{microtype}
 \usepackage{tikz}
 \usetikzlibrary{calc,arrows.meta,patterns,decorations.pathmorphing}
+\usepackage[font=small,labelfont=bf,width=0.92\textwidth]{caption}
 \usepackage[margin=3.1cm]{geometry}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
@@ -211,6 +212,52 @@ statement follows by the same subdivision.
 
 \section{Two-sided strips along polygonal curves}\label{sec:strips}
 
+\begin{figure}[t]
+\centering
+% common furniture; #1 = outgoing angle, #2 = anchor for the theta label
+\newcommand{\vertexframe}[2]{%
+  \path[use as bounding box] (-2.7,-2.7) rectangle (2.7,2.7);
+  \draw[aux,line width=0.4pt] (0,0) circle (1.85);
+  \draw[jcurve] (180:2.35) -- (0,0) -- (#1:2.35);
+  \draw[jcurve,-{Stealth[length=4.5pt]}] (180:2.15) -- (180:1.78);
+  \draw[jcurve,-{Stealth[length=4.5pt]}] (#1:1.78) -- (#1:2.15);
+  \node[jdot] at (0,0) {};
+  \node[jcutdot] at (165:1.15) {}; \node[cut,font=\tiny] at (165:1.55) {$\pi\!-\!\delta$};
+  \node[jdot,fill=aux] at (195:1.15) {}; \node[aux,font=\tiny] at (195:1.55) {$\pi\!+\!\delta$};
+  \node[font=\scriptsize,anchor=south east] at (180:2.3) {$\pi$};
+  \node[font=\scriptsize,anchor=#2] at (#1:2.42) {$\theta$};}
+\begin{minipage}{0.47\textwidth}\centering
+\begin{tikzpicture}[scale=0.92]
+  \fill[fill1] (0,0) -- (65:1.85) arc[start angle=65,end angle=180,radius=1.85] -- cycle;
+  \fill[fill2] (0,0) -- (180:1.85) arc[start angle=180,end angle=425,radius=1.85] -- cycle;
+  \vertexframe{65}{south}
+  \node[jcutdot] at (80:1.15) {}; \node[cut,font=\tiny] at (80:1.55) {$\theta\!+\!\delta$};
+  \node[jdot,fill=aux] at (50:1.15) {}; \node[aux,font=\tiny] at (50:1.55) {$\theta\!-\!\delta$};
+  \node[cut,font=\small] at (122:0.72) {$L$};
+  \node[aux,font=\small] at (300:0.95) {$R$};
+\end{tikzpicture}\\[2pt]
+{\small (a) a left turn}\end{minipage}\hfill
+\begin{minipage}{0.47\textwidth}\centering
+\begin{tikzpicture}[scale=0.92]
+  \fill[fill1] (0,0) -- (295:1.85) arc[start angle=295,end angle=540,radius=1.85] -- cycle;
+  \fill[fill2] (0,0) -- (180:1.85) arc[start angle=180,end angle=295,radius=1.85] -- cycle;
+  \vertexframe{295}{north}
+  \node[jcutdot] at (310:1.15) {}; \node[cut,font=\tiny] at (310:1.55) {$\theta\!+\!\delta$};
+  \node[jdot,fill=aux] at (280:1.15) {}; \node[aux,font=\tiny] at (280:1.55) {$\theta\!-\!\delta$};
+  \node[cut,font=\small] at (60:1.15) {$L$};
+  \node[aux,font=\small] at (237:0.95) {$R$};
+\end{tikzpicture}\\[2pt]
+{\small (b) a right turn}\end{minipage}
+\caption{The bookkeeping at a vertex. With the incoming tangent at
+angle $0$, the two left germs (red) sit at polar angles $\pi-\delta$
+and $\theta+\delta$, the two right germs (grey) at $\pi+\delta$ and
+$\theta-\delta$. Whatever the sign of the turn, the left pair lies in
+the counterclockwise arc from $\theta$ to $\pi$ --- shaded $L$ --- and
+the right pair in the complementary arc. This is why the two tracks of
+a strip never change places, and why they close up after a full
+circuit.}\label{fig:vertex}
+\end{figure}
+
 \begin{lemma}[Two-sided strips]\label{lem:strip}
 Let $P$ be a simple closed polygonal curve, or a simple polygonal arc
 with a compact subarc $K$ of $P\setminus\partial P$. Then $P$
@@ -334,6 +381,60 @@ with $\Omega\subseteq V$. Then $C\setminus J\subseteq V$.
 \begin{proof}
 $C=\partial\Omega\subseteq\overline\Omega\subseteq\overline V=V\cup J$.
 \end{proof}
+
+\begin{figure}[t]
+\centering
+\newcommand{\bloB}{1.6+0.20*cos(3*\t)}
+\begin{minipage}{0.47\textwidth}\centering
+\begin{tikzpicture}[scale=0.95]
+  \path[use as bounding box] (-2.5,-2.3) rectangle (2.5,2.9);
+  \fill[fill1] plot[domain=20:155,smooth,variable=\t] ({\t}:{\bloB}) -- cycle;
+  \fill[fill2] plot[domain=155:380,smooth,variable=\t] ({\t}:{\bloB}) -- cycle;
+  \draw[jcurve] plot[domain=0:360,smooth,variable=\t] ({\t}:{\bloB});
+  \coordinate (p) at (155:{1.6+0.20*cos(3*155)});
+  \coordinate (q) at (20:{1.6+0.20*cos(3*20)});
+  \draw[jcut] (p) -- (q);
+  \node[jcutdot] at (p) {}; \node[jcutdot] at (q) {};
+  \node[cut,font=\scriptsize,anchor=east] at ($(p)+(-0.08,0.02)$) {$p$};
+  \node[cut,font=\scriptsize,anchor=west] at ($(q)+(0.08,0.02)$) {$q$};
+  \node[cut,font=\scriptsize] at (0.80,0.95) {$P$};
+  \node[font=\small] at (0.0,1.18) {$V_1$};
+  \node[font=\small] at (255:0.85) {$V_2$};
+  \node[font=\scriptsize,anchor=south] at (95:1.95) {$A_1$};
+  \node[font=\scriptsize,anchor=north] at (265:1.85) {$A_2$};
+\end{tikzpicture}\\[2pt]
+{\small (a) $P$ crosses $\Omega=\Int(C)$}\end{minipage}\hfill
+\begin{minipage}{0.47\textwidth}\centering
+\begin{tikzpicture}[scale=0.95]
+  \path[use as bounding box] (-2.5,-2.3) rectangle (2.5,2.9);
+  \coordinate (p) at (160:{1.6+0.20*cos(3*160)});
+  \coordinate (q) at (20:{1.6+0.20*cos(3*20)});
+  \fill[fill2,even odd rule] (-2.45,-2.25) rectangle (2.45,2.85)
+     plot[domain=160:380,smooth,variable=\t] ({\t}:{\bloB}) -- (0,2.6) -- cycle;
+  \fill[fill1] plot[domain=20:160,smooth,variable=\t] ({\t}:{\bloB})
+     -- (0,2.6) -- cycle;
+  \fill[white] plot[domain=0:360,smooth,variable=\t] ({\t}:{\bloB});
+  \draw[jcurve] plot[domain=0:360,smooth,variable=\t] ({\t}:{\bloB});
+  \draw[jcut] (p) -- (0,2.6) -- (q);
+  \node[jcutdot] at (p) {}; \node[jcutdot] at (q) {};
+  \node[cut,font=\scriptsize,anchor=east] at ($(p)+(-0.08,0)$) {$p$};
+  \node[cut,font=\scriptsize,anchor=west] at ($(q)+(0.08,0)$) {$q$};
+  \node[cut,font=\scriptsize,anchor=south west] at (0.06,2.6) {$P$};
+  \node[font=\small] at (0.0,2.02) {$V_2$};
+  \node[font=\small] at (-1.75,-1.75) {$V_1$};
+  \node[font=\small] at (280:0.75) {$\Omega^\dagger$};
+  \node[font=\scriptsize,anchor=east] at (-0.95,1.62) {$A_2$};
+  \node[font=\scriptsize,anchor=north] at (265:1.85) {$A_1$};
+\end{tikzpicture}\\[2pt]
+{\small (b) $P$ crosses $\Omega=\Ext(C)$}\end{minipage}
+\caption{A crosscut cuts two Jordan regions out of the side it
+crosses. In (a) the two cells are the interiors $\Int(J_1),\Int(J_2)$;
+in (b) --- where $\Omega^\dagger=\Int(C)$ lies inside $J_1$ --- the cell
+$V_1$ is the \emph{exterior} of $J_1$, and only $V_2$ is an interior.
+Stating the lemma through ``the region of $\mathbb R^2\setminus J_i$
+that does not contain $\Omega^\dagger$'' covers both pictures at
+once. Throughout, $\overline{V_i}\cap C=A_i$.}\label{fig:crosscut}
+\end{figure}
 
 \begin{lemma}[Crosscut cells]\label{lem:cells}
 Let $C$ be a separating Jordan curve and $P$ a simple arc meeting $C$
@@ -503,6 +604,26 @@ radials meet only at $v$. The assembled polygonal arcs realize the
 same abstract graph.
 \end{proof}
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.25]
+  \foreach \a/\n/\lab in {90/x1/{$x_1$},30/y1/{$y_1$},-30/x2/{$x_2$},
+                          -90/y2/{$y_2$},-150/x3/{$x_3$},150/y3/{$y_3$}}
+    {\coordinate (\n) at (\a:1.55); \node[font=\scriptsize] at (\a:1.85) {\lab};}
+  \draw[jcurve] (x1)--(y1)--(x2)--(y2)--(x3)--(y3)--cycle;
+  \draw[jcut] (x1) to[bend left=22] (y2);
+  \draw[jcut] (x2) to[bend left=22] (y3);
+  \draw[jcut] (x3) to[bend left=22] (y1);
+  \foreach \n in {x1,y1,x2,y2,x3,y3} {\node[jdot] at (\n) {};}
+\end{tikzpicture}
+\caption{$K_{3,3}$ as a hexagon with three chords. Read around the
+hexagon, the chords join positions $(1,4)$, $(3,6)$ and $(5,2)$, so
+\emph{any two of them alternate}. In a plane drawing two of the three
+would have to lie on the same side of the hexagon, where
+Corollary~\ref{cor:alt} forces them to
+meet.}\label{fig:k33}
+\end{figure}
+
 \begin{lemma}\label{lem:k33}
 No subdivision of $K_{3,3}$ has a plane drawing.
 \end{lemma}
@@ -578,6 +699,37 @@ face contains $x$.
 
 \section{Arc complements and the Jordan curve theorem}\label{sec:jct}
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.05]
+  \foreach \i in {0,...,18} {
+    \pgfmathsetmacro{\tx}{-3.06+0.34*\i}
+    \pgfmathsetmacro{\ty}{0.55*sin(110*\tx)}
+    \draw[aux,line width=0.4pt] (\tx-0.30,\ty-0.30) rectangle (\tx+0.30,\ty+0.30);}
+  \draw[jcurve,domain=-3.06:3.06,smooth,variable=\x,samples=120]
+    plot (\x,{0.55*sin(110*\x)});
+  \draw[jcut,dashed] (-3.95,1.45) -- (-3.7,1.85)
+     .. controls (-1.2,2.15) and (1.2,2.15) .. (3.62,1.5) -- (3.95,-1.45);
+  \node[jcutdot] at (-3.95,1.45) {}; \node[jcutdot] at (3.95,-1.45) {};
+  \node[cut,font=\scriptsize,anchor=east] at (-4.05,1.45) {$p$};
+  \node[cut,font=\scriptsize,anchor=west] at (4.05,-1.45) {$q$};
+  \node[font=\scriptsize,anchor=north east] at (-3.15,0.85) {$A$};
+  \foreach \l/\r/\lab in {-3.42/-1.42/{$\Gamma_1$},-1.52/0.48/{$\Gamma_2$},
+                          0.38/2.38/{$\Gamma_3$}} {
+    \draw[aux,line width=0.4pt] (\l,-0.86) -- (\l,-0.98) -- (\r,-0.98) -- (\r,-0.86);
+    \node[font=\scriptsize,anchor=north] at ({(\l+\r)/2},-1.02) {\lab};}
+  \node[aux,font=\scriptsize,anchor=west] at (2.55,-0.98) {$\cdots$};
+\end{tikzpicture}
+\caption{Why an arc cannot separate. Small squares of radius $\delta/4$
+are strung along $A$ so that consecutive ones overlap; blocks of them
+form 2-connected graphs $\Gamma_i$, consecutive blocks sharing a whole
+square and non-consecutive ones disjoint. The chain lemma says the outer
+face of the union is a single region --- a corridor running all the way
+around --- and it contains both $p$ and $q$. The arc itself is buried:
+each of its points lies inside or on one of the
+squares.}\label{fig:chain}
+\end{figure}
+
 \begin{theorem}[Arc-complement theorem]\label{thm:arc}
 The complement of a simple arc $A$ is connected.
 \end{theorem}
@@ -628,6 +780,53 @@ being a continuous bijection from a compactum to a Hausdorff space, a
 homeomorphism. The remaining claims transport from the circle; the
 square case follows via radial projection.
 \end{proof}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.18]
+  \def\blb{1.5+0.28*cos(2*\t)+0.12*sin(3*\t)}
+  \coordinate (p1) at (-1.801,0.209);
+  \coordinate (p2) at (1.801,0.209);
+  \coordinate (a)  at (0.45,1.156);
+  \coordinate (b)  at (0.45,-1.268);
+  \coordinate (cp) at (0.45,0.10);
+  \coordinate (dp) at (0.75,2.30);
+  \draw[aux,line width=0.4pt] (-1.801,-2.15) -- (-1.801,2.55);
+  \draw[aux,line width=0.4pt] (1.801,-2.15) -- (1.801,2.55);
+  \draw[aux,line width=0.4pt] (0.45,-2.15) -- (0.45,2.55);
+  \node[aux,font=\scriptsize,anchor=north] at (-1.801,-2.18) {$L_1$};
+  \node[aux,font=\scriptsize,anchor=north] at (1.801,-2.18) {$L_2$};
+  \node[aux,font=\scriptsize,anchor=north] at (0.45,-2.18) {$L_3$};
+  \draw[jcurve,domain=0:360,smooth,variable=\t,samples=200]
+    plot ({\t}:{\blb});
+  \draw[cut,line width=1.0pt] (a) -- (b);
+  \draw[cut,line width=1.0pt] (p1) -- (-1.801,2.30) -- (1.801,2.30) -- (p2);
+  \draw[jcut,dashed] (cp) .. controls (2.15,0.15) and (1.75,2.05) .. (dp);
+  \foreach \n in {p1,p2,cp} {\node[rectangle,fill=curve,inner sep=1.7pt] at (\n) {};}
+  \foreach \n in {a,b,dp} {\node[circle,draw=cut,fill=white,line width=0.8pt,
+      inner sep=1.5pt] at (\n) {};}
+  \node[font=\scriptsize,anchor=east]  at ($(p1)+(-0.10,0.02)$) {$p_1$};
+  \node[font=\scriptsize,anchor=west]  at ($(p2)+(0.10,0.02)$) {$p_2$};
+  \node[cut,font=\scriptsize,anchor=east] at ($(a)+(-0.09,0.06)$) {$a$};
+  \node[cut,font=\scriptsize,anchor=west] at ($(b)+(0.09,-0.05)$) {$b$};
+  \node[font=\scriptsize,anchor=east]  at ($(cp)+(-0.10,-0.02)$) {$c'$};
+  \node[cut,font=\scriptsize,anchor=south] at ($(dp)+(0,0.10)$) {$d'$};
+  \node[cut,font=\scriptsize,anchor=west] at (0.52,-0.75) {$L_4$};
+  \node[cut,font=\scriptsize,anchor=south] at (-0.9,2.32) {$L_5$};
+  \node[cut,font=\scriptsize,anchor=west] at (2.02,1.30) {$L_6$};
+  \node[font=\scriptsize] at (-1.15,0.95) {$P_1$};
+  \node[font=\scriptsize] at (-1.05,-1.15) {$P_2$};
+\end{tikzpicture}
+\caption{The configuration behind ``a Jordan curve separates''. Squares
+mark $p_1,p_2,c'$; circles mark $a,b,d'$. Every square is joined to
+every circle by one of nine internally disjoint arcs --- four subarcs of
+$C$, two halves of $L_4$, two pieces of $L_5$, and $L_6$ --- so the
+picture is a plane subdivision of $K_{3,3}$, which cannot exist. The
+dashed $L_6$ is the hypothesis being refuted --- it is assumed to reach
+$L_5$ from $L_4$ without meeting $C$ --- so no drawing of it can be
+faithful; here it is shown crossing $C$ on the
+right.}\label{fig:sep}
+\end{figure}
 
 \begin{proposition}[A Jordan curve separates]\label{prop:sep}
 $\mathbb R^2\setminus C$ is disconnected.
@@ -682,6 +881,41 @@ join $x$ to $y$ there by a simple polygonal arc. The arc must cross
 $C$, and only inside $J_0$; its first meeting, from $x$, is the
 endpoint of an access arc from $\Omega$ and lies in $J$.
 \end{proof}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.15]
+  \draw[jcurve,domain=-2.7:2.7,smooth,variable=\x,samples=80]
+     plot (\x,{0.30*cos(33*\x)});
+  \coordinate (t1) at (-1.55,{0.30*cos(33*(-1.55))});
+  \coordinate (t2) at (0,0.30);
+  \coordinate (t3) at (1.55,{0.30*cos(33*1.55)});
+  \draw[cut,line width=1.6pt,-{Stealth[length=5pt]},
+        domain=-1.55:-0.17,smooth,variable=\x,samples=40]
+     plot (\x,{0.30*cos(33*\x)});
+  \draw[cut,line width=1.6pt,{Stealth[length=5pt]}-,
+        domain=0.17:1.55,smooth,variable=\x,samples=40]
+     plot (\x,{0.30*cos(33*\x)});
+  \draw[aux,line width=0.75pt] (t1) to[out=-110,in=90] (-1.9,-1.55);
+  \draw[aux,line width=0.75pt] (t2) to[out=-90,in=90] (0,-1.55);
+  \draw[aux,line width=0.75pt] (t3) to[out=-70,in=90] (1.9,-1.55);
+  \node[font=\scriptsize,anchor=north] at (-1.9,-1.6) {$x_1$};
+  \node[font=\scriptsize,anchor=north] at (0,-1.6) {$x_2$};
+  \node[font=\scriptsize,anchor=north] at (1.9,-1.6) {$x_3$};
+  \foreach \n in {t1,t3} {\node[jdot] at (\n) {};}
+  \node[circle,draw=cut,fill=white,line width=0.9pt,inner sep=1.7pt] at (t2) {};
+  \node[font=\scriptsize,anchor=south east] at ($(t1)+(0.05,0.10)$) {$p_{1j}$};
+  \node[font=\scriptsize,anchor=south west] at ($(t3)+(-0.05,0.10)$) {$p_{3j}$};
+  \node[cut,font=\scriptsize,anchor=south] at ($(t2)+(0,0.14)$) {$y_j=p_{2j}$};
+  \node[font=\scriptsize,anchor=west] at (2.75,0.24) {$Q_j$};
+\end{tikzpicture}
+\caption{The middle-terminal trick. On the arc $Q_j$ the three trees
+land at $p_{1j},p_{2j},p_{3j}$; the meeting point $y_j$ is chosen to be
+the \emph{middle} one. The two travelling subarcs (thick) then reach
+$y_j$ from opposite sides and share no interior point, while the tree
+that lands on $y_j$ travels not at all. Choosing any other terminal as
+$y_j$ would make two of the three routes overlap.}\label{fig:middle}
+\end{figure}
 
 \begin{theorem}[Jordan curve theorem]\label{thm:jct}
 $\mathbb R^2\setminus C$ has exactly two regions, one bounded and one
@@ -1101,6 +1335,63 @@ $\|\cdot\|_\infty$. Put
 $s_n(p)=r(p)-\min(r(p)/2,\varepsilon_n)$ and let $W_n(p)$ be the
 closed square of radius $s_n(p)$ at $p$, so
 $W_n(p)\subseteq D$ and $r(p)-s_n(p)\le\varepsilon_n$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[scale=1.0]
+  % ---- source side ----
+  \begin{scope}[shift={(-3.6,0)}]
+    \def\blc{1.75+0.16*cos(3*\t)+0.10*sin(2*\t)}
+    \fill[white] plot[domain=0:360,smooth,variable=\t] ({\t}:{\blc});
+    \draw[jcurve] plot[domain=0:360,smooth,variable=\t] ({\t}:{\blc});
+    \draw[cut,line width=0.9pt] (150:{1.75+0.16*cos(450)+0.10*sin(300)})
+       .. controls (-0.3,0.35) and (0.4,-0.2) ..
+       (-20:{1.75+0.16*cos(-60)+0.10*sin(-40)});
+    \foreach \i in {0,...,4} {
+      \draw[aux,line width=0.35pt] (-1.0+0.35*\i,-0.35) -- (-1.0+0.35*\i,1.05);
+      \draw[aux,line width=0.35pt] (-1.0,-0.35+0.35*\i) -- (0.4,-0.35+0.35*\i);}
+    \draw[curve,line width=0.7pt] (-1.0,-0.35) rectangle (0.4,1.05);
+    \node[jdot] at (-0.3,0.35) {};
+    \node[font=\scriptsize,fill=white,inner sep=1pt,anchor=north east]
+       at (-0.34,0.30) {$b_n$};
+    \node[font=\scriptsize,fill=white,inner sep=1pt,anchor=south]
+       at (-0.3,1.12) {$W_n(b_n)$};
+    \node[font=\scriptsize,anchor=south east] at (135:2.15) {$C$};
+    \node[font=\small] at (0,-2.35) {$\overline D$};
+  \end{scope}
+  % ---- target side ----
+  \begin{scope}[shift={(3.6,0)}]
+    \draw[jcurve] (-1.8,-1.8) rectangle (1.8,1.8);
+    \draw[aux,line width=0.55pt,dashed] (-1.32,-1.32) rectangle (1.32,1.32);
+    \foreach \i in {1,...,5} {
+      \draw[aux,line width=0.35pt] (-1.32+0.44*\i,-1.32) -- (-1.32+0.44*\i,1.32);
+      \draw[aux,line width=0.35pt] (-1.32,-1.32+0.44*\i) -- (1.32,-1.32+0.44*\i);}
+    \foreach \k in {0,...,15} {
+      \pgfmathsetmacro{\an}{22.5*\k+11.25}
+      \draw[cut,line width=0.6pt]
+        ({1.8*cos(\an)/max(abs(cos(\an)),abs(sin(\an)))},
+         {1.8*sin(\an)/max(abs(cos(\an)),abs(sin(\an)))}) --
+        ({1.32*cos(\an)/max(abs(cos(\an)),abs(sin(\an)))},
+         {1.32*sin(\an)/max(abs(cos(\an)),abs(sin(\an)))});}
+    \node[font=\scriptsize,anchor=south west] at (1.82,1.82) {$S$};
+    \node[cut,font=\scriptsize,anchor=west] at (1.9,0.72) {spokes at $z_i$};
+    \node[font=\small] at (0,-2.35) {$Q$};
+  \end{scope}
+  % ---- the two transfers ----
+  \draw[curve,line width=0.6pt,-{Stealth[length=5pt]}] (-1.35,0.42) -- (1.35,0.42);
+  \draw[curve,line width=0.6pt,-{Stealth[length=5pt]}] (1.35,-0.42) -- (-1.35,-0.42);
+  \node[font=\scriptsize,anchor=south] at (0,0.50) {transfer (a)};
+  \node[font=\scriptsize,anchor=north] at (0,-0.50) {transfer (b)};
+\end{tikzpicture}
+\caption{One stage of the scheme. A grid fine enough to force cells
+below $\varepsilon_n$ is attached to the source inside the square
+$W_n(b_n)$ and carried to the target; then an anchored mesh --- a
+gridded core $\lambda Q$ and a collar cut into rectangles by spokes
+dropped from fresh anchor points $z_i\in u(A)$ --- is laid over the
+target and carried back. Refining one side alone would shrink that
+side's cells only; the alternation shrinks
+both.}\label{fig:stage}
+\end{figure}
 
 Stage $n$ starts from $(\Gamma_{n-1},\Gamma_{n-1}')$ and performs four
 steps: attach a local grid in $W_n(b_n)$ to the source
