@@ -117,6 +117,30 @@ to the Euclidean metric, while a subscript $\infty$ denotes the sup
 metric $\|x\|_\infty=\max(|x_1|,|x_2|)$; the comparison
 $\|x\|_\infty\le\|x\|\le\sqrt2\,\|x\|_\infty$ is used without comment.
 
+\begin{remark}[Polygonal sets and their vertex presentations]\label{rem:polygonal-presentation}
+\emph{Polygonal} is the set-level condition just defined --- a finite
+union of line segments --- and every statement below quantifies over
+polygonal sets in that sense, with no condition on any list of
+vertices. This is deliberate: the constructions produce sets, not
+vertex lists. A formal development, however, will represent a
+polygonal curve by a vertex list, and will want that list to have no
+three consecutive collinear vertices, since that is what the germ
+argument at a vertex in the proof of Lemma~\ref{lem:polygonal-collar}
+runs on. The two notions are not interchangeable for free. Deleting
+redundant collinear vertices, the opening move of that proof, is an
+operation on presentations, and the class of lists without collinear
+triples is not closed under the splices performed later: at a join
+vertex in Theorem~\ref{thm:polygonal-crosscut} the crosscut may leave
+along the ray directly opposite the arriving edge --- perfectly
+compatible with its meeting the curve only at its two endpoints --- so
+that the spliced curve is a simple closed polygonal curve whose
+inherited presentation has a collinear triple. What is owed, and is
+not stated below because at the set level there is nothing to state,
+is a realization theorem: every simple polygonal arc and every simple
+closed polygonal curve admits a vertex presentation without collinear
+triples.
+\end{remark}
+
 \begin{lemma}[Polygonal connectedness]\label{lem:polygonal-connected}
 Any two points of a region $\Omega$ can be joined in $\Omega$ by a
 simple polygonal arc.
@@ -803,8 +827,9 @@ one common vertex remains.
 Let $G$ be a finite 2-connected graph.
 \begin{enumerate}\alphlabels
 \item Every subdivision of $G$ is 2-connected.
-\item If $P$ is a path whose distinct endpoints lie in $G$ and whose
-      internal vertices are new, then $G\cup P$ is 2-connected.
+\item If $P$ is a path whose two endpoints are distinct vertices of
+      $G$, then $G\cup P$ is 2-connected. The internal vertices of $P$
+      need not be new.
 \end{enumerate}
 \end{longlemma}
 \begin{proof}
@@ -819,14 +844,32 @@ a vertex other than its indicated endpoint; deleting that endpoint would
 then disconnect $G$, contrary to 2-connectivity. Thus $G-uv$ is
 connected. Iteration proves (a).
 
-For (b), delete a vertex $x$. If $x$ is an old vertex, $G-x$ is
-connected. When $x$ is not an endpoint of $P$, every component of
-$P-x$ is attached to $G-x$ at one of the two endpoints of $P$; when
-$x$ is an endpoint, the remainder of $P$ is attached at the other
-endpoint. If $x$ is a new internal vertex, $G$ remains connected and
-the two pieces of $P-x$ attach to its two endpoints in $G$. Thus
-removing any vertex leaves $G\cup P$ connected.
+For (b), delete a vertex $x$. The graph $G-x$ is connected --- it is
+$G$ itself if $x$ is not a vertex of $G$ --- and it still contains an
+endpoint of $P$, since the two endpoints are distinct vertices of $G$
+and at most one of them is $x$. Every vertex of $P-x$ is joined along
+$P$ to a surviving endpoint of $P$: if $x$ is internal to $P$, the two
+remaining subpaths contain one endpoint each; if $x$ is an endpoint of
+$P$, what remains of $P$ is a path containing the other endpoint; and
+if $x$ does not lie on $P$, nothing of $P$ is lost. Every vertex of
+$(G\cup P)-x$ therefore reaches a surviving endpoint of $P$, and those
+endpoints lie in the connected graph $G-x$. Thus removing any vertex
+leaves $G\cup P$ connected.
 \end{proof}
+
+\begin{remark}[Where freshness is needed]\label{rem:ear-freshness}
+The freshness of the internal vertices belongs to (a), not to (b).
+Half (a) is the case of ``replace an edge of $G$ by a path between its
+two endpoints'' in which the replacement path is new, and there
+freshness is essential: without it the deleted vertex may lie both on
+the replacement path and inside $G$, and then neither route between
+the replaced edge's ends need survive. Half (b) deletes nothing, and
+what carries its argument is only that every vertex of $P-x$ still
+reaches an endpoint of $P$. Ears produced by an overlay, as several
+below are, carry no freshness certificate --- their internal vertices
+are whatever the overlay created --- and (b) applies to them
+unchanged.
+\end{remark}
 
 \begin{lemma}[Relative ear decomposition]\label{lem:relative-ear}
 If $H$ is a 2-connected subgraph of a finite 2-connected graph $G$,
@@ -940,9 +983,11 @@ vertices, the interior of $R$ misses $C$ altogether.
 The vertices $u,v$ divide $C$ into two arcs $C_1,C_2$. Each arc
 contains an edge outside $\Gamma_{j-1}$, because its endpoints belong
 to different maximal subpaths of the intersection. The path $R$ lies
-on one side of $C$ and is a crosscut there. By
-Theorem~\ref{thm:polygonal-crosscut}, exactly one of the two cycles
-$R\cup C_1$, $R\cup C_2$ encloses $x$. That cycle remains in the fixed
+on one side of $C$ and is a crosscut there. The point $x$ lies in a
+face of $G$, while $R\cup C\subseteq|G|$, so $x$ lies on neither of
+the two cycles $R\cup C_1$, $R\cup C_2$; by
+Theorem~\ref{thm:polygonal-crosscut}, exactly one of them encloses
+$x$. That cycle remains in the fixed
 union $\Gamma_i\cup\cdots\cup\Gamma_j$, but it has fewer edges outside
 $\Gamma_{j-1}$ than $C$, since one nonempty outside portion of $C$ has
 been replaced by $R\subseteq\Gamma_{j-1}$. This contradicts the choice
@@ -951,6 +996,20 @@ of $C$.
 This contradiction rules out the assumed bounded face of $G$.
 Therefore $x$ lies in the outer face of $G$.
 \end{proof}
+
+\begin{remark}[The descent step needs $x$ off the crosscut]\label{rem:outer-chain-descent}
+The step that replaces $C$ by one of $R\cup C_1$, $R\cup C_2$ is the
+one a formal development will want to isolate as a lemma about a
+cycle, a crosscut of it, and an enclosed point --- and in that form it
+is false unless the point is required to lie off the crosscut. Take
+the unit square for $C$, cut at $(0,0)$ and $(1,1)$, let $R$ be the
+two segments from $(0,0)$ to $(1/2,1/2)$ to $(1,1)$, and let
+$x=(2/5,2/5)$. Every condition on the cycle and the crosscut holds and
+$x$ is enclosed by $C$, but $x$ lies on $R$, hence on both spliced
+curves, and is enclosed by neither. In the proof above the clause is
+free, since a point in a face of $G$ is off $|G|$ and both spliced
+curves lie in $|G|$; stated on its own, the step must carry it.
+\end{remark}
 
 \section{A simple arc does not separate the plane}
 
@@ -2302,9 +2361,24 @@ Make \(x\) a vertex of both graphs. Since \(K\) is 2-connected, \(K\setminus\{x\
 
 Let \(L\) be the finite overlay of the resulting union. It contains the whole grid and is 2-connected. Its open nonboundary part need not yet be connected: for example, the auxiliary crosscut could have both endpoints on \(C\).
 
-If \(|L|\setminus C\) has more than one component, choose points in two of its components and join them by a simple polygonal arc in \(D\), using Lemma~\ref{lem:polygonal-connected}. Overlay this polygonal arc with the polygonal nonboundary skeleton. Each component of the arc outside the old graph is an open subarc whose closure has two distinct endpoints on the old graph; after subdivision it is an ear. By Lemma~\ref{lem:subdivision-ear-preserve}, adding these ears successively preserves 2-connectivity. Because the joining arc lies in \(D\), every ear endpoint lies in the open nonboundary part; hence no ear increases the number of components of the open nonboundary part, and once all ears of one joining arc are present, the whole arc lies in the open nonboundary part and joins the two chosen components. Each round therefore strictly decreases the number of components. Since there are only finitely many components, finitely many repetitions produce a 2-connected graph \(H_n\) for which \(|H_n|\setminus C\) is connected.
+If \(|L|\setminus C\) has more than one component, choose points in two of its components and join them by a simple polygonal arc in \(D\), using Lemma~\ref{lem:polygonal-connected}. Overlay this polygonal arc with the polygonal nonboundary skeleton. Each component of the arc outside the old graph is an open subarc whose closure has two distinct endpoints on the old graph; after subdivision it is an ear. By Lemma~\ref{lem:subdivision-ear-preserve}, adding these ears successively preserves 2-connectivity. Because the joining arc lies in \(D\), every ear endpoint lies in the open nonboundary part; hence no ear increases the number of components of the open nonboundary part, and once all ears of one joining arc are present, the whole arc lies in the open nonboundary part and joins the two chosen components. Each round therefore strictly decreases the number of components. There are only finitely many of them, and this must be argued rather than assumed: \(L\) is a finite plane graph, \(C\) is a union of edges of \(L\), and distinct edges of a plane graph meet only at shared vertices, so every edge of \(L\) not contained in \(C\) meets \(C\) in at most its two endpoints. Hence \(|L|\setminus C\) is the union of the finitely many open nonboundary edges and the finitely many nonboundary vertices, and it has at most that many components. Finitely many repetitions therefore produce a 2-connected graph \(H_n\) for which \(|H_n|\setminus C\) is connected.
 
 The graph \(H_n\) contains the entire local grid and has all the stated properties. \end{proof}
+
+\begin{remark}[Finiteness of the component count is not a plane fact]\label{rem:grid-attachment-finiteness}
+The finiteness just used is a property of the overlay, not of the
+plane. A single straight segment can meet a wild Jordan curve in a
+Cantor set, and the complement of that set in the segment has
+uncountably many components; so ``\(|L|\setminus C\) has finitely many
+components'' is unavailable from the geometry of \(L\) and \(C\)
+alone. What supplies it is the plane-graph invariant recorded above:
+every polygonal object fed into the overlay meets \(C\) in at most two
+points, because \(C\) is carried as a union of edges and distinct
+edges meet only at shared vertices. The convention of
+Remark~\ref{rem:polygonal-overlay-convention} is what keeps that
+invariant available, since it never overlays anything against \(C\)
+itself.
+\end{remark}
 
 Apply Theorem~\ref{thm:finite-transfer}\textup{(a)} to the extension
 $H_n$ of Proposition~\ref{prop:local-grid-attachment}. We obtain a matched target realization \(H'_n\).
@@ -2368,10 +2442,11 @@ is a homeomorphism.
 Choose finitely many fresh points
 
 \[
-z_0,z_1,\ldots,z_{m-1}\in u(\mathcal A)\setminus V_\partial
+z_0,z_1,\ldots,z_{m-1}\in u(\mathcal A)\setminus V_\partial,
+\qquad m\ge2,
 \]
 
-in cyclic order so that every closed boundary arc \(A_i\) from \(z_i\) to \(z_{i+1}\) has diameter \(<\delta/4\). This is possible by parametrizing \(S\) by a circle (Lemma~\ref{lem:jordan-circle}), using uniform continuity to partition the circle into arcs whose images in \(S\) have diameter \(<\delta/8\), and choosing one fresh dense-set point in the relative interior of each --- density supplies such a point after the finitely many exclusions --- so that the chosen points are distinct and in cyclic order: two consecutive chosen points then bound an arc of \(S\) contained in the union of two consecutive image arcs, hence of diameter \(<\delta/4\). Insert the old points of \(V_\partial\) merely as subdivisions of the outer arcs \(A_i\).
+in cyclic order so that every closed boundary arc \(A_i\) from \(z_i\) to \(z_{i+1}\) has diameter \(<\delta/4\). This is possible by parametrizing \(S\) by a circle (Lemma~\ref{lem:jordan-circle}), using uniform continuity to partition the circle into arcs whose images in \(S\) have diameter \(<\delta/8\), and choosing one fresh dense-set point in the relative interior of each --- density supplies such a point after the finitely many exclusions --- so that the chosen points are distinct and in cyclic order: two consecutive chosen points then bound an arc of \(S\) contained in the union of two consecutive image arcs, hence of diameter \(<\delta/4\). The requirement \(m\ge2\) is imposed outright and not inferred: for large \(\delta\) the diameter condition permits a smaller choice, and clause~5 fails for one; see Remark~\ref{rem:mesh-two-spokes}. Insert the old points of \(V_\partial\) merely as subdivisions of the outer arcs \(A_i\).
 
 For each \(z_i\), draw the radial spoke
 
@@ -2406,7 +2481,21 @@ Thus every collar cell has diameter \(<\delta\).
 
 Fill the inner square \(\lambda Q\) with a rectangular grid. Include the four corners of \(\lambda Q\), all points \(\lambda z_i\), and enough additional horizontal and vertical coordinates that every inner rectangle has diameter \(<\delta\). Subdivide the inner boundary where necessary.
 
-The inner grid is 2-connected by the same ear construction used for \(K\), together with Lemma~\ref{lem:subdivision-ear-preserve}. The boundary of every collar rectangle is a cycle sharing with the inner grid at least the two endpoints of its inner boundary arc. Adding these finitely many cycles one at a time and applying Lemma~\ref{lem:union-two-connected} proves that the full mesh is 2-connected. After deleting \(S\), the inner grid together with all open spokes is still connected. The only inward edge incident with \(S\) at a new point is the single spoke at that point. \end{proof}
+The inner grid is 2-connected by the same ear construction used for \(K\), together with Lemma~\ref{lem:subdivision-ear-preserve}. Because \(m\ge2\), the two endpoints \(\lambda z_i\), \(\lambda z_{i+1}\) of the inner boundary arc of a collar rectangle are distinct, so the boundary of every collar rectangle is a cycle sharing with the inner grid at least those two vertices. Adding these finitely many cycles one at a time and applying Lemma~\ref{lem:union-two-connected} proves that the full mesh is 2-connected. After deleting \(S\), the inner grid together with all open spokes is still connected. The only inward edge incident with \(S\) at a new point is the single spoke at that point. \end{proof}
+
+\begin{remark}[Two spokes are needed, and two are enough]\label{rem:mesh-two-spokes}
+Clause~5 is false if fewer than two fresh points are chosen, and for
+large \(\delta\) the arc-diameter condition permits that choice, so
+\(m\ge2\) has to be imposed outright. With no fresh point there is no
+spoke, and the mesh is the outer cycle together with the inner grid,
+two disjoint pieces --- not even connected. With exactly one, the
+single spoke is the only thing joining those two pieces, so every
+interior vertex of the spoke is a cut vertex. Two are already enough,
+which is what the argument above uses: from \(m\ge2\) onwards every
+collar rectangle shares two distinct vertices with the inner grid. In
+the application \(\delta=\varepsilon_n=2^{-n}\), and the arc-diameter
+condition then forces far more than two.
+\end{remark}
 
 Apply Proposition~\ref{prop:anchored-square-mesh} with \(\delta=\varepsilon_n\), obtaining \(T_n\). By Lemma~\ref{lem:polygonal-overlay}, overlay \(T_n\) with \(H'_n\). The two 2-connected graphs contain the whole outer cycle \(S\), so their overlay is 2-connected by Lemma~\ref{lem:union-two-connected}.
 
@@ -3189,6 +3278,7 @@ Statement & Direct internal prerequisites \\
 \hline
 \endlastfoot
 Theorem~\ref{thm:main}\newline\emph{Relative Jordan--Schönflies} & Theorem~\ref{thm:closed-interior-extension} and Proposition~\ref{prop:exterior-extension} \\
+Remark~\ref{rem:polygonal-presentation}\newline\emph{Polygonal sets and their vertex presentations} & Lemma~\ref{lem:polygonal-collar} and Theorem~\ref{thm:polygonal-crosscut} \\
 Lemma~\ref{lem:polygonal-connected}\newline\emph{Polygonal connectedness} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:finite-polygonal-union}\newline\emph{Finite polygonal unions} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:nearest-segment}\newline\emph{Nearest-point segment} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
@@ -3213,10 +3303,12 @@ Lemma~\ref{lem:k33}\newline\emph{Nonplanarity of $K_{3,3}$} & Lemma~\ref{lem:pol
 Corollary~\ref{cor:k33-subdivision}\newline\emph{Subdivisions of $K_{3,3}$} & Lemma~\ref{lem:k33} \\
 Lemma~\ref{lem:union-two-connected}\newline\emph{Union of 2-connected graphs} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:subdivision-ear-preserve}\newline\emph{Subdivisions and ears preserve 2-connectivity} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
+Remark~\ref{rem:ear-freshness}\newline\emph{Where freshness is needed} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:relative-ear}\newline\emph{Relative ear decomposition} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:polygonal-overlay}\newline\emph{Polygonal overlay} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:face-cycles}\newline\emph{Face cycles} & Lemma~\ref{lem:relative-ear}, Theorem~\ref{thm:polygonal-jordan} and Theorem~\ref{thm:polygonal-crosscut} \\
 Lemma~\ref{lem:outer-chain}\newline\emph{Outer face of a chain} & Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:face-cycles} and Theorem~\ref{thm:polygonal-crosscut} \\
+Remark~\ref{rem:outer-chain-descent}\newline\emph{The descent step needs $x$ off the crosscut} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Theorem~\ref{thm:arc-complement}\newline\emph{Arc-complement theorem} & Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:polygonal-overlay}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:outer-chain} and Lemma~\ref{lem:polygonal-connected} \\
 Lemma~\ref{lem:jordan-circle}\newline\emph{Model-curve parametrization} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Proposition~\ref{prop:jordan-disconnected}\newline\emph{A Jordan curve separates} & Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:polygonal-connected} and Corollary~\ref{cor:k33-subdivision} \\
@@ -3250,7 +3342,9 @@ Lemma~\ref{lem:local-skeleton-structure}\newline\emph{Local structure of a polyg
 Lemma~\ref{lem:polygonal-side-accessibility}\newline\emph{Polygonal-side accessibility} & Lemma~\ref{lem:local-skeleton-structure}, Lemma~\ref{lem:compact-separation}, Lemma~\ref{lem:cellulation-invariants} and Theorem~\ref{thm:polygonal-jordan} \\
 Theorem~\ref{thm:finite-transfer}\newline\emph{Finite transfer} & Lemma~\ref{lem:polygonal-overlay}, Remark~\ref{rem:polygonal-overlay-convention}, Lemma~\ref{lem:relative-ear}, Definition~\ref{def:generated-structure}, Remark~\ref{rem:intermediate-disconnection}, Lemma~\ref{lem:cellulation-invariants}, Lemma~\ref{lem:accessible-endpoints}, Lemma~\ref{lem:polygonal-side-accessibility}, Lemma~\ref{lem:combinatorial-invariance}, Lemma~\ref{lem:tangent-cone}, Lemma~\ref{lem:compact-separation} and Theorem~\ref{thm:general-crosscut} \\
 Proposition~\ref{prop:local-grid-attachment}\newline\emph{Local-grid attachment} & Lemma~\ref{lem:subdivision-ear-preserve}, Lemma~\ref{lem:polygonal-overlay}, Remark~\ref{rem:polygonal-overlay-convention}, Lemma~\ref{lem:union-two-connected}, Lemma~\ref{lem:cellulation-invariants} and Lemma~\ref{lem:polygonal-connected} \\
-Proposition~\ref{prop:anchored-square-mesh}\newline\emph{Anchored square mesh} & Lemma~\ref{lem:jordan-circle}, Lemma~\ref{lem:subdivision-ear-preserve} and Lemma~\ref{lem:union-two-connected} \\
+Remark~\ref{rem:grid-attachment-finiteness}\newline\emph{Finiteness of the component count is not a plane fact} & Remark~\ref{rem:polygonal-overlay-convention} \\
+Proposition~\ref{prop:anchored-square-mesh}\newline\emph{Anchored square mesh} & Lemma~\ref{lem:jordan-circle}, Remark~\ref{rem:mesh-two-spokes}, Lemma~\ref{lem:subdivision-ear-preserve} and Lemma~\ref{lem:union-two-connected} \\
+Remark~\ref{rem:mesh-two-spokes}\newline\emph{Two spokes are needed, and two are enough} & Definitions and imported background (\hyperref[app:background]{Appendix~C}) only. \\
 Lemma~\ref{lem:grid-star-estimate}\newline\emph{Grid-star estimate} & Lemma~\ref{lem:refinement-compatibility} and Lemma~\ref{lem:star-face-mesh} \\
 Proposition~\ref{prop:shrinking-stars}\newline\emph{Shrinking matched stars} & Lemma~\ref{lem:grid-star-estimate} and Lemma~\ref{lem:refinement-compatibility} \\
 Lemma~\ref{lem:anchor-density}\newline\emph{Density of anchors} & Proposition~\ref{prop:anchored-square-mesh} \\
